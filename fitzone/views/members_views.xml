@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Member fields on the contact form (res.partner) -->
+    <record id="view_partner_form_fitzone" model="ir.ui.view">
+        <field name="name">res.partner.form.fitzone</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="FitZone Member">
+                    <group>
+                        <field name="membership_no"/>
+                        <field name="birth_date"/>
+                    </group>
+                    <separator string="Emergency Contacts"/>
+                    <field name="emergency_contact_ids"/>
+                    <separator string="Health Profile"/>
+                    <field name="health_profile_ids"/>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+
+    <!-- Emergency Contacts -->
+    <record id="view_fitzone_emergency_contact_list" model="ir.ui.view">
+        <field name="name">fitzone.emergency.contact.list</field>
+        <field name="model">fitzone.emergency.contact</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="member_id"/>
+                <field name="name"/>
+                <field name="phone"/>
+                <field name="relationship"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_fitzone_emergency_contact_form" model="ir.ui.view">
+        <field name="name">fitzone.emergency.contact.form</field>
+        <field name="model">fitzone.emergency.contact</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                <group>
+                    <field name="member_id"/>
+                    <field name="name"/>
+                    <field name="phone"/>
+                    <field name="relationship"/>
+                </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_fitzone_emergency_contact" model="ir.actions.act_window">
+        <field name="name">Emergency Contacts</field>
+        <field name="res_model">fitzone.emergency.contact</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+
+    <!-- Health Profiles -->
+    <record id="view_fitzone_health_profile_list" model="ir.ui.view">
+        <field name="name">fitzone.health.profile.list</field>
+        <field name="model">fitzone.health.profile</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="member_id"/>
+                <field name="age"/>
+                <field name="weight"/>
+                <field name="height"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_fitzone_health_profile_form" model="ir.ui.view">
+        <field name="name">fitzone.health.profile.form</field>
+        <field name="model">fitzone.health.profile</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                <group>
+                    <field name="member_id"/>
+                    <field name="age"/>
+                    <field name="weight"/>
+                    <field name="height"/>
+                </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_fitzone_health_profile" model="ir.actions.act_window">
+        <field name="name">Health Profiles</field>
+        <field name="res_model">fitzone.health.profile</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+
+    <!-- Progress Tracking -->
+    <record id="view_fitzone_progress_tracking_list" model="ir.ui.view">
+        <field name="name">fitzone.progress.tracking.list</field>
+        <field name="model">fitzone.progress.tracking</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="member_id"/>
+                <field name="trainer_id"/>
+                <field name="record_date"/>
+                <field name="weight"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_fitzone_progress_tracking_form" model="ir.ui.view">
+        <field name="name">fitzone.progress.tracking.form</field>
+        <field name="model">fitzone.progress.tracking</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                <group>
+                    <field name="member_id"/>
+                    <field name="trainer_id"/>
+                    <field name="record_date"/>
+                    <field name="weight"/>
+                </group>
+                <group>
+                    <field name="notes"/>
+                </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_fitzone_progress_tracking" model="ir.actions.act_window">
+        <field name="name">Progress Tracking</field>
+        <field name="res_model">fitzone.progress.tracking</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+</odoo>

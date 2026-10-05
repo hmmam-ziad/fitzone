@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Injuries -->
+    <record id="view_fitzone_injury_list" model="ir.ui.view">
+        <field name="name">fitzone.injury.list</field>
+        <field name="model">fitzone.injury</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="member_id"/>
+                <field name="reported_by"/>
+                <field name="physiotherapist_id"/>
+                <field name="injury_date"/>
+                <field name="cause"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_fitzone_injury_form" model="ir.ui.view">
+        <field name="name">fitzone.injury.form</field>
+        <field name="model">fitzone.injury</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                <group>
+                    <field name="member_id"/>
+                    <field name="reported_by"/>
+                    <field name="physiotherapist_id"/>
+                    <field name="injury_date"/>
+                    <field name="cause"/>
+                </group>
+                <group>
+                    <field name="description"/>
+                </group>
+                <notebook>
+                        <page string="Type">
+                            <field name="type_ids"/>
+                        </page>
+                </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_fitzone_injury" model="ir.actions.act_window">
+        <field name="name">Injuries</field>
+        <field name="res_model">fitzone.injury</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+
+    <!-- Injury Types -->
+    <record id="view_fitzone_injury_type_list" model="ir.ui.view">
+        <field name="name">fitzone.injury.type.list</field>
+        <field name="model">fitzone.injury.type</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="injury_id"/>
+                <field name="member_id"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_fitzone_injury_type_form" model="ir.ui.view">
+        <field name="name">fitzone.injury.type.form</field>
+        <field name="model">fitzone.injury.type</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                <group>
+                    <field name="injury_id"/>
+                    <field name="member_id"/>
+                </group>
+                <group>
+                    <field name="restriction"/>
+                </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_fitzone_injury_type" model="ir.actions.act_window">
+        <field name="name">Injury Types</field>
+        <field name="res_model">fitzone.injury.type</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+
+    <!-- Rehabilitation -->
+    <record id="view_fitzone_rehabilitation_list" model="ir.ui.view">
+        <field name="name">fitzone.rehabilitation.list</field>
+        <field name="model">fitzone.rehabilitation</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="member_id"/>
+                <field name="injury_id"/>
+                <field name="physiotherapist_id"/>
+                <field name="start_date"/>
+                <field name="end_date"/>
+                <field name="status"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_fitzone_rehabilitation_form" model="ir.ui.view">
+        <field name="name">fitzone.rehabilitation.form</field>
+        <field name="model">fitzone.rehabilitation</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                <group>
+                    <field name="member_id"/>
+                    <field name="injury_id"/>
+                    <field name="physiotherapist_id"/>
+                    <field name="start_date"/>
+                    <field name="end_date"/>
+                    <field name="status"/>
+                </group>
+                <group>
+                    <field name="notes"/>
+                </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_fitzone_rehabilitation" model="ir.actions.act_window">
+        <field name="name">Rehabilitation</field>
+        <field name="res_model">fitzone.rehabilitation</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+</odoo>

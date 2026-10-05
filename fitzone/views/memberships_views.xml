@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Package fields on the product form (product.template) -->
+    <record id="view_product_template_form_fitzone" model="ir.ui.view">
+        <field name="name">product.template.form.fitzone</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="FitZone Package">
+                    <group>
+                        <field name="package_type"/>
+                        <field name="duration_months"/>
+                        <field name="total_sessions"/>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+
+    <!-- Memberships -->
+    <record id="view_fitzone_membership_list" model="ir.ui.view">
+        <field name="name">fitzone.membership.list</field>
+        <field name="model">fitzone.membership</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="member_id"/>
+                <field name="package_id"/>
+                <field name="barcode"/>
+                <field name="start_date"/>
+                <field name="end_date"/>
+                <field name="state"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_fitzone_membership_form" model="ir.ui.view">
+        <field name="name">fitzone.membership.form</field>
+        <field name="model">fitzone.membership</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                <group>
+                    <field name="member_id"/>
+                    <field name="package_id"/>
+                    <field name="barcode"/>
+                    <field name="start_date"/>
+                    <field name="end_date"/>
+                    <field name="state"/>
+                </group>
+                <notebook>
+                        <page string="Freeze">
+                            <field name="freeze_ids"/>
+                        </page>
+                </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_fitzone_membership" model="ir.actions.act_window">
+        <field name="name">Memberships</field>
+        <field name="res_model">fitzone.membership</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+
+    <!-- Freezes -->
+    <record id="view_fitzone_freeze_list" model="ir.ui.view">
+        <field name="name">fitzone.freeze.list</field>
+        <field name="model">fitzone.freeze</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="membership_id"/>
+                <field name="start_date"/>
+                <field name="end_date"/>
+                <field name="days"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_fitzone_freeze_form" model="ir.ui.view">
+        <field name="name">fitzone.freeze.form</field>
+        <field name="model">fitzone.freeze</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                <group>
+                    <field name="membership_id"/>
+                    <field name="start_date"/>
+                    <field name="end_date"/>
+                    <field name="days"/>
+                </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_fitzone_freeze" model="ir.actions.act_window">
+        <field name="name">Freezes</field>
+        <field name="res_model">fitzone.freeze</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+</odoo>

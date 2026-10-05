@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_fitzone_root" name="FitZone" sequence="10"/>
+
+    <menuitem id="menu_fitzone_members" name="Members" parent="menu_fitzone_root" sequence="10"/>
+    <menuitem id="menu_fitzone_emergency_contact" name="Emergency Contacts" parent="menu_fitzone_members" action="action_fitzone_emergency_contact" sequence="10"/>
+    <menuitem id="menu_fitzone_health_profile" name="Health Profiles" parent="menu_fitzone_members" action="action_fitzone_health_profile" sequence="20"/>
+    <menuitem id="menu_fitzone_progress_tracking" name="Progress Tracking" parent="menu_fitzone_members" action="action_fitzone_progress_tracking" sequence="30"/>
+
+    <menuitem id="menu_fitzone_memberships" name="Memberships" parent="menu_fitzone_root" sequence="20"/>
+    <menuitem id="menu_fitzone_membership" name="Memberships" parent="menu_fitzone_memberships" action="action_fitzone_membership" sequence="10"/>
+    <menuitem id="menu_fitzone_freeze" name="Freezes" parent="menu_fitzone_memberships" action="action_fitzone_freeze" sequence="20"/>
+
+    <menuitem id="menu_fitzone_payments" name="Payments" parent="menu_fitzone_root" sequence="30"/>
+    <menuitem id="menu_fitzone_installment_plan" name="Installment Plans" parent="menu_fitzone_payments" action="action_fitzone_installment_plan" sequence="10"/>
+    <menuitem id="menu_fitzone_installment" name="Installments" parent="menu_fitzone_payments" action="action_fitzone_installment" sequence="20"/>
+
+    <menuitem id="menu_fitzone_visits" name="Visits" parent="menu_fitzone_root" sequence="40"/>
+    <menuitem id="menu_fitzone_visit" name="Visits" parent="menu_fitzone_visits" action="action_fitzone_visit" sequence="10"/>
+
+    <menuitem id="menu_fitzone_classes" name="Classes" parent="menu_fitzone_root" sequence="50"/>
+    <menuitem id="menu_fitzone_gym_class" name="Group Classes" parent="menu_fitzone_classes" action="action_fitzone_gym_class" sequence="10"/>
+    <menuitem id="menu_fitzone_class_booking" name="Class Bookings" parent="menu_fitzone_classes" action="action_fitzone_class_booking" sequence="20"/>
+    <menuitem id="menu_fitzone_attendance" name="Attendance" parent="menu_fitzone_classes" action="action_fitzone_attendance" sequence="30"/>
+
+    <menuitem id="menu_fitzone_personal_training" name="Personal Training" parent="menu_fitzone_root" sequence="60"/>
+    <menuitem id="menu_fitzone_pt_session" name="PT Sessions" parent="menu_fitzone_personal_training" action="action_fitzone_pt_session" sequence="10"/>
+    <menuitem id="menu_fitzone_trainer_commission" name="Trainer Commissions" parent="menu_fitzone_personal_training" action="action_fitzone_trainer_commission" sequence="20"/>
+
+    <menuitem id="menu_fitzone_pool" name="Pool" parent="menu_fitzone_root" sequence="70"/>
+    <menuitem id="menu_fitzone_pool_booking" name="Pool Bookings" parent="menu_fitzone_pool" action="action_fitzone_pool_booking" sequence="10"/>
+
+    <menuitem id="menu_fitzone_injuries" name="Injuries" parent="menu_fitzone_root" sequence="80"/>
+    <menuitem id="menu_fitzone_injury" name="Injuries" parent="menu_fitzone_injuries" action="action_fitzone_injury" sequence="10"/>
+    <menuitem id="menu_fitzone_injury_type" name="Injury Types" parent="menu_fitzone_injuries" action="action_fitzone_injury_type" sequence="20"/>
+    <menuitem id="menu_fitzone_rehabilitation" name="Rehabilitation" parent="menu_fitzone_injuries" action="action_fitzone_rehabilitation" sequence="30"/>
+
+    <menuitem id="menu_fitzone_maintenance" name="Maintenance" parent="menu_fitzone_root" sequence="90"/>
+    <menuitem id="menu_fitzone_fault_report" name="Fault Reports" parent="menu_fitzone_maintenance" action="action_fitzone_fault_report" sequence="10"/>
+
+    <menuitem id="menu_fitzone_configuration" name="Configuration" parent="menu_fitzone_root" sequence="100"/>
+    <menuitem id="menu_fitzone_trainer" name="Trainers" parent="menu_fitzone_configuration" action="action_fitzone_trainer" sequence="10"/>
+    <menuitem id="menu_fitzone_room" name="Rooms" parent="menu_fitzone_configuration" action="action_fitzone_room" sequence="20"/>
+    <menuitem id="menu_fitzone_pool_slot" name="Pool Slots" parent="menu_fitzone_configuration" action="action_fitzone_pool_slot" sequence="30"/>
+    <menuitem id="menu_fitzone_commission_rule" name="Commission Rules" parent="menu_fitzone_configuration" action="action_fitzone_commission_rule" sequence="40"/>
+</odoo>
