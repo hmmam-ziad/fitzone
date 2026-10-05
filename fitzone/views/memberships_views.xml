@@ -19,7 +19,6 @@
         </field>
     </record>
 
-
     <!-- Memberships -->
     <record id="view_fitzone_membership_list" model="ir.ui.view">
         <field name="name">fitzone.membership.list</field>
@@ -29,9 +28,6 @@
                 <field name="member_id"/>
                 <field name="package_id"/>
                 <field name="barcode"/>
-                <field name="start_date"/>
-                <field name="end_date"/>
-                <field name="state"/>
             </list>
         </field>
     </record>
@@ -46,15 +42,7 @@
                     <field name="member_id"/>
                     <field name="package_id"/>
                     <field name="barcode"/>
-                    <field name="start_date"/>
-                    <field name="end_date"/>
-                    <field name="state"/>
                 </group>
-                <notebook>
-                        <page string="Freeze">
-                            <field name="freeze_ids"/>
-                        </page>
-                </notebook>
                 </sheet>
             </form>
         </field>

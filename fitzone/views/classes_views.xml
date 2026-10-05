@@ -65,11 +65,6 @@
                     <field name="start_datetime"/>
                     <field name="end_datetime"/>
                 </group>
-                <notebook>
-                        <page string="Booking">
-                            <field name="booking_ids"/>
-                        </page>
-                </notebook>
                 </sheet>
             </form>
         </field>
