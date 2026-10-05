@@ -1,0 +1,23 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_fitzone_room_user,fitzone_room user,model_fitzone_room,base.group_user,1,1,1,1
+access_fitzone_gym_class_user,fitzone_gym_class user,model_fitzone_gym_class,base.group_user,1,1,1,1
+access_fitzone_class_booking_user,fitzone_class_booking user,model_fitzone_class_booking,base.group_user,1,1,1,1
+access_fitzone_attendance_user,fitzone_attendance user,model_fitzone_attendance,base.group_user,1,1,1,1
+access_fitzone_trainer_user,fitzone_trainer user,model_fitzone_trainer,base.group_user,1,1,1,1
+access_fitzone_injury_user,fitzone_injury user,model_fitzone_injury,base.group_user,1,1,1,1
+access_fitzone_injury_type_user,fitzone_injury_type user,model_fitzone_injury_type,base.group_user,1,1,1,1
+access_fitzone_rehabilitation_user,fitzone_rehabilitation user,model_fitzone_rehabilitation,base.group_user,1,1,1,1
+access_fitzone_fault_report_user,fitzone_fault_report user,model_fitzone_fault_report,base.group_user,1,1,1,1
+access_fitzone_emergency_contact_user,fitzone_emergency_contact user,model_fitzone_emergency_contact,base.group_user,1,1,1,1
+access_fitzone_health_profile_user,fitzone_health_profile user,model_fitzone_health_profile,base.group_user,1,1,1,1
+access_fitzone_progress_tracking_user,fitzone_progress_tracking user,model_fitzone_progress_tracking,base.group_user,1,1,1,1
+access_fitzone_membership_user,fitzone_membership user,model_fitzone_membership,base.group_user,1,1,1,1
+access_fitzone_freeze_user,fitzone_freeze user,model_fitzone_freeze,base.group_user,1,1,1,1
+access_fitzone_installment_plan_user,fitzone_installment_plan user,model_fitzone_installment_plan,base.group_user,1,1,1,1
+access_fitzone_installment_user,fitzone_installment user,model_fitzone_installment,base.group_user,1,1,1,1
+access_fitzone_pt_session_user,fitzone_pt_session user,model_fitzone_pt_session,base.group_user,1,1,1,1
+access_fitzone_commission_rule_user,fitzone_commission_rule user,model_fitzone_commission_rule,base.group_user,1,1,1,1
+access_fitzone_trainer_commission_user,fitzone_trainer_commission user,model_fitzone_trainer_commission,base.group_user,1,1,1,1
+access_fitzone_pool_slot_user,fitzone_pool_slot user,model_fitzone_pool_slot,base.group_user,1,1,1,1
+access_fitzone_pool_booking_user,fitzone_pool_booking user,model_fitzone_pool_booking,base.group_user,1,1,1,1
+access_fitzone_visit_user,fitzone_visit user,model_fitzone_visit,base.group_user,1,1,1,1

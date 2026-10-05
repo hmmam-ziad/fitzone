@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- PT Sessions -->
+    <record id="view_fitzone_pt_session_list" model="ir.ui.view">
+        <field name="name">fitzone.pt.session.list</field>
+        <field name="model">fitzone.pt.session</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="member_id"/>
+                <field name="trainer_id"/>
+                <field name="membership_id"/>
+                <field name="package_id"/>
+                <field name="session_date"/>
+                <field name="end_datetime"/>
+                <field name="status"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_fitzone_pt_session_form" model="ir.ui.view">
+        <field name="name">fitzone.pt.session.form</field>
+        <field name="model">fitzone.pt.session</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="member_id"/>
+                        <field name="trainer_id"/>
+                        <field name="membership_id"/>
+                        <field name="package_id"/>
+                        <field name="session_date"/>
+                        <field name="end_datetime"/>
+                        <field name="status"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_fitzone_pt_session" model="ir.actions.act_window">
+        <field name="name">PT Sessions</field>
+        <field name="res_model">fitzone.pt.session</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+
+    <!-- Commission Rules -->
+    <record id="view_fitzone_commission_rule_list" model="ir.ui.view">
+        <field name="name">fitzone.commission.rule.list</field>
+        <field name="model">fitzone.commission.rule</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="rate"/>
+                <field name="effective_from"/>
+                <field name="effective_to"/>
+                <field name="active"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_fitzone_commission_rule_form" model="ir.ui.view">
+        <field name="name">fitzone.commission.rule.form</field>
+        <field name="model">fitzone.commission.rule</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="rate"/>
+                        <field name="effective_from"/>
+                        <field name="effective_to"/>
+                        <field name="active"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_fitzone_commission_rule" model="ir.actions.act_window">
+        <field name="name">Commission Rules</field>
+        <field name="res_model">fitzone.commission.rule</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+
+    <!-- Trainer Commissions -->
+    <record id="view_fitzone_trainer_commission_list" model="ir.ui.view">
+        <field name="name">fitzone.trainer.commission.list</field>
+        <field name="model">fitzone.trainer.commission</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="trainer_id"/>
+                <field name="pt_session_id"/>
+                <field name="commission_rule_id"/>
+                <field name="amount"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_fitzone_trainer_commission_form" model="ir.ui.view">
+        <field name="name">fitzone.trainer.commission.form</field>
+        <field name="model">fitzone.trainer.commission</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="trainer_id"/>
+                        <field name="pt_session_id"/>
+                        <field name="commission_rule_id"/>
+                        <field name="amount"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_fitzone_trainer_commission" model="ir.actions.act_window">
+        <field name="name">Trainer Commissions</field>
+        <field name="res_model">fitzone.trainer.commission</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+</odoo>
