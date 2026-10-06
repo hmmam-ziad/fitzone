@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="payment_method_cash" model="pos.payment.method">
+        <field name="name">Cash</field>
+        <field name="journal_id" ref="account.1_cash"/>
+    </record>
+
+    <record id="payment_method_card" model="pos.payment.method">
+        <field name="name">Card</field>
+        <field name="journal_id" ref="account.1_bank"/>
+    </record>
+
+    <record id="payment_method_ewallet" model="pos.payment.method">
+        <field name="name">E-Wallet</field>
+        <field name="journal_id" ref="account.1_bank"/>
+    </record>
+
+</odoo>

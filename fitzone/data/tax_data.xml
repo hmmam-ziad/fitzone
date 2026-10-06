@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="fitzone_tax_16" model="account.tax">
+        <field name="name">FitZone 16%</field>
+        <field name="amount">16</field>
+        <field name="amount_type">percent</field>
+        <field name="type_tax_use">sale</field>
+        <field name="price_include">1</field>
+        <field name="description">16% Sales Tax</field>
+    </record>
+
+    <record id="base.main_company" model="res.company">
+        <field name="account_sale_tax_id" ref="fitzone_tax_16"/>
+    </record>
+
+</odoo>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="pos_config_reception" model="pos.config">
+        <field name="name">FitZone Reception</field>
+        <field name="payment_method_ids" eval="[(6, 0, [
+            ref('fitzone.payment_method_cash'),
+            ref('fitzone.payment_method_card'),
+            ref('fitzone.payment_method_ewallet')
+        ])]"/>
+    </record>
+
+</odoo>
