@@ -1,6 +1,5 @@
 from . import members
 from . import trainer
-from . import employee
 from . import memberships
 from . import emergency_contact
 from . import health_profile
