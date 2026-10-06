@@ -14,6 +14,7 @@
         "point_of_sale",
         "sale_management",
         "account",
+        "l10n_jo",
         "stock",
         "purchase",
         "hr",
@@ -37,6 +38,7 @@
         "views/maintenance_views.xml",
         "views/menus.xml",
     ],
+    "post_init_hook": "post_init_hook",
     "installable": True,
     "application": True,
 }
