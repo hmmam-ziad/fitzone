@@ -3,6 +3,7 @@
 
     <record id="fitzone_tax_group_16" model="account.tax.group">
         <field name="name">FitZone 16%</field>
+        <field name="country_id" ref="base.jo"/>
     </record>
 
     <record id="fitzone_tax_16" model="account.tax">
@@ -10,7 +11,7 @@
         <field name="amount">16</field>
         <field name="amount_type">percent</field>
         <field name="type_tax_use">sale</field>
-        <field name="price_include">1</field>
+        <field name="price_include_override">tax_included</field>
         <field name="tax_group_id" ref="fitzone_tax_group_16"/>
         <field name="country_id" ref="base.jo"/>
         <field name="description">16% Sales Tax</field>
