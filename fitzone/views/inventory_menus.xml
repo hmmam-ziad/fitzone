@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_fitzone_inventory" name="Inventory &amp; Procurement" parent="menu_fitzone_root" sequence="95"/>
+    <menuitem id="menu_fitzone_product_inventory" name="Supplements &amp; Health Products" parent="menu_fitzone_inventory" action="action_fitzone_product_inventory" sequence="10"/>
+    <menuitem id="menu_fitzone_low_stock" name="Low Stock Alerts" parent="menu_fitzone_inventory" action="action_fitzone_low_stock" sequence="20"/>
+    <menuitem id="menu_fitzone_purchase_request" name="Purchase Requests" parent="menu_fitzone_inventory" action="action_fitzone_purchase_request" sequence="30"/>
+</odoo>

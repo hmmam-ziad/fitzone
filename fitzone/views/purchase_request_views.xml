@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_fitzone_purchase_request_list" model="ir.ui.view">
+        <field name="name">fitzone.purchase.request.list</field>
+        <field name="model">fitzone.purchase.request</field>
+        <field name="arch" type="xml">
+            <list decoration-info="state == 'to_approve'" decoration-muted="state == 'rejected'">
+                <field name="name"/>
+                <field name="request_date"/>
+                <field name="source"/>
+                <field name="requested_by"/>
+                <field name="vendor_id"/>
+                <field name="state"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_fitzone_purchase_request_form" model="ir.ui.view">
+        <field name="name">fitzone.purchase.request.form</field>
+        <field name="model">fitzone.purchase.request</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_submit" string="Submit for Approval" type="object"
+                            class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_approve" string="Approve" type="object"
+                            class="btn-primary" invisible="state != 'to_approve'"
+                            groups="purchase.group_purchase_manager"/>
+                    <button name="action_reject" string="Reject" type="object"
+                            invisible="state != 'to_approve'"
+                            groups="purchase.group_purchase_manager"/>
+                    <button name="action_create_rfq" string="Create RFQ" type="object"
+                            class="btn-primary" invisible="state != 'approved'"
+                            groups="purchase.group_purchase_user"/>
+                    <button name="action_reset_draft" string="Reset to Draft" type="object"
+                            invisible="state != 'rejected'"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,to_approve,approved,ordered"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="source"/>
+                            <field name="requested_by" readonly="state != 'draft'"/>
+                            <field name="vendor_id" readonly="state in ('ordered', 'rejected')"/>
+                        </group>
+                        <group>
+                            <field name="request_date" readonly="state != 'draft'"/>
+                            <field name="approver_id"/>
+                            <field name="approval_date"/>
+                            <field name="purchase_order_id"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <group invisible="state != 'rejected'">
+                        <field name="reject_reason"/>
+                    </group>
+                    <notebook>
+                        <page string="Products" name="products">
+                            <field name="line_ids" readonly="state not in ('draft', 'to_approve')">
+                                <list editable="bottom">
+                                    <field name="product_id"/>
+                                    <field name="qty"/>
+                                    <field name="uom_id"/>
+                                    <field name="usable_qty"/>
+                                    <field name="min_qty"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <field name="notes"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_fitzone_purchase_request_search" model="ir.ui.view">
+        <field name="name">fitzone.purchase.request.search</field>
+        <field name="model">fitzone.purchase.request</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="vendor_id"/>
+                <filter string="Waiting Approval" name="to_approve" domain="[('state', '=', 'to_approve')]"/>
+                <filter string="Approved" name="approved" domain="[('state', '=', 'approved')]"/>
+                <filter string="Automatic (low stock)" name="auto" domain="[('source', '=', 'auto')]"/>
+                <group>
+                    <filter string="Status" name="group_state" context="{'group_by': 'state'}"/>
+                    <filter string="Source" name="group_source" context="{'group_by': 'source'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_fitzone_purchase_request" model="ir.actions.act_window">
+        <field name="name">Purchase Requests</field>
+        <field name="res_model">fitzone.purchase.request</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+</odoo>
