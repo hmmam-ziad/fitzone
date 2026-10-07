@@ -20,10 +20,10 @@ from . import pool
 from . import pool_booking
 from . import injuries
 from . import injury_type
-from . import injuries
 from . import rehabilitation
 from . import product_template
 from . import purchase_order
 from . import maintenance_equipment
 from . import fault_report
 from . import maintenance_request
+from . import checkin_wizard

@@ -14,6 +14,15 @@
                         <field name="duration_months"/>
                         <field name="total_sessions"/>
                     </group>
+                    <group string="Allowed Class Days">
+                        <field name="allow_mon"/>
+                        <field name="allow_tue"/>
+                        <field name="allow_wed"/>
+                        <field name="allow_thu"/>
+                        <field name="allow_fri"/>
+                        <field name="allow_sat"/>
+                        <field name="allow_sun"/>
+                    </group>
                 </page>
             </xpath>
         </field>
@@ -24,10 +33,14 @@
         <field name="name">fitzone.membership.list</field>
         <field name="model">fitzone.membership</field>
         <field name="arch" type="xml">
-            <list>
+            <list decoration-muted="state != 'active'">
                 <field name="member_id"/>
                 <field name="package_id"/>
                 <field name="barcode"/>
+                <field name="date_start"/>
+                <field name="date_end"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'active'"/>
             </list>
         </field>
     </record>
@@ -37,12 +50,21 @@
         <field name="model">fitzone.membership</field>
         <field name="arch" type="xml">
             <form>
+                <header>
+                    <field name="state" widget="statusbar"/>
+                </header>
                 <sheet>
-                <group>
-                    <field name="member_id"/>
-                    <field name="package_id"/>
-                    <field name="barcode"/>
-                </group>
+                    <group>
+                        <group>
+                            <field name="member_id"/>
+                            <field name="package_id"/>
+                            <field name="barcode"/>
+                        </group>
+                        <group>
+                            <field name="date_start"/>
+                            <field name="date_end"/>
+                        </group>
+                    </group>
                 </sheet>
             </form>
         </field>
@@ -75,12 +97,12 @@
         <field name="arch" type="xml">
             <form>
                 <sheet>
-                <group>
-                    <field name="membership_id"/>
-                    <field name="start_date"/>
-                    <field name="end_date"/>
-                    <field name="days"/>
-                </group>
+                    <group>
+                        <field name="membership_id"/>
+                        <field name="start_date"/>
+                        <field name="end_date"/>
+                        <field name="days"/>
+                    </group>
                 </sheet>
             </form>
         </field>

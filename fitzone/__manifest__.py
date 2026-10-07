@@ -35,6 +35,8 @@
         "views/pool_views.xml",
         "views/injuries_views.xml",
         "views/maintenance_views.xml",
+        "views/checkin_wizard_views.xml",
+        "data/room_data.xml",
         "views/menus.xml",
     ],
     "pre_init_hook": "pre_init_hook",

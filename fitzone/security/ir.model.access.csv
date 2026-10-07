@@ -21,3 +21,4 @@ access_fitzone_trainer_commission_user,fitzone_trainer_commission user,model_fit
 access_fitzone_pool_slot_user,fitzone_pool_slot user,model_fitzone_pool_slot,base.group_user,1,1,1,1
 access_fitzone_pool_booking_user,fitzone_pool_booking user,model_fitzone_pool_booking,base.group_user,1,1,1,1
 access_fitzone_visit_user,fitzone_visit user,model_fitzone_visit,base.group_user,1,1,1,1
+access_fitzone_checkin_wizard,access_fitzone_checkin_wizard,model_fitzone_checkin_wizard,base.group_user,1,1,1,1

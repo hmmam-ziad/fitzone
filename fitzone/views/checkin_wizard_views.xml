@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_fitzone_checkin_wizard_form" model="ir.ui.view">
+        <field name="name">fitzone.checkin.wizard.form</field>
+        <field name="model">fitzone.checkin.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Class Check-in">
+                <group>
+                    <field name="class_id"/>
+                    <field name="barcode" autofocus="1"/>
+                </group>
+                <footer>
+                    <button name="action_check_in" type="object"
+                            string="Check In" class="btn-primary"/>
+                    <button string="Close" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_fitzone_checkin_wizard" model="ir.actions.act_window">
+        <field name="name">Class Check-in</field>
+        <field name="res_model">fitzone.checkin.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+
+
+</odoo>
