@@ -22,7 +22,6 @@
         "maintenance",
     ],
     "data": [
-        "data/tax_data.xml",
         "data/payment_methods.xml",
         "security/ir.model.access.csv",
         "views/members_views.xml",
@@ -38,7 +37,7 @@
         "views/maintenance_views.xml",
         "views/menus.xml",
     ],
-    "post_init_hook": "post_init_hook",
+    "pre_init_hook": "pre_init_hook",
     "installable": True,
     "application": True,
 }
