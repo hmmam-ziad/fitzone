@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="rule_fitzone_pt_session_trainer" model="ir.rule">
+        <field name="name">Trainer: Own PT Sessions</field>
+        <field name="model_id" ref="model_fitzone_pt_session"/>
+        <field name="domain_force">
+            [('trainer_id.employee_id.user_id', '=', user.id)]
+        </field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+</odoo>
