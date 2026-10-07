@@ -18,6 +18,7 @@
         "stock",
         "purchase",
         "hr",
+        "hr_holidays",
         "calendar",
         "maintenance",
     ],
