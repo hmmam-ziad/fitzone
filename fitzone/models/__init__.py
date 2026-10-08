@@ -1,5 +1,6 @@
 from . import members
 from . import trainer
+from . import employee
 from . import memberships
 from . import emergency_contact
 from . import health_profile
@@ -20,11 +21,10 @@ from . import pool
 from . import pool_booking
 from . import injuries
 from . import injury_type
-from . import injuries
 from . import rehabilitation
 from . import product_template
 from . import purchase_order
 from . import maintenance_equipment
 from . import fault_report
 from . import maintenance_request
-from . import pos_order
+from . import staff_availability_wizardfrom . import pos_order

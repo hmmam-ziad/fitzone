@@ -18,13 +18,18 @@
         "stock",
         "purchase",
         "hr",
+        "hr_holidays",
         "calendar",
         "maintenance",
     ],
     "data": [
         "data/payment_methods.xml",
         "data/product_categories.xml",
+        "data/employee_sequence.xml",
+        'security/security_groups.xml',
+        "security/ir_rule.xml",
         "security/ir.model.access.csv",
+        "views/employee_views.xml",
         "views/members_views.xml",
         "views/trainer_views.xml",
         "views/memberships_views.xml",
@@ -36,7 +41,9 @@
         "views/pool_views.xml",
         "views/injuries_views.xml",
         "views/maintenance_views.xml",
+        "views/staff_availability_views.xml",
         "views/menus.xml",
+
     ],
     "assets": {
         "point_of_sale._assets_pos": [
