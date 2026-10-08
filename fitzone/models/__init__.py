@@ -28,3 +28,4 @@ from . import maintenance_equipment
 from . import fault_report
 from . import maintenance_request
 from . import staff_availability_wizard
+from . import pos_order

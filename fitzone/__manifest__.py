@@ -24,6 +24,7 @@
     ],
     "data": [
         "data/payment_methods.xml",
+        "data/product_categories.xml",
         "data/employee_sequence.xml",
         'security/security_groups.xml',
         "security/ir_rule.xml",
@@ -42,8 +43,14 @@
         "views/maintenance_views.xml",
         "views/staff_availability_views.xml",
         "views/menus.xml",
-        
+
     ],
+    "assets": {
+        "point_of_sale._assets_pos": [
+            "fitzone/static/src/js/member_discount.js",
+            "fitzone/static/src/xml/select_partner_button.xml",
+        ],
+    },
     "pre_init_hook": "pre_init_hook",
     "installable": True,
     "application": True,
