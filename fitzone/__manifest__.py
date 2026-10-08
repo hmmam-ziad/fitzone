@@ -23,6 +23,8 @@
     ],
     "data": [
         "data/payment_methods.xml",
+        "data/maintenance_data.xml",
+        "security/maintenance_security.xml",
         "security/ir.model.access.csv",
         "views/members_views.xml",
         "views/trainer_views.xml",

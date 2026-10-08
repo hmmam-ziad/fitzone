@@ -38,6 +38,17 @@
 
     <menuitem id="menu_fitzone_maintenance" name="Maintenance" parent="menu_fitzone_root" sequence="90"/>
     <menuitem id="menu_fitzone_fault_report" name="Fault Reports" parent="menu_fitzone_maintenance" action="action_fitzone_fault_report" sequence="10"/>
+    <menuitem id="menu_fitzone_equipment"
+          name="Equipment"
+          parent="menu_fitzone_maintenance"
+          action="maintenance.hr_equipment_action"
+          sequence="20"/>
+
+<menuitem id="menu_fitzone_maintenance_request"
+          name="Maintenance Tickets"
+          parent="menu_fitzone_maintenance"
+          action="maintenance.hr_equipment_request_action"
+          sequence="30"/>
 
     <menuitem id="menu_fitzone_configuration" name="Configuration" parent="menu_fitzone_root" sequence="100"/>
     <menuitem id="menu_fitzone_trainer" name="Trainers" parent="menu_fitzone_configuration" action="action_fitzone_trainer" sequence="10"/>

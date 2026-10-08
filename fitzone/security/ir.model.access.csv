@@ -22,3 +22,6 @@ access_fitzone_pool_slot_user,fitzone_pool_slot user,model_fitzone_pool_slot,bas
 access_fitzone_pool_booking_user,fitzone_pool_booking user,model_fitzone_pool_booking,base.group_user,1,1,1,1
 access_fitzone_visit_user,fitzone_visit user,model_fitzone_visit,base.group_user,1,1,1,1
 access_fitzone_checkin_wizard,access_fitzone_checkin_wizard,model_fitzone_checkin_wizard,base.group_user,1,1,1,1
+access_fitzone_fault_report_staff,fitzone.fault.report staff,model_fitzone_fault_report,group_fitzone_staff,1,0,1,0
+access_fitzone_fault_report_tech,fitzone.fault.report tech,model_fitzone_fault_report,group_fitzone_technician,1,0,0,0
+access_fitzone_fault_report_manager,fitzone.fault.report manager,model_fitzone_fault_report,group_fitzone_manager,1,1,1,1
