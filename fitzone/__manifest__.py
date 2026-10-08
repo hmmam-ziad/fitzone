@@ -16,6 +16,7 @@
         "account",
         "l10n_jo",
         "stock",
+        "product_expiry",
         "purchase",
         "hr",
         "hr_holidays",
@@ -24,7 +25,9 @@
     ],
     "data": [
         "data/payment_methods.xml",
+        "data/product_category_data.xml",
         "data/product_categories.xml",
+        "data/inventory_data.xml",
         "data/employee_sequence.xml",
         "data/room_data.xml",
         "data/pos_config.xml",
@@ -42,9 +45,12 @@
         "views/pool_views.xml",
         "views/injuries_views.xml",
         "views/maintenance_views.xml",
+        "views/inventory_views.xml",
+        "views/purchase_request_views.xml",
         "views/staff_availability_views.xml",
         "views/checkin_wizard_views.xml",
         "views/menus.xml",
+        "views/inventory_menus.xml",
     ],
     "assets": {
         "point_of_sale._assets_pos": [

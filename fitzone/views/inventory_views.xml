@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Product form: FitZone inventory policy tab -->
+    <record id="view_product_template_form_fitzone_inventory" model="ir.ui.view">
+        <field name="name">product.template.form.fitzone.inventory</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="FitZone Inventory" name="fitzone_inventory">
+                    <group>
+                        <group string="Scope">
+                            <field name="fz_product_type"/>
+                        </group>
+                        <group string="Reorder Policy"
+                               invisible="fz_product_type not in ('supplement', 'health')">
+                            <field name="fz_min_stock_level"/>
+                            <field name="fz_reorder_qty"/>
+                            <field name="fz_usable_qty"/>
+                            <field name="fz_low_stock"/>
+                        </group>
+                    </group>
+                    <div class="text-muted"
+                         invisible="fz_product_type in ('supplement', 'health')">
+                        This product is not stock-tracked: selling it from the POS
+                        does not deduct any inventory.
+                    </div>
+                    <div class="text-muted"
+                         invisible="fz_product_type not in ('supplement', 'health')">
+                        Tracked by lot with expiration dates. Stock is dispensed
+                        First-Expired-First-Out (FEFO).
+                    </div>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Inventory list -->
+    <record id="view_fitzone_product_inventory_list" model="ir.ui.view">
+        <field name="name">fitzone.product.inventory.list</field>
+        <field name="model">product.template</field>
+        <field name="arch" type="xml">
+            <list decoration-danger="fz_low_stock">
+                <field name="name"/>
+                <field name="fz_product_type"/>
+                <field name="categ_id"/>
+                <field name="qty_available"/>
+                <field name="fz_usable_qty"/>
+                <field name="fz_min_stock_level"/>
+                <field name="fz_low_stock"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_fitzone_product_inventory_search" model="ir.ui.view">
+        <field name="name">fitzone.product.inventory.search</field>
+        <field name="model">product.template</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <filter string="Low Stock" name="low_stock" domain="[('fz_low_stock', '=', True)]"/>
+                <filter string="Supplements" name="supplements" domain="[('fz_product_type', '=', 'supplement')]"/>
+                <filter string="Health Products" name="health" domain="[('fz_product_type', '=', 'health')]"/>
+                <group>
+                    <filter string="Type" name="group_type" context="{'group_by': 'fz_product_type'}"/>
+                    <filter string="Category" name="group_categ" context="{'group_by': 'categ_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_fitzone_product_inventory" model="ir.actions.act_window">
+        <field name="name">Supplements &amp; Health Products</field>
+        <field name="res_model">product.template</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('fz_product_type', 'in', ('supplement', 'health'))]</field>
+        <field name="context">{'default_fz_product_type': 'supplement', 'default_type': 'consu', 'default_is_storable': True, 'default_tracking': 'lot', 'default_use_expiration_date': True}</field>
+        <field name="search_view_id" ref="view_fitzone_product_inventory_search"/>
+    </record>
+    <record id="action_fitzone_product_inventory_list" model="ir.actions.act_window.view">
+        <field name="sequence" eval="1"/>
+        <field name="view_mode">list</field>
+        <field name="view_id" ref="view_fitzone_product_inventory_list"/>
+        <field name="act_window_id" ref="action_fitzone_product_inventory"/>
+    </record>
+
+    <record id="action_fitzone_low_stock" model="ir.actions.act_window">
+        <field name="name">Low Stock Alerts</field>
+        <field name="res_model">product.template</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('fz_low_stock', '=', True)]</field>
+        <field name="search_view_id" ref="view_fitzone_product_inventory_search"/>
+    </record>
+    <record id="action_fitzone_low_stock_list" model="ir.actions.act_window.view">
+        <field name="sequence" eval="1"/>
+        <field name="view_mode">list</field>
+        <field name="view_id" ref="view_fitzone_product_inventory_list"/>
+        <field name="act_window_id" ref="action_fitzone_low_stock"/>
+    </record>
+
+</odoo>
