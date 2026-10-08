@@ -49,6 +49,8 @@
         "views/purchase_request_views.xml",
         "views/staff_availability_views.xml",
         "views/checkin_wizard_views.xml",
+        "views/trainer_commission_wizard_views.xml",
+        "report/trainer_commission_statement.xml",
         "views/menus.xml",
         "views/inventory_menus.xml",
     ],
