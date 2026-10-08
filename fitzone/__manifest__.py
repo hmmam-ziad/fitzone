@@ -23,6 +23,7 @@
     ],
     "data": [
         "data/payment_methods.xml",
+        "data/product_categories.xml",
         "security/ir.model.access.csv",
         "views/members_views.xml",
         "views/trainer_views.xml",
@@ -37,6 +38,12 @@
         "views/maintenance_views.xml",
         "views/menus.xml",
     ],
+    "assets": {
+        "point_of_sale._assets_pos": [
+            "fitzone/static/src/js/member_discount.js",
+            "fitzone/static/src/xml/select_partner_button.xml",
+        ],
+    },
     "pre_init_hook": "pre_init_hook",
     "installable": True,
     "application": True,

@@ -9,3 +9,6 @@ class Membership(models.Model):
     member_id = fields.Many2one('res.partner', required=True)
     package_id = fields.Many2one('product.template', required=True)
     barcode = fields.Char()
+
+    start_date = fields.Date()
+    end_date = fields.Date()
