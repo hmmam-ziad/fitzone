@@ -37,6 +37,7 @@
         "views/maintenance_views.xml",
         "views/checkin_wizard_views.xml",
         "data/room_data.xml",
+        "data/membership_cron.xml",
         "views/menus.xml",
     ],
     "pre_init_hook": "pre_init_hook",

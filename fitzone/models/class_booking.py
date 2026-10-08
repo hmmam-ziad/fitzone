@@ -7,172 +7,134 @@ class ClassBooking(models.Model):
     _description = 'Class Booking'
     _rec_name = 'member_id'
 
-    member_id = fields.Many2one(
-        'res.partner',
-        required=True,
-    )
-
-    membership_id = fields.Many2one(
-        'fitzone.membership',
-        readonly=True,
-    )
-
-    class_id = fields.Many2one(
-        'fitzone.gym.class',
-        required=True,
-    )
-
-    booking_date = fields.Datetime(
-        default=fields.Datetime.now,
-    )
-
+    member_id = fields.Many2one('res.partner', required=True)
+    membership_id = fields.Many2one('fitzone.membership', readonly=True)
+    class_id = fields.Many2one('fitzone.gym.class', required=True)
+    booking_date = fields.Datetime(default=fields.Datetime.now)
     status = fields.Selection(
-        [
-            ('booked', 'Booked'),
-            ('cancelled', 'Cancelled'),
-            ('attended', 'Attended'),
-        ],
-        default='booked',
-        required=True,
-    )
+        [('booked', 'Booked'), ('cancelled', 'Cancelled'), ('attended', 'Attended')],
+        default='booked', required=True)
 
+   
+    @api.model
+    def _check_entitlement(self, member_id, class_start, membership=None):
+        """Validate membership status, freeze, day and time.
+        Returns the membership or raises ValidationError with the reason."""
+        local_dt = fields.Datetime.context_timestamp(self, class_start)
+        class_date = local_dt.date()
+        class_hour = local_dt.hour + local_dt.minute / 60.0
+        Membership = self.env['fitzone.membership']
+
+        if not membership:
+            candidates = Membership.search([
+                ('member_id', '=', member_id),
+                ('date_start', '<=', class_date),
+                ('date_end', '>=', class_date),
+            ])
+            if not candidates:
+                if Membership.search_count([('member_id', '=', member_id)]):
+                    raise ValidationError("Membership expired or does not cover the class date.")
+                raise ValidationError("This member has no membership.")
+            membership = candidates.filtered(lambda m: m.state == 'active')[:1]
+            if not membership:
+                state = candidates[0].state
+                if state == 'blocked':
+                    raise ValidationError("Membership is blocked.")
+                if state == 'expired':
+                    raise ValidationError("Membership expired.")
+                raise ValidationError("Membership is not active (%s)." % state)
+
+        if self.env['fitzone.freeze'].search_count([
+            ('membership_id', '=', membership.id),
+            ('start_date', '<=', class_date),
+            ('end_date', '>=', class_date),
+        ]):
+            raise ValidationError("Membership is frozen on the class date.")
+
+        package = membership.package_id
+        if class_date.weekday() not in package.allowed_weekdays():
+            raise ValidationError("Package does not include this day.")
+
+        # Time covered by the package
+        if not (package.allowed_from <= class_hour <= package.allowed_to):
+            raise ValidationError("Package does not include this time.")
+
+        return membership
+
+    
     @api.model_create_multi
     def create(self, vals_list):
         records = self.browse()
+        for vals in vals_list:  # one by one so the seat count stays accurate
+            gym_class = self.env['fitzone.gym.class'].browse(vals['class_id'])
 
-        for vals in vals_list:
-            gym_class = self.env['fitzone.gym.class'].browse(
-                vals['class_id']
-            )
-
-            # Lock the class row so two people cannot book
-            # the last seat at the same time.
+            
             self.env.cr.execute(
                 "SELECT id FROM fitzone_gym_class WHERE id = %s FOR UPDATE",
-                (gym_class.id,),
-            )
+                (gym_class.id,))
 
-            class_date = fields.Datetime.context_timestamp(
-                self,
-                gym_class.start_datetime,
-            ).date()
+            # 1) Status, freeze, day and time
+            membership = self._check_entitlement(
+                vals['member_id'], gym_class.start_datetime)
 
-            # 1) Active membership
-            membership = self.env['fitzone.membership'].search(
-                [
-                    ('member_id', '=', vals['member_id']),
-                    ('state', '=', 'active'),
-                    ('date_start', '<=', class_date),
-                    ('date_end', '>=', class_date),
-                ],
-                limit=1,
-            )
+            if self.search_count([
+                ('member_id', '=', vals['member_id']),
+                ('class_id', '=', gym_class.id),
+                ('status', 'in', ('booked', 'attended')),
+            ]):
+                raise ValidationError("This member has already booked this class.")
 
-            if not membership:
-                raise ValidationError(
-                    "This member has no active membership "
-                    "on the class date."
-                )
-
-            # 2) Class day is covered by the package
-            if class_date.weekday() not in (
-                membership.package_id.allowed_weekdays()
-            ):
-                raise ValidationError(
-                    "Your package does not include this day."
-                )
-
-            # 3) Member cannot book the same class twice
-            if self.search_count(
-                [
-                    ('member_id', '=', vals['member_id']),
-                    ('class_id', '=', gym_class.id),
-                    ('status', 'in', ('booked', 'attended')),
-                ]
-            ):
-                raise ValidationError(
-                    "This member has already booked this class."
-                )
-
-            # 4) Room capacity
-            booked = self.search_count(
-                [
-                    ('class_id', '=', gym_class.id),
-                    ('status', 'in', ('booked', 'attended')),
-                ]
-            )
-
+            booked = self.search_count([
+                ('class_id', '=', gym_class.id),
+                ('status', 'in', ('booked', 'attended')),
+            ])
             if booked >= gym_class.room_id.capacity:
-                raise ValidationError(
-                    "The class is full."
-                )
+                raise ValidationError("The class is full.")
 
             vals['membership_id'] = membership.id
-
             records |= super().create([vals])
-
         return records
 
+    def write(self, vals):
+        if 'class_id' in vals or 'member_id' in vals:
+            raise ValidationError(
+                "Member and class cannot be changed. Cancel and create a new booking.")
+        if vals.get('status') == 'booked' and any(r.status != 'booked' for r in self):
+            raise ValidationError("A cancelled or attended booking cannot be reopened.")
+        return super().write(vals)
+
     def action_cancel(self):
-        # The cancelled seat becomes vacant.
-        # There is no waiting list or automatic transfer.
         for rec in self:
             if rec.status != 'booked':
-                raise ValidationError(
-                    "This booking cannot be cancelled."
-                )
-
+                raise ValidationError("This booking cannot be cancelled.")
             rec.status = 'cancelled'
 
+   
     @api.model
     def check_in_member(self, class_id, barcode):
-        """Check-in screen: only pre-registered members can check in."""
-
         membership = self.env['fitzone.membership'].search(
-            [
-                ('barcode', '=', barcode),
-            ],
-            limit=1,
-        )
-
+            [('barcode', '=', barcode)], limit=1)
         booking = self.browse()
-
         if membership:
-            booking = self.search(
-                [
-                    ('class_id', '=', class_id),
-                    ('member_id', '=', membership.member_id.id),
-                    ('status', '=', 'booked'),
-                ],
-                limit=1,
-            )
-
-        # Walk-ins are not allowed.
+            booking = self.search([
+                ('class_id', '=', class_id),
+                ('member_id', '=', membership.member_id.id),
+                ('status', '=', 'booked'),
+            ], limit=1)
         if not booking:
             raise ValidationError(
-                "Not pre-registered for this class "
-                "(walk-ins are not allowed)."
-            )
+                "Not pre-registered for this class (walk-ins are not allowed).")
 
-        # Create attendance record if it does not exist.
-        attendance = self.env['fitzone.attendance'].search(
-            [
-                ('booking_id', '=', booking.id),
-            ],
-            limit=1,
-        )
+        if membership.state != 'active':
+            raise ValidationError(
+                "Membership is %s. Check-in denied." % membership.state)
+        today = fields.Date.context_today(self)
+        if self.env['fitzone.freeze'].search_count([
+            ('membership_id', '=', membership.id),
+            ('start_date', '<=', today),
+            ('end_date', '>=', today),
+        ]):
+            raise ValidationError("Membership is frozen. Check-in denied.")
 
-        if attendance:
-            attendance.attended = True
-        else:
-            self.env['fitzone.attendance'].create(
-                {
-                    'booking_id': booking.id,
-                    'attended': True,
-                }
-            )
-
-        # Mark the booking as attended.
         booking.status = 'attended'
-
         return booking
