@@ -30,9 +30,9 @@ class ResPartner(models.Model):
 
             for membership in memberships:
                 if (
-                    membership.start_date
-                    and membership.end_date
-                    and membership.start_date <= today <= membership.end_date
+                    membership.date_start
+                    and membership.date_end
+                    and membership.date_start <= today <= membership.date_end
                 ):
                     freeze = self.env['fitzone.freeze'].search([
                         ('membership_id', '=', membership.id),

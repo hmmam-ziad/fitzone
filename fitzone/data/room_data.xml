@@ -1,0 +1,12 @@
+<odoo>
+  <data >
+    <record id="room_studio_1" model="fitzone.room">
+      <field name="name">Studio 1</field>
+      <field name="capacity">20</field>
+    </record>
+    <record id="room_studio_2" model="fitzone.room">
+      <field name="name">Studio 2</field>
+      <field name="capacity">15</field>
+    </record>
+  </data>
+</odoo>
