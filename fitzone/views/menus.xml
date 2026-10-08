@@ -44,4 +44,12 @@
     <menuitem id="menu_fitzone_room" name="Rooms" parent="menu_fitzone_configuration" action="action_fitzone_room" sequence="20"/>
     <menuitem id="menu_fitzone_pool_slot" name="Pool Slots" parent="menu_fitzone_configuration" action="action_fitzone_pool_slot" sequence="30"/>
     <menuitem id="menu_fitzone_commission_rule" name="Commission Rules" parent="menu_fitzone_configuration" action="action_fitzone_commission_rule" sequence="40"/>
+
+    <menuitem
+        id="menu_fitzone_staff_availability"
+        name="Find Available Staff"
+        parent="menu_fitzone_root"
+        action="action_fitzone_staff_availability"
+        sequence="15"
+    />
 </odoo>

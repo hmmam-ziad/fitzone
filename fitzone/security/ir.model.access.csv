@@ -3,7 +3,7 @@ access_fitzone_room_user,fitzone_room user,model_fitzone_room,base.group_user,1,
 access_fitzone_gym_class_user,fitzone_gym_class user,model_fitzone_gym_class,base.group_user,1,1,1,1
 access_fitzone_class_booking_user,fitzone_class_booking user,model_fitzone_class_booking,base.group_user,1,1,1,1
 access_fitzone_attendance_user,fitzone_attendance user,model_fitzone_attendance,base.group_user,1,1,1,1
-access_fitzone_trainer_user,fitzone_trainer user,model_fitzone_trainer,base.group_user,1,1,1,1
+access_fitzone_trainer_user,fitzone_trainer user,model_fitzone_trainer,base.group_user,1,0,0,0
 access_fitzone_injury_user,fitzone_injury user,model_fitzone_injury,base.group_user,1,1,1,1
 access_fitzone_injury_type_user,fitzone_injury_type user,model_fitzone_injury_type,base.group_user,1,1,1,1
 access_fitzone_rehabilitation_user,fitzone_rehabilitation user,model_fitzone_rehabilitation,base.group_user,1,1,1,1
@@ -22,3 +22,6 @@ access_fitzone_pool_slot_user,fitzone_pool_slot user,model_fitzone_pool_slot,bas
 access_fitzone_pool_booking_user,fitzone_pool_booking user,model_fitzone_pool_booking,base.group_user,1,1,1,1
 access_fitzone_visit_user,fitzone_visit user,model_fitzone_visit,base.group_user,1,1,1,1
 access_fitzone_checkin_wizard,access_fitzone_checkin_wizard,model_fitzone_checkin_wizard,base.group_user,1,1,1,1
+access_fitzone_trainer_manager,fitzone_trainer manager,model_fitzone_trainer,fitzone.group_fitzone_manager,1,1,1,1
+access_fitzone_trainer_admin,fitzone_trainer admin,model_fitzone_trainer,base.group_system,1,1,1,1
+access_fitzone_staff_availability_wizard_user,fitzone staff availability wizard user,model_fitzone_staff_availability_wizard,base.group_user,1,1,1,1

@@ -5,28 +5,30 @@
     <record id="view_product_template_form_fitzone" model="ir.ui.view">
         <field name="name">product.template.form.fitzone</field>
         <field name="model">product.template</field>
-        <field name="inherit_id" ref="product.product_template_form_view"/>
+        <field name="inherit_id" ref="product.product_template_form_view" />
         <field name="arch" type="xml">
             <xpath expr="//notebook" position="inside">
                 <page string="FitZone Package">
                     <group>
-                        <field name="package_type"/>
-                        <field name="duration_months"/>
-                        <field name="total_sessions"/>
+                        <field name="package_type" />
+                        <field name="duration_months" />
+                        <field name="total_sessions" />
                     </group>
+
                     <group string="Allowed Class Days">
-                        <field name="allow_mon"/>
-                        <field name="allow_tue"/>
-                        <field name="allow_wed"/>
-                        <field name="allow_thu"/>
-                        <field name="allow_fri"/>
-                        <field name="allow_sat"/>
-                        <field name="allow_sun"/>
+                        <field name="allow_mon" />
+                        <field name="allow_tue" />
+                        <field name="allow_wed" />
+                        <field name="allow_thu" />
+                        <field name="allow_fri" />
+                        <field name="allow_sat" />
+                        <field name="allow_sun" />
                     </group>
                 </page>
             </xpath>
         </field>
     </record>
+
 
     <!-- Memberships -->
     <record id="view_fitzone_membership_list" model="ir.ui.view">
@@ -34,16 +36,18 @@
         <field name="model">fitzone.membership</field>
         <field name="arch" type="xml">
             <list decoration-muted="state != 'active'">
-                <field name="member_id"/>
-                <field name="package_id"/>
-                <field name="barcode"/>
-                <field name="date_start"/>
-                <field name="date_end"/>
-                <field name="state" widget="badge"
-                       decoration-success="state == 'active'"/>
+                <field name="member_id" />
+                <field name="package_id" />
+                <field name="barcode" />
+                <field name="date_start" />
+                <field name="date_end" />
+                <field name="state"
+                    widget="badge"
+                    decoration-success="state == 'active'" />
             </list>
         </field>
     </record>
+
 
     <record id="view_fitzone_membership_form" model="ir.ui.view">
         <field name="name">fitzone.membership.form</field>
@@ -51,24 +55,27 @@
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <field name="state" widget="statusbar"/>
+                    <field name="state" widget="statusbar" />
                 </header>
+
                 <sheet>
                     <group>
                         <group>
-                            <field name="member_id"/>
-                            <field name="package_id"/>
-                            <field name="barcode"/>
+                            <field name="member_id" />
+                            <field name="package_id" />
+                            <field name="barcode" />
                         </group>
+
                         <group>
-                            <field name="date_start"/>
-                            <field name="date_end"/>
+                            <field name="date_start" />
+                            <field name="date_end" />
                         </group>
                     </group>
                 </sheet>
             </form>
         </field>
     </record>
+
 
     <record id="action_fitzone_membership" model="ir.actions.act_window">
         <field name="name">Memberships</field>
@@ -83,13 +90,14 @@
         <field name="model">fitzone.freeze</field>
         <field name="arch" type="xml">
             <list>
-                <field name="membership_id"/>
-                <field name="start_date"/>
-                <field name="end_date"/>
-                <field name="days"/>
+                <field name="membership_id" />
+                <field name="start_date" />
+                <field name="end_date" />
+                <field name="days" />
             </list>
         </field>
     </record>
+
 
     <record id="view_fitzone_freeze_form" model="ir.ui.view">
         <field name="name">fitzone.freeze.form</field>
@@ -98,15 +106,16 @@
             <form>
                 <sheet>
                     <group>
-                        <field name="membership_id"/>
-                        <field name="start_date"/>
-                        <field name="end_date"/>
-                        <field name="days"/>
+                        <field name="membership_id" />
+                        <field name="start_date" />
+                        <field name="end_date" />
+                        <field name="days" />
                     </group>
                 </sheet>
             </form>
         </field>
     </record>
+
 
     <record id="action_fitzone_freeze" model="ir.actions.act_window">
         <field name="name">Freezes</field>

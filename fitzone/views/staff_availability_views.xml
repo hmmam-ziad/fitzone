@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_fitzone_staff_availability_form" model="ir.ui.view">
+        <field name="name">fitzone.staff.availability.wizard.form</field>
+        <field name="model">fitzone.staff.availability.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Find Available Staff">
+                <group>
+                    <field name="department_id"/>
+                    <field name="job_id"/>
+                    <field name="start_datetime"/>
+                    <field name="end_datetime"/>
+                </group>
+
+                <button
+                    name="action_search"
+                    type="object"
+                    string="Search"
+                    class="btn-primary"
+                />
+
+                <field name="employee_ids"/>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_fitzone_staff_availability" model="ir.actions.act_window">
+        <field name="name">Find Available Staff</field>
+        <field name="res_model">fitzone.staff.availability.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+</odoo>

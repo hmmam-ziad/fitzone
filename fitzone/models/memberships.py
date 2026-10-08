@@ -15,8 +15,10 @@ class ProductTemplate(models.Model):
     def allowed_weekdays(self):
         """Python weekday(): Monday = 0 ... Sunday = 6"""
         self.ensure_one()
-        flags = [self.allow_mon, self.allow_tue, self.allow_wed, self.allow_thu,
-                 self.allow_fri, self.allow_sat, self.allow_sun]
+        flags = [
+            self.allow_mon, self.allow_tue, self.allow_wed, self.allow_thu,
+            self.allow_fri, self.allow_sat, self.allow_sun
+        ]
         return [i for i, f in enumerate(flags) if f]
 
 
@@ -32,4 +34,5 @@ class Membership(models.Model):
     date_end = fields.Date(required=True)
     state = fields.Selection(
         [('active', 'Active'), ('expired', 'Expired'), ('cancelled', 'Cancelled')],
-        default='active', required=True)
+        default='active', required=True
+    )
