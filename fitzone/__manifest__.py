@@ -25,6 +25,7 @@
     "data": [
         "data/payment_methods.xml",
         "data/employee_sequence.xml",
+        "data/sequences.xml",
         'security/security_groups.xml',
         "security/ir_rule.xml",
         "security/ir.model.access.csv",
