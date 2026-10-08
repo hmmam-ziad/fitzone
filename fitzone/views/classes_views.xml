@@ -19,10 +19,10 @@
         <field name="arch" type="xml">
             <form>
                 <sheet>
-                <group>
-                    <field name="name"/>
-                    <field name="capacity"/>
-                </group>
+                    <group>
+                        <field name="name"/>
+                        <field name="capacity"/>
+                    </group>
                 </sheet>
             </form>
         </field>
@@ -40,13 +40,20 @@
         <field name="name">fitzone.gym.class.list</field>
         <field name="model">fitzone.gym.class</field>
         <field name="arch" type="xml">
-            <list>
+            <list decoration-danger="alert_level == 'full'"
+                  decoration-warning="alert_level == 'near_full'">
                 <field name="name"/>
                 <field name="trainer_id"/>
                 <field name="room_id"/>
-                <field name="capacity"/>
                 <field name="start_datetime"/>
                 <field name="end_datetime"/>
+                <field name="capacity"/>
+                <field name="booked_count"/>
+                <field name="available_seats"/>
+                <field name="alert_level" widget="badge"
+                       decoration-success="alert_level == 'ok'"
+                       decoration-warning="alert_level == 'near_full'"
+                       decoration-danger="alert_level == 'full'"/>
             </list>
         </field>
     </record>
@@ -57,14 +64,34 @@
         <field name="arch" type="xml">
             <form>
                 <sheet>
-                <group>
-                    <field name="name"/>
-                    <field name="trainer_id"/>
-                    <field name="room_id"/>
-                    <field name="capacity"/>
-                    <field name="start_datetime"/>
-                    <field name="end_datetime"/>
-                </group>
+                    <div class="alert alert-warning" role="alert"
+                         invisible="alert_level != 'near_full'">
+                        Almost full: only <field name="available_seats" class="oe_inline"/> seat(s) left.
+                    </div>
+                    <div class="alert alert-danger" role="alert"
+                         invisible="alert_level != 'full'">
+                        This class is full. No more bookings are allowed.
+                    </div>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="trainer_id"/>
+                            <field name="room_id"/>
+                        </group>
+                        <group>
+                            <field name="start_datetime"/>
+                            <field name="end_datetime"/>
+                        </group>
+                    </group>
+                    <group string="Capacity">
+                        <field name="capacity"/>
+                        <field name="booked_count"/>
+                        <field name="available_seats"/>
+                        <field name="alert_level" widget="badge"
+                               decoration-success="alert_level == 'ok'"
+                               decoration-warning="alert_level == 'near_full'"
+                               decoration-danger="alert_level == 'full'"/>
+                    </group>
                 </sheet>
             </form>
         </field>
@@ -82,12 +109,13 @@
         <field name="name">fitzone.class.booking.list</field>
         <field name="model">fitzone.class.booking</field>
         <field name="arch" type="xml">
-            <list>
+            <list decoration-muted="status == 'cancelled'"
+                  decoration-success="status == 'attended'">
                 <field name="member_id"/>
                 <field name="membership_id"/>
                 <field name="class_id"/>
                 <field name="booking_date"/>
-                <field name="status"/>
+                <field name="status" widget="badge"/>
             </list>
         </field>
     </record>
@@ -97,14 +125,20 @@
         <field name="model">fitzone.class.booking</field>
         <field name="arch" type="xml">
             <form>
+                <header>
+                    <button name="action_cancel" type="object" string="Cancel Booking"
+                            invisible="status != 'booked'"
+                            confirm="Cancel this booking? The seat will stay vacant."/>
+                    <field name="status" widget="statusbar"
+                           statusbar_visible="booked,attended"/>
+                </header>
                 <sheet>
-                <group>
-                    <field name="member_id"/>
-                    <field name="membership_id"/>
-                    <field name="class_id"/>
-                    <field name="booking_date"/>
-                    <field name="status"/>
-                </group>
+                    <group>
+                        <field name="member_id" readonly="id"/>
+                        <field name="class_id" readonly="id"/>
+                        <field name="membership_id"/>
+                        <field name="booking_date"/>
+                    </group>
                 </sheet>
             </form>
         </field>
@@ -135,10 +169,10 @@
         <field name="arch" type="xml">
             <form>
                 <sheet>
-                <group>
-                    <field name="booking_id"/>
-                    <field name="attended"/>
-                </group>
+                    <group>
+                        <field name="booking_id"/>
+                        <field name="attended"/>
+                    </group>
                 </sheet>
             </form>
         </field>

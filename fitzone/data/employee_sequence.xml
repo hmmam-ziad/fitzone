@@ -1,0 +1,10 @@
+<odoo>
+    <data noupdate="1">
+        <record id="seq_fitzone_employee" model="ir.sequence">
+            <field name="name">FitZone Employee Number</field>
+            <field name="code">fitzone.employee</field>
+            <field name="prefix">EMP-</field>
+            <field name="padding">4</field>
+        </record>
+    </data>
+</odoo>
