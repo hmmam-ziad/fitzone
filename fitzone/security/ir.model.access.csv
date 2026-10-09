@@ -9,7 +9,7 @@ access_fitzone_injury_type_user,fitzone_injury_type user,model_fitzone_injury_ty
 access_fitzone_rehabilitation_user,fitzone_rehabilitation user,model_fitzone_rehabilitation,base.group_user,1,1,1,1
 access_fitzone_fault_report_user,fitzone_fault_report user,model_fitzone_fault_report,base.group_user,1,1,1,1
 access_fitzone_emergency_contact_user,fitzone_emergency_contact user,model_fitzone_emergency_contact,base.group_user,1,1,1,1
-access_fitzone_health_profile_user,fitzone_health_profile user,model_fitzone_health_profile,base.group_user,1,1,1,1
+access_fitzone_health_profile_clinic,fitzone_health_profile clinic,model_fitzone_health_profile,fitzone.group_fitzone_clinic,1,1,1,1
 access_fitzone_progress_tracking_user,fitzone_progress_tracking user,model_fitzone_progress_tracking,base.group_user,1,1,1,1
 access_fitzone_membership_user,fitzone_membership user,model_fitzone_membership,base.group_user,1,1,1,1
 access_fitzone_freeze_user,fitzone_freeze user,model_fitzone_freeze,base.group_user,1,1,1,1

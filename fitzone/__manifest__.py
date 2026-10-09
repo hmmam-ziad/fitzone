@@ -29,6 +29,7 @@
         "data/product_categories.xml",
         "data/inventory_data.xml",
         "data/employee_sequence.xml",
+        "data/sequences.xml",
         "data/room_data.xml",
         "data/pos_config.xml",
         "data/membership_cron.xml",
