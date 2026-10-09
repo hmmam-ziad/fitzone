@@ -65,7 +65,7 @@ class ClassBooking(models.Model):
     @api.model_create_multi
     def create(self, vals_list):
         records = self.browse()
-        for vals in vals_list:  # one by one so the seat count stays accurate
+        for vals in vals_list:  
             gym_class = self.env['fitzone.gym.class'].browse(vals['class_id'])
 
             

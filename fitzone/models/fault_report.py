@@ -36,7 +36,6 @@ class FaultReport(models.Model):
         records = super().create(vals_list)
         managers = self.env.ref('fitzone.group_fitzone_manager').user_ids
         for rec in records:
-            # Immediately take the device out of service
             rec.equipment_id.sudo().write({'status': 'out_of_service'})
             rec.message_post(
                 body="New fault report for %s (%s)."
