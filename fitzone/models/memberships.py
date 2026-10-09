@@ -1,4 +1,5 @@
 from odoo import api, fields, models
+from odoo.exceptions import ValidationError
 
 
 class Membership(models.Model):
@@ -114,3 +115,15 @@ class Membership(models.Model):
         ])
 
         memberships._sync_expiry_state()
+
+    @api.constrains('date_start', 'date_end')
+    def _check_membership_dates(self):
+        for membership in self:
+            if (
+                membership.date_start
+                and membership.date_end
+                and membership.date_end < membership.date_start
+            ):
+                raise ValidationError(
+                    "Membership end date cannot be earlier than start date."
+                )
