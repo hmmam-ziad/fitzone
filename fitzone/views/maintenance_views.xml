@@ -1,16 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- Fault Reports -->
+    <!-- Equipment: list (red when out of service) -->
+    <record id="view_equipment_list_fitzone" model="ir.ui.view">
+        <field name="name">maintenance.equipment.list.fitzone</field>
+        <field name="model">maintenance.equipment</field>
+        <field name="inherit_id" ref="maintenance.hr_equipment_view_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//list" position="attributes">
+                <attribute name="decoration-danger">status == 'out_of_service'</attribute>
+            </xpath>
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="status" widget="badge"
+                       decoration-success="status == 'in_service'"
+                       decoration-danger="status == 'out_of_service'"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Equipment: form -->
+    <record id="view_equipment_form_fitzone" model="ir.ui.view">
+        <field name="name">maintenance.equipment.form.fitzone</field>
+        <field name="model">maintenance.equipment</field>
+        <field name="inherit_id" ref="maintenance.hr_equipment_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet" position="before">
+                <header>
+                    <button name="action_return_to_service" type="object"
+                            string="Return to Service" class="btn-primary"
+                            groups="fitzone.group_fitzone_manager"
+                            invisible="status != 'out_of_service'"
+                            confirm="Return this equipment to service?"/>
+                    <field name="status" widget="statusbar"/>
+                </header>
+            </xpath>
+            <xpath expr="//field[@name='maintenance_team_id']" position="after">
+              <field name="vendor_id"/>
+               <field name="period"/>
+          </xpath>
+        </field>
+    </record>
+
+    <!-- Maintenance ticket: extra fields -->
+    <record id="view_request_form_fitzone" model="ir.ui.view">
+        <field name="name">maintenance.request.form.fitzone</field>
+        <field name="model">maintenance.request</field>
+        <field name="inherit_id" ref="maintenance.hr_equipment_request_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='equipment_id']" position="after">
+                <field name="fault_id"/>
+                <field name="vendor_id" groups="fitzone.group_fitzone_manager"/>
+                <field name="estimated_cost" groups="fitzone.group_fitzone_manager"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Fault reports -->
     <record id="view_fitzone_fault_report_list" model="ir.ui.view">
         <field name="name">fitzone.fault.report.list</field>
         <field name="model">fitzone.fault.report</field>
         <field name="arch" type="xml">
-            <list>
+            <list decoration-danger="status == 'reported'"
+                  decoration-muted="status == 'rejected'">
                 <field name="equipment_id"/>
+                <field name="serial_no"/>
                 <field name="reported_by"/>
+                <field name="member_id"/>
                 <field name="report_date"/>
-                <field name="status"/>
+                <field name="status" widget="badge"/>
             </list>
         </field>
     </record>
@@ -20,17 +77,43 @@
         <field name="model">fitzone.fault.report</field>
         <field name="arch" type="xml">
             <form>
+                <header>
+                    <button name="action_approve" type="object" string="Approve"
+                            class="btn-primary" groups="fitzone.group_fitzone_manager"
+                            invisible="status != 'reported'"/>
+                    <button name="action_reject" type="object" string="Reject"
+                            groups="fitzone.group_fitzone_manager"
+                            invisible="status != 'reported'"/>
+                    <field name="status" widget="statusbar"/>
+                </header>
                 <sheet>
-                <group>
-                    <field name="equipment_id"/>
-                    <field name="reported_by"/>
-                    <field name="report_date"/>
-                    <field name="status"/>
-                </group>
-                <group>
-                    <field name="description"/>
-                </group>
+                    <group>
+                        <group>
+                            <field name="equipment_id" readonly="id"/>
+                            <field name="serial_no"/>
+                            <field name="reported_by" readonly="id"/>
+                            <field name="member_id" readonly="id"/>
+                            <field name="report_date"/>
+                        </group>
+                        <group>
+                            <field name="description" readonly="id"/>
+                        </group>
+                    </group>
+                    <group string="Management Review"
+                           groups="fitzone.group_fitzone_manager">
+                        <group>
+                            <field name="technician_id" readonly="status != 'reported'"/>
+                            <field name="vendor_id" readonly="status != 'reported'"/>
+                            <field name="estimated_cost" readonly="status != 'reported'"/>
+                            <field name="expected_date" readonly="status != 'reported'"/>
+                        </group>
+                        <group>
+                            <field name="reject_reason" readonly="status != 'reported'"/>
+                            <field name="request_id"/>
+                        </group>
+                    </group>
                 </sheet>
+                <chatter/>
             </form>
         </field>
     </record>

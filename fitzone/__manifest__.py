@@ -25,6 +25,7 @@
     ],
     "data": [
         "data/payment_methods.xml",
+        "data/maintenance_data.xml",
         "data/product_category_data.xml",
         "data/product_categories.xml",
         "data/inventory_data.xml",
@@ -34,6 +35,7 @@
         "data/pos_config.xml",
         "data/membership_cron.xml",
         "security/security_groups.xml",
+        "security/maintenance_security.xml",
         "security/ir_rule.xml",
         "security/ir.model.access.csv",
         "views/employee_views.xml",

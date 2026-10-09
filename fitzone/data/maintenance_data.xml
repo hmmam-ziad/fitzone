@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- Create preventive maintenance tickets -->
+        <record id="ir_cron_create_preventive_requests" model="ir.cron">
+            <field name="name">FitZone: Create Preventive Maintenance</field>
+            <field name="model_id" ref="maintenance.model_maintenance_request"/>
+            <field name="state">code</field>
+            <field name="code">model._cron_create_preventive_requests()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="active">True</field>
+            <field name="user_id" ref="base.user_root"/>
+        </record>
+
+        <!-- Preventive maintenance reminders -->
+        <record id="ir_cron_preventive_reminders" model="ir.cron">
+            <field name="name">FitZone: Preventive Maintenance Reminders</field>
+            <field name="model_id" ref="maintenance.model_maintenance_request"/>
+            <field name="state">code</field>
+            <field name="code">model._cron_preventive_reminders()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="user_id" ref="base.user_root"/>
+        </record>
+
+    </data>
+</odoo>
