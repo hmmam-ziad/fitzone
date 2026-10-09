@@ -5,32 +5,32 @@
     <record id="view_product_template_form_fitzone" model="ir.ui.view">
         <field name="name">product.template.form.fitzone</field>
         <field name="model">product.template</field>
-        <field name="inherit_id" ref="product.product_template_form_view"/>
+        <field name="inherit_id" ref="product.product_template_form_view" />
         <field name="arch" type="xml">
 
             <xpath expr="//notebook" position="inside">
                 <page string="FitZone Package">
 
                     <group>
-                        <field name="package_type"/>
-                        <field name="duration_months"/>
-                        <field name="total_sessions"/>
+                        <field name="package_type" />
+                        <field name="duration_months" />
+                        <field name="total_sessions" />
                     </group>
 
                     <group string="Allowed Class Days">
-                        <field name="allow_mon"/>
-                        <field name="allow_tue"/>
-                        <field name="allow_wed"/>
-                        <field name="allow_thu"/>
-                        <field name="allow_fri"/>
-                        <field name="allow_sat"/>
-                        <field name="allow_sun"/>
+                        <field name="allow_mon" />
+                        <field name="allow_tue" />
+                        <field name="allow_wed" />
+                        <field name="allow_thu" />
+                        <field name="allow_fri" />
+                        <field name="allow_sat" />
+                        <field name="allow_sun" />
                     </group>
 
                     <!-- Time window allowed by the package -->
                     <group string="Allowed Class Time">
-                        <field name="allowed_from" widget="float_time"/>
-                        <field name="allowed_to" widget="float_time"/>
+                        <field name="allowed_from" widget="float_time" />
+                        <field name="allowed_to" widget="float_time" />
                     </group>
 
                 </page>
@@ -50,16 +50,16 @@
                 decoration-muted="state in ('expired', 'cancelled')"
                 decoration-danger="state == 'blocked'">
 
-                <field name="member_id"/>
-                <field name="package_id"/>
-                <field name="barcode"/>
-                <field name="date_start"/>
-                <field name="date_end"/>
+                <field name="member_id" />
+                <field name="package_id" />
+                <field name="barcode" />
+                <field name="date_start" />
+                <field name="date_end" />
 
                 <field name="state"
-                       widget="badge"
-                       decoration-success="state == 'active'"
-                       decoration-danger="state == 'blocked'"/>
+                    widget="badge"
+                    decoration-success="state == 'active'"
+                    decoration-danger="state == 'blocked'" />
 
             </list>
 
@@ -107,14 +107,14 @@
                     <group>
 
                         <group>
-                            <field name="member_id"/>
-                            <field name="package_id"/>
-                            <field name="barcode"/>
+                            <field name="member_id" />
+                            <field name="package_id" />
+                            <field name="barcode" />
                         </group>
 
                         <group>
-                            <field name="date_start"/>
-                            <field name="date_end"/>
+                            <field name="date_start" />
+                            <field name="date_end" />
 
                             <field
                                 name="block_reason"
@@ -147,10 +147,10 @@
         <field name="arch" type="xml">
 
             <list>
-                <field name="membership_id"/>
-                <field name="start_date"/>
-                <field name="end_date"/>
-                <field name="days"/>
+                <field name="membership_id" />
+                <field name="start_date" />
+                <field name="end_date" />
+                <field name="days" />
             </list>
 
         </field>
@@ -158,6 +158,7 @@
 
 
     <!-- Freeze Form -->
+    <!-- t -->
     <record id="view_fitzone_freeze_form" model="ir.ui.view">
         <field name="name">fitzone.freeze.form</field>
         <field name="model">fitzone.freeze</field>
@@ -167,10 +168,10 @@
                 <sheet>
 
                     <group>
-                        <field name="membership_id"/>
-                        <field name="start_date"/>
-                        <field name="end_date"/>
-                        <field name="days"/>
+                        <field name="membership_id" />
+                        <field name="start_date" />
+                        <field name="end_date" />
+                        <field name="days" />
                     </group>
 
                 </sheet>

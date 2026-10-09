@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="seq_fitzone_member" model="ir.sequence">
+        <field name="name">FitZone Member Number</field>
+        <field name="code">fitzone.member</field>
+        <field name="prefix">M-</field>
+        <field name="padding">5</field>
+    </record>
+</odoo>

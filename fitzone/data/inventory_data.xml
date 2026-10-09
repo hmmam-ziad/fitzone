@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Lots & serial numbers (needed for expiry dates) for all internal users -->
+    <record id="base.group_user" model="res.groups">
+        <field name="implied_ids" eval="[(4, ref('stock.group_production_lot'))]"/>
+    </record>
+
+    <data noupdate="1">
+        <!-- Management approval: every PO needs a Purchase Manager (threshold 0) -->
+        <record id="base.main_company" model="res.company">
+            <field name="po_double_validation">two_step</field>
+            <field name="po_double_validation_amount">0</field>
+        </record>
+
+        <record id="seq_fitzone_purchase_request" model="ir.sequence">
+            <field name="name">FitZone Purchase Request</field>
+            <field name="code">fitzone.purchase.request</field>
+            <field name="prefix">PR/</field>
+            <field name="padding">4</field>
+        </record>
+
+        <record id="ir_cron_fz_low_stock_check" model="ir.cron">
+            <field name="name">FitZone: Check Low Stock Levels</field>
+            <field name="model_id" ref="product.model_product_template"/>
+            <field name="state">code</field>
+            <field name="code">model._cron_fz_check_low_stock()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">hours</field>
+        </record>
+    </data>
+</odoo>

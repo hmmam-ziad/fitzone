@@ -9,10 +9,41 @@
         <field name="arch" type="xml">
             <xpath expr="//notebook" position="inside">
                 <page string="FitZone Member">
-                    <group>
-                        <field name="membership_no"/>
+
+                    <group string="Basic Information">
+                        <field name="membership_no" readonly="1"/>
                         <field name="birth_date"/>
                     </group>
+
+                    <separator string="Emergency Contacts"/>
+
+                    <field name="emergency_contact_ids">
+                        <list editable="bottom">
+                            <field name="name"/>
+                            <field name="phone"/>
+                            <field name="relationship"/>
+                        </list>
+                    </field>
+
+                    <separator string="Memberships"/>
+
+                    <field name="membership_ids">
+                        <list>
+                            <field name="package_id"/>
+                            <field name="barcode"/>
+                        </list>
+                    </field>
+
+                    <separator string="Health &amp; Nutrition"/>
+
+                    <field name="health_profile_ids">
+                        <list>
+                            <field name="age"/>
+                            <field name="weight"/>
+                            <field name="height"/>
+                        </list>
+                    </field>
+
                 </page>
             </xpath>
         </field>
