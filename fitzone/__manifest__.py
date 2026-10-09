@@ -31,6 +31,7 @@
         "data/employee_sequence.xml",
         "data/room_data.xml",
         "data/pos_config.xml",
+        "data/membership_cron.xml",
         "security/security_groups.xml",
         "security/ir_rule.xml",
         "security/ir.model.access.csv",
