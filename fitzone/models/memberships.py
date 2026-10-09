@@ -1,4 +1,4 @@
-from odoo import fields, models
+from odoo import api, fields, models
 
 
 class Membership(models.Model):
@@ -40,34 +40,77 @@ class Membership(models.Model):
 
     block_reason = fields.Char()
 
+    def _sync_expiry_state(self):
+        today = fields.Date.context_today(self)
+
+        for membership in self:
+            if membership.state in ('blocked', 'cancelled'):
+                continue
+
+            if not membership.date_end:
+                continue
+
+            if membership.date_end < today:
+                target_state = 'expired'
+            else:
+                target_state = 'active'
+
+            if membership.state != target_state:
+                membership.with_context(
+                    skip_expiry_sync=True
+                ).write({
+                    'state': target_state,
+                })
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        memberships = super().create(vals_list)
+        memberships._sync_expiry_state()
+        return memberships
+
+    def write(self, vals):
+        result = super().write(vals)
+
+        if (
+            not self.env.context.get('skip_expiry_sync')
+            and ('date_end' in vals or 'state' in vals)
+        ):
+            self._sync_expiry_state()
+
+        return result
+
+    @api.onchange('date_end')
+    def _onchange_date_end(self):
+        today = fields.Date.context_today(self)
+
+        for membership in self:
+            if membership.state in ('blocked', 'cancelled'):
+                continue
+
+            if not membership.date_end:
+                continue
+
+            if membership.date_end < today:
+                membership.state = 'expired'
+            else:
+                membership.state = 'active'
+
     def action_block(self):
         self.write({
             'state': 'blocked',
         })
 
     def action_unblock(self):
-        today = fields.Date.context_today(self)
-
         for membership in self:
-            if membership.date_end < today:
-                membership.write({
-                    'state': 'expired',
-                    'block_reason': False,
-                })
-            else:
-                membership.write({
-                    'state': 'active',
-                    'block_reason': False,
-                })
+            membership.write({
+                'state': 'active',
+                'block_reason': False,
+            })
 
+    @api.model
     def action_expire_memberships(self):
-        today = fields.Date.context_today(self)
-
         memberships = self.search([
-            ('date_end', '<', today),
-            ('state', '=', 'active'),
+            ('state', 'in', ['active', 'expired']),
         ])
 
-        memberships.write({
-            'state': 'expired',
-        })
+        memberships._sync_expiry_state()
