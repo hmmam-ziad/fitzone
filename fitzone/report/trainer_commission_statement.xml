@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_report_trainer_commission_statement" model="ir.actions.report">
+        <field name="name">Trainer Commission Statement</field>
+        <field name="model">fitzone.trainer.commission.wizard</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">fitzone.report_trainer_commission_statement</field>
+        <field name="report_file">fitzone.report_trainer_commission_statement</field>
+        <field name="print_report_name">'Trainer Commission Statement - %s' % object.trainer_id.display_name</field>
+    </record>
+    <template id="report_trainer_commission_statement">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <h2>Trainer Commission Statement</h2>
+                        <p><strong>Trainer: </strong><span t-field="o.trainer_id"/></p>
+                        <p><strong>Period: </strong><span t-field="o.date_from"/> to <span t-field="o.date_to"/></p>
+                        <t t-set="sessions" t-value="o._get_sessions()"/>
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Date</th><th>Trainee Name</th>
+                                    <th class="text-end">Session Price</th>
+                                    <th class="text-end">Applied Rate %</th>
+                                    <th class="text-end">Earned Commission</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="sessions" t-as="session">
+                                    <td><span t-field="session.session_date"/></td>
+                                    <td><span t-field="session.trainee_id"/></td>
+                                    <td class="text-end"><span t-field="session.session_price" t-options="{'widget': 'float', 'precision': 2}"/></td>
+                                    <td class="text-end"><span t-field="session.applied_commission_rate" t-options="{'widget': 'float', 'precision': 2}"/>%</td>
+                                    <td class="text-end"><span t-field="session.calculated_commission" t-options="{'widget': 'float', 'precision': 2}"/></td>
+                                </tr>
+                                <tr t-if="not sessions"><td colspan="5">No completed sessions in this period.</td></tr>
+                            </tbody>
+                        </table>
+                        <p><strong>Total completed sessions: </strong><span t-out="len(sessions)"/></p>
+                        <p><strong>Total Commission Due: </strong><span t-out="sum(sessions.mapped('calculated_commission'))" t-options="{'widget': 'float', 'precision': 2}"/></p>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

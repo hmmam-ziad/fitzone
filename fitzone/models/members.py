@@ -4,6 +4,10 @@ from odoo import api, fields, models
 class ResPartner(models.Model):
     _inherit = 'res.partner'
 
+    pt_session_ids = fields.One2many(
+        'fitzone.pt.session', 'member_id', string='Personal Training Sessions',
+    )
+
     membership_no = fields.Char()
     birth_date = fields.Date()
 
