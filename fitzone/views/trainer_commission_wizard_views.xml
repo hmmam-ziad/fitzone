@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_trainer_commission_wizard_form" model="ir.ui.view">
+        <field name="name">fitzone.trainer.commission.wizard.form</field>
+        <field name="model">fitzone.trainer.commission.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Trainer Commission Statement">
+                <group>
+                    <field name="trainer_id" options="{'no_create': True}"/>
+                    <field name="date_from"/>
+                    <field name="date_to"/>
+                </group>
+                <footer>
+                    <button name="action_print_report" type="object" string="Print Statement" class="btn-primary"/>
+                    <button string="Cancel" special="cancel" class="btn-secondary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+    <record id="action_trainer_commission_wizard" model="ir.actions.act_window">
+        <field name="name">Trainer Commission Statement</field>
+        <field name="res_model">fitzone.trainer.commission.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_trainer_commission_wizard_form"/>
+        <field name="target">new</field>
+    </record>
+</odoo>

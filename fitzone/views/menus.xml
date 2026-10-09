@@ -22,10 +22,14 @@
     <menuitem id="menu_fitzone_gym_class" name="Group Classes" parent="menu_fitzone_classes" action="action_fitzone_gym_class" sequence="10"/>
     <menuitem id="menu_fitzone_class_booking" name="Class Bookings" parent="menu_fitzone_classes" action="action_fitzone_class_booking" sequence="20"/>
     <menuitem id="menu_fitzone_attendance" name="Attendance" parent="menu_fitzone_classes" action="action_fitzone_attendance" sequence="30"/>
+    <menuitem id="menu_fitzone_checkin" name="Class Check-in" parent="menu_fitzone_classes" action="action_fitzone_checkin_wizard" sequence="40"/>
 
     <menuitem id="menu_fitzone_personal_training" name="Personal Training" parent="menu_fitzone_root" sequence="60"/>
     <menuitem id="menu_fitzone_pt_session" name="PT Sessions" parent="menu_fitzone_personal_training" action="action_fitzone_pt_session" sequence="10"/>
     <menuitem id="menu_fitzone_trainer_commission" name="Trainer Commissions" parent="menu_fitzone_personal_training" action="action_fitzone_trainer_commission" sequence="20"/>
+
+    <menuitem id="menu_fitzone_my_trainees" name="My Trainees" parent="menu_fitzone_personal_training" action="action_fitzone_my_trainees" groups="fitzone.group_fitzone_trainer,fitzone.group_fitzone_manager" sequence="5"/>
+    <menuitem id="menu_trainer_commission_statement" name="Trainer Commission Statement" parent="menu_fitzone_personal_training" action="action_trainer_commission_wizard" sequence="30"/>
 
     <menuitem id="menu_fitzone_pool" name="Pool" parent="menu_fitzone_root" sequence="70"/>
     <menuitem id="menu_fitzone_pool_booking" name="Pool Bookings" parent="menu_fitzone_pool" action="action_fitzone_pool_booking" sequence="10"/>
@@ -42,7 +46,7 @@
     <menuitem id="menu_fitzone_trainer" name="Trainers" parent="menu_fitzone_configuration" action="action_fitzone_trainer" sequence="10"/>
     <menuitem id="menu_fitzone_room" name="Rooms" parent="menu_fitzone_configuration" action="action_fitzone_room" sequence="20"/>
     <menuitem id="menu_fitzone_pool_slot" name="Pool Slots" parent="menu_fitzone_configuration" action="action_fitzone_pool_slot" sequence="30"/>
-    <menuitem id="menu_fitzone_commission_rule" name="Commission Rules" parent="menu_fitzone_configuration" action="action_fitzone_commission_rule" sequence="40"/>
+    <menuitem id="menu_fitzone_commission_rule" name="Commission Rules" parent="menu_fitzone_configuration" action="action_fitzone_commission_rule" groups="fitzone.group_fitzone_manager" sequence="40"/>
 
     <menuitem
         id="menu_fitzone_staff_availability"
