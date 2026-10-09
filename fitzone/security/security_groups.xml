@@ -12,12 +12,7 @@
         <field name="name">FitZone Manager</field>
         <field name="implied_ids" eval="[(4, ref('hr.group_hr_manager'))]"/>
     </record>
-<<<<<<< HEAD
-
     <record id="group_fitzone_clinic" model="res.groups">
         <field name="name">FitZone Clinic</field>
     </record>
 </odoo>
-=======
-</odoo>
->>>>>>> origin/main
