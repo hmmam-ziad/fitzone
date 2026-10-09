@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Supplements & health products: stock tracked, dispensed FEFO -->
+    <record id="product_category_supplements" model="product.category">
+        <field name="name">Supplements &amp; Health Products</field>
+        <field name="parent_id" ref="product.product_category_goods" />
+        <field name="removal_strategy_id" search="[('method', '=', 'fefo')]" />
+    </record>
+
+    <!-- Juices, snacks, juice ingredients: made-to-order, never stock tracked -->
+    <record id="product_category_made_to_order" model="product.category">
+        <field name="name">Made-to-Order (Juices &amp; Snacks)</field>
+        <field name="parent_id" ref="product.product_category_goods" />
+    </record>
+</odoo>
