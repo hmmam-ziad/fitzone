@@ -1,4 +1,5 @@
 from odoo import api, fields, models
+from odoo.exceptions import ValidationError
 
 
 class GymClass(models.Model):
@@ -56,6 +57,18 @@ class GymClass(models.Model):
         ],
         compute='_compute_seats',
     )
+
+    @api.constrains('start_datetime', 'end_datetime')
+    def _check_class_datetimes(self):
+        for rec in self:
+            if (
+                rec.start_datetime
+                and rec.end_datetime
+                and rec.end_datetime < rec.start_datetime
+            ):
+                raise ValidationError(
+                    "End Datetime cannot be earlier than Start Datetime."
+                )
 
     @api.depends(
         'room_id.capacity',
