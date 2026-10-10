@@ -75,6 +75,26 @@ class PTSession(models.Model):
                 continue
             if session.state == 'cancelled' or session.status == 'cancelled':
                 raise ValidationError("Cancelled sessions cannot be completed.")
+            membership = session.membership_id
+
+            if membership.member_id != session.member_id:
+                raise ValidationError(
+                    "The selected membership does not belong to this member."
+                )
+
+            if membership.package_id.id != session.package_id.id:
+                raise ValidationError(
+                    "The session package must match the selected membership."
+                )
+
+            if (
+                session.package_id.package_type == 'private'
+                and session.package_id.total_sessions > 0
+                and membership.remaining_sessions <= 0
+            ):
+                raise ValidationError(
+                    "This membership has no remaining PT sessions."
+                )
             if not session.session_date:
                 raise ValidationError("Set the session date before completing the session.")
             session_day = fields.Date.to_date(session.session_date)
@@ -94,6 +114,12 @@ class PTSession(models.Model):
                 'state': 'completed',
                 'status': 'completed',
             })
+
+            if (
+                session.package_id.package_type == 'private'
+                and session.package_id.total_sessions > 0
+            ):
+                membership.consumed_sessions += 1
         return True
 
     @api.constrains('trainer_id', 'session_date', 'end_datetime', 'status')
