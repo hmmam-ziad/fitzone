@@ -1,14 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- Rooms -->
+    <!-- ========================================== -->
+    <!-- Rooms Views & Search -->
+    <!-- ========================================== -->
+    <record id="view_fitzone_room_search" model="ir.ui.view">
+        <field name="name">fitzone.room.search</field>
+        <field name="model">fitzone.room</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name" />
+                <field name="capacity" />
+                <separator />
+                <filter string="Capacity 20+" name="filter_capacity_20"
+                    domain="[('capacity', '&gt;=', 20)]" />
+            </search>
+        </field>
+    </record>
+
     <record id="view_fitzone_room_list" model="ir.ui.view">
         <field name="name">fitzone.room.list</field>
         <field name="model">fitzone.room</field>
         <field name="arch" type="xml">
             <list>
-                <field name="name"/>
-                <field name="capacity"/>
+                <field name="name" />
+                <field name="capacity" />
             </list>
         </field>
     </record>
@@ -20,8 +36,8 @@
             <form>
                 <sheet>
                     <group>
-                        <field name="name"/>
-                        <field name="capacity"/>
+                        <field name="name" />
+                        <field name="capacity" />
                     </group>
                 </sheet>
             </form>
@@ -32,28 +48,65 @@
         <field name="name">Rooms</field>
         <field name="res_model">fitzone.room</field>
         <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_fitzone_room_search" />
     </record>
 
 
-    <!-- Group Classes -->
+    <!-- ========================================== -->
+    <!-- Group Classes Views & Search -->
+    <!-- ========================================== -->
+    <record id="view_fitzone_gym_class_search" model="ir.ui.view">
+        <field name="name">fitzone.gym.class.search</field>
+        <field name="model">fitzone.gym.class</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name" string="Class" />
+                <field name="trainer_id" />
+                <field name="room_id" />
+                <field name="start_datetime" />
+                <separator />
+                <filter string="Available" name="filter_ok"
+                    domain="[('alert_level', '=', 'ok')]" />
+                <filter string="Almost Full" name="filter_near_full"
+                    domain="[('alert_level', '=', 'near_full')]" />
+                <filter string="Full" name="filter_full"
+                    domain="[('alert_level', '=', 'full')]" />
+                <separator />
+                <filter string="Upcoming" name="filter_upcoming"
+                    domain="[('start_datetime', '&gt;=', context_today().strftime('%Y-%m-%d'))]" />
+                <filter string="Past" name="filter_past"
+                    domain="[('start_datetime', '&lt;', context_today().strftime('%Y-%m-%d'))]" />
+                <separator />
+                <filter string="Trainer" name="group_by_trainer"
+                    context="{'group_by': 'trainer_id'}" />
+                <filter string="Room" name="group_by_room"
+                    context="{'group_by': 'room_id'}" />
+                <filter string="Status" name="group_by_alert_level"
+                    context="{'group_by': 'alert_level'}" />
+                <filter string="Start Date" name="group_by_start"
+                    context="{'group_by': 'start_datetime:day'}" />
+            </search>
+        </field>
+    </record>
+
     <record id="view_fitzone_gym_class_list" model="ir.ui.view">
         <field name="name">fitzone.gym.class.list</field>
         <field name="model">fitzone.gym.class</field>
         <field name="arch" type="xml">
             <list decoration-danger="alert_level == 'full'"
-                  decoration-warning="alert_level == 'near_full'">
-                <field name="name"/>
-                <field name="trainer_id"/>
-                <field name="room_id"/>
-                <field name="start_datetime"/>
-                <field name="end_datetime"/>
-                <field name="capacity"/>
-                <field name="booked_count"/>
-                <field name="available_seats"/>
+                decoration-warning="alert_level == 'near_full'">
+                <field name="name" />
+                <field name="trainer_id" />
+                <field name="room_id" />
+                <field name="start_datetime" />
+                <field name="end_datetime" />
+                <field name="capacity" />
+                <field name="booked_count" />
+                <field name="available_seats" />
                 <field name="alert_level" widget="badge"
-                       decoration-success="alert_level == 'ok'"
-                       decoration-warning="alert_level == 'near_full'"
-                       decoration-danger="alert_level == 'full'"/>
+                    decoration-success="alert_level == 'ok'"
+                    decoration-warning="alert_level == 'near_full'"
+                    decoration-danger="alert_level == 'full'" />
             </list>
         </field>
     </record>
@@ -65,32 +118,31 @@
             <form>
                 <sheet>
                     <div class="alert alert-warning" role="alert"
-                         invisible="alert_level != 'near_full'">
-                        Almost full: only <field name="available_seats" class="oe_inline"/> seat(s) left.
-                    </div>
+                        invisible="alert_level != 'near_full'"> Almost full: only <field
+                            name="available_seats" class="oe_inline" /> seat(s) left. </div>
                     <div class="alert alert-danger" role="alert"
-                         invisible="alert_level != 'full'">
+                        invisible="alert_level != 'full'">
                         This class is full. No more bookings are allowed.
                     </div>
                     <group>
                         <group>
-                            <field name="name"/>
-                            <field name="trainer_id"/>
-                            <field name="room_id"/>
+                            <field name="name" />
+                            <field name="trainer_id" />
+                            <field name="room_id" />
                         </group>
                         <group>
-                            <field name="start_datetime"/>
-                            <field name="end_datetime"/>
+                            <field name="start_datetime" />
+                            <field name="end_datetime" />
                         </group>
                     </group>
                     <group string="Capacity">
-                        <field name="capacity"/>
-                        <field name="booked_count"/>
-                        <field name="available_seats"/>
+                        <field name="capacity" />
+                        <field name="booked_count" />
+                        <field name="available_seats" />
                         <field name="alert_level" widget="badge"
-                               decoration-success="alert_level == 'ok'"
-                               decoration-warning="alert_level == 'near_full'"
-                               decoration-danger="alert_level == 'full'"/>
+                            decoration-success="alert_level == 'ok'"
+                            decoration-warning="alert_level == 'near_full'"
+                            decoration-danger="alert_level == 'full'" />
                     </group>
                 </sheet>
             </form>
@@ -101,21 +153,53 @@
         <field name="name">Group Classes</field>
         <field name="res_model">fitzone.gym.class</field>
         <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_fitzone_gym_class_search" />
     </record>
 
 
-    <!-- Class Bookings -->
+    <!-- ========================================== -->
+    <!-- Class Bookings Views & Search -->
+    <!-- ========================================== -->
+    <record id="view_fitzone_class_booking_search" model="ir.ui.view">
+        <field name="name">fitzone.class.booking.search</field>
+        <field name="model">fitzone.class.booking</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="member_id" />
+                <field name="class_id" />
+                <field name="membership_id" />
+                <field name="booking_date" />
+                <separator />
+                <filter string="Booked" name="filter_booked"
+                    domain="[('status', '=', 'booked')]" />
+                <filter string="Attended" name="filter_attended"
+                    domain="[('status', '=', 'attended')]" />
+                <filter string="Cancelled" name="filter_cancelled"
+                    domain="[('status', '=', 'cancelled')]" />
+                <separator />
+                <filter string="Member" name="group_by_member"
+                    context="{'group_by': 'member_id'}" />
+                <filter string="Class" name="group_by_class"
+                    context="{'group_by': 'class_id'}" />
+                <filter string="Status" name="group_by_status"
+                    context="{'group_by': 'status'}" />
+                <filter string="Booking Date" name="group_by_booking_date"
+                    context="{'group_by': 'booking_date:day'}" />
+            </search>
+        </field>
+    </record>
+
     <record id="view_fitzone_class_booking_list" model="ir.ui.view">
         <field name="name">fitzone.class.booking.list</field>
         <field name="model">fitzone.class.booking</field>
         <field name="arch" type="xml">
             <list decoration-muted="status == 'cancelled'"
-                  decoration-success="status == 'attended'">
-                <field name="member_id"/>
-                <field name="membership_id"/>
-                <field name="class_id"/>
-                <field name="booking_date"/>
-                <field name="status" widget="badge"/>
+                decoration-success="status == 'attended'">
+                <field name="member_id" />
+                <field name="membership_id" />
+                <field name="class_id" />
+                <field name="booking_date" />
+                <field name="status" widget="badge" />
             </list>
         </field>
     </record>
@@ -127,17 +211,17 @@
             <form>
                 <header>
                     <button name="action_cancel" type="object" string="Cancel Booking"
-                            invisible="status != 'booked'"
-                            confirm="Cancel this booking? The seat will stay vacant."/>
+                        invisible="status != 'booked'"
+                        confirm="Cancel this booking? The seat will stay vacant." />
                     <field name="status" widget="statusbar"
-                           statusbar_visible="booked,attended"/>
+                        statusbar_visible="booked,attended" />
                 </header>
                 <sheet>
                     <group>
-                        <field name="member_id" readonly="id"/>
-                        <field name="class_id" readonly="id"/>
-                        <field name="membership_id"/>
-                        <field name="booking_date"/>
+                        <field name="member_id" readonly="id" />
+                        <field name="class_id" readonly="id" />
+                        <field name="membership_id" />
+                        <field name="booking_date" />
                     </group>
                 </sheet>
             </form>
@@ -148,17 +232,40 @@
         <field name="name">Class Bookings</field>
         <field name="res_model">fitzone.class.booking</field>
         <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_fitzone_class_booking_search" />
     </record>
 
 
-    <!-- Attendance -->
+    <!-- ========================================== -->
+    <!-- Attendance Views & Search -->
+    <!-- ========================================== -->
+    <record id="view_fitzone_attendance_search" model="ir.ui.view">
+        <field name="name">fitzone.attendance.search</field>
+        <field name="model">fitzone.attendance</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="booking_id" />
+                <separator />
+                <filter string="Attended" name="filter_attended"
+                    domain="[('attended', '=', True)]" />
+                <filter string="Absent" name="filter_absent"
+                    domain="[('attended', '=', False)]" />
+                <separator />
+                <filter string="Booking" name="group_by_booking"
+                    context="{'group_by': 'booking_id'}" />
+                <filter string="Attended" name="group_by_attended"
+                    context="{'group_by': 'attended'}" />
+            </search>
+        </field>
+    </record>
+
     <record id="view_fitzone_attendance_list" model="ir.ui.view">
         <field name="name">fitzone.attendance.list</field>
         <field name="model">fitzone.attendance</field>
         <field name="arch" type="xml">
             <list>
-                <field name="booking_id"/>
-                <field name="attended"/>
+                <field name="booking_id" />
+                <field name="attended" />
             </list>
         </field>
     </record>
@@ -170,8 +277,8 @@
             <form>
                 <sheet>
                     <group>
-                        <field name="booking_id"/>
-                        <field name="attended"/>
+                        <field name="booking_id" />
+                        <field name="attended" />
                     </group>
                 </sheet>
             </form>
@@ -182,6 +289,7 @@
         <field name="name">Attendance</field>
         <field name="res_model">fitzone.attendance</field>
         <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_fitzone_attendance_search" />
     </record>
 
 </odoo>

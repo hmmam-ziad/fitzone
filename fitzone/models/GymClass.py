@@ -55,7 +55,7 @@ class GymClass(models.Model):
             ('near_full', 'Almost Full'),
             ('full', 'Full'),
         ],
-        compute='_compute_seats',
+        compute='_compute_seats', store=True
     )
 
     @api.constrains('start_datetime', 'end_datetime')
