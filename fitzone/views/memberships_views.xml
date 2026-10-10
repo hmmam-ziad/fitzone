@@ -124,6 +124,24 @@
 
                     </group>
 
+                    <group string="All-Inclusive Medical Credits"
+                           invisible="not all_inclusive">
+                        <group string="Physiotherapy">
+                            <field name="physio_sessions_total" />
+                            <field name="physio_sessions_consumed" />
+                            <field name="physio_sessions_remaining" />
+                        </group>
+                        <group string="Nutrition">
+                            <field name="nutrition_sessions_total" />
+                            <field name="nutrition_sessions_consumed" />
+                            <field name="nutrition_sessions_remaining" />
+                        </group>
+                    </group>
+
+                    <group>
+                        <field name="all_inclusive" />
+                    </group>
+
                 </sheet>
 
             </form>

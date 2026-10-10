@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+
+        <!-- General Membership Packages -->
+        <record id="product_general_1_month" model="product.template">
+            <field name="name">General Membership - 1 Month</field>
+            <field name="type">service</field>
+            <field name="list_price">50.0</field>
+            <field name="package_type">general</field>
+            <field name="duration_months">1</field>
+            <field name="total_sessions">0</field>
+        </record>
+
+        <record id="product_general_3_months" model="product.template">
+            <field name="name">General Membership - 3 Months</field>
+            <field name="type">service</field>
+            <field name="list_price">135.0</field>
+            <field name="package_type">general</field>
+            <field name="duration_months">3</field>
+            <field name="total_sessions">0</field>
+        </record>
+
+        <record id="product_general_6_months" model="product.template">
+            <field name="name">General Membership - 6 Months</field>
+            <field name="type">service</field>
+            <field name="list_price">250.0</field>
+            <field name="package_type">general</field>
+            <field name="duration_months">6</field>
+            <field name="total_sessions">0</field>
+        </record>
+
+        <!-- Private Training Packages -->
+        <record id="product_private_12_sessions" model="product.template">
+            <field name="name">Private Package - 12 Sessions</field>
+            <field name="type">service</field>
+            <field name="list_price">150.0</field>
+            <field name="package_type">private</field>
+            <field name="duration_months">1</field>
+            <field name="total_sessions">12</field>
+        </record>
+
+        <record id="product_private_24_sessions" model="product.template">
+            <field name="name">Private Package - 24 Sessions</field>
+            <field name="type">service</field>
+            <field name="list_price">280.0</field>
+            <field name="package_type">private</field>
+            <field name="duration_months">2</field>
+            <field name="total_sessions">24</field>
+        </record>
+
+        <!-- All-Inclusive Add-on -->
+        <record id="product_all_inclusive_addon" model="product.template">
+            <field name="name">All-Inclusive Add-on</field>
+            <field name="type">service</field>
+            <field name="list_price">20.0</field>
+            <field name="package_type">all_inclusive</field>
+            <field name="duration_months">0</field>
+            <field name="total_sessions">0</field>
+        </record>
+
+    </data>
+</odoo>
