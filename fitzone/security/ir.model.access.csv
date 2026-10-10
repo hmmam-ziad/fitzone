@@ -4,9 +4,9 @@ access_fitzone_gym_class_user,fitzone_gym_class user,model_fitzone_gym_class,bas
 access_fitzone_class_booking_user,fitzone_class_booking user,model_fitzone_class_booking,base.group_user,1,1,1,1
 access_fitzone_attendance_user,fitzone_attendance user,model_fitzone_attendance,base.group_user,1,1,1,1
 access_fitzone_trainer_user,fitzone_trainer user,model_fitzone_trainer,base.group_user,1,0,0,0
-access_fitzone_injury_user,fitzone_injury user,model_fitzone_injury,base.group_user,1,1,1,1
+access_fitzone_injury_user,fitzone_injury trainer,model_fitzone_injury,fitzone.group_fitzone_trainer,1,1,1,0
 access_fitzone_injury_type_user,fitzone_injury_type user,model_fitzone_injury_type,base.group_user,1,1,1,1
-access_fitzone_rehabilitation_user,fitzone_rehabilitation user,model_fitzone_rehabilitation,base.group_user,1,1,1,1
+access_fitzone_rehabilitation_user,fitzone_rehabilitation clinic,model_fitzone_rehabilitation,fitzone.group_fitzone_clinic,1,1,1,1
 access_fitzone_emergency_contact_user,fitzone_emergency_contact user,model_fitzone_emergency_contact,base.group_user,1,1,1,1
 access_fitzone_health_profile_clinic,fitzone_health_profile clinic,model_fitzone_health_profile,fitzone.group_fitzone_clinic,1,1,1,1
 access_fitzone_progress_tracking_user,fitzone_progress_tracking user,model_fitzone_progress_tracking,base.group_user,1,1,1,1
@@ -33,3 +33,7 @@ access_fitzone_trainer_commission_wizard_user,fitzone trainer commission wizard 
 access_fitzone_fault_report_staff,fitzone.fault.report staff,model_fitzone_fault_report,fitzone.group_fitzone_staff,1,0,1,0
 access_fitzone_fault_report_tech,fitzone.fault.report tech,model_fitzone_fault_report,fitzone.group_fitzone_technician,1,0,0,0
 access_fitzone_fault_report_manager,fitzone.fault.report manager,model_fitzone_fault_report,fitzone.group_fitzone_manager,1,1,1,1
+access_fitzone_injury_cause_user,fitzone_injury_cause trainer,model_fitzone_injury_cause,fitzone.group_fitzone_trainer,1,0,0,0
+access_fitzone_injury_cause_clinic,fitzone_injury_cause clinic,model_fitzone_injury_cause,fitzone.group_fitzone_clinic,1,1,1,1
+access_fitzone_injury_clinic,fitzone_injury clinic,model_fitzone_injury,fitzone.group_fitzone_clinic,1,1,1,1
+access_fitzone_rehabilitation_trainer,fitzone_rehabilitation trainer,model_fitzone_rehabilitation,fitzone.group_fitzone_trainer,0,0,0,0

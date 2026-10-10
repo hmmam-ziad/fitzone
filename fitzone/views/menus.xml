@@ -56,13 +56,22 @@
     <menuitem id="menu_fitzone_pool_booking" name="Pool Bookings" parent="menu_fitzone_pool"
         action="action_fitzone_pool_booking" sequence="10" />
 
-    <menuitem id="menu_fitzone_injuries" name="Injuries" parent="menu_fitzone_root" sequence="80" />
-    <menuitem id="menu_fitzone_injury" name="Injuries" parent="menu_fitzone_injuries"
-        action="action_fitzone_injury" sequence="10" />
-    <menuitem id="menu_fitzone_injury_type" name="Injury Types" parent="menu_fitzone_injuries"
-        action="action_fitzone_injury_type" sequence="20" />
-    <menuitem id="menu_fitzone_rehabilitation" name="Rehabilitation" parent="menu_fitzone_injuries"
-        action="action_fitzone_rehabilitation" sequence="30" />
+    <menuitem id="menu_fitzone_injuries" name="Clinic" parent="menu_fitzone_root"
+        groups="fitzone.group_fitzone_clinic" sequence="80"/>
+    <menuitem id="menu_fitzone_injury" name="Incident Reports Inbox" parent="menu_fitzone_injuries"
+        action="action_fitzone_injury_clinic_inbox" groups="fitzone.group_fitzone_clinic" sequence="10"/>
+    <menuitem id="menu_fitzone_rehabilitation" name="Rehabilitation Files" parent="menu_fitzone_injuries"
+        action="action_fitzone_rehabilitation" groups="fitzone.group_fitzone_clinic" sequence="20"/>
+    <menuitem id="menu_fitzone_clinic_configuration" name="Configuration" parent="menu_fitzone_injuries"
+        groups="fitzone.group_fitzone_clinic" sequence="90"/>
+    <menuitem id="menu_fitzone_injury_cause" name="Injury Causes" parent="menu_fitzone_clinic_configuration"
+        action="action_fitzone_injury_cause" groups="fitzone.group_fitzone_clinic" sequence="10"/>
+    <menuitem id="menu_fitzone_injury_type" name="Injury Types" parent="menu_fitzone_clinic_configuration"
+        action="action_fitzone_injury_type" groups="fitzone.group_fitzone_clinic" sequence="20"/>
+    <menuitem id="menu_fitzone_trainer_root" name="Trainer" parent="menu_fitzone_root"
+        groups="fitzone.group_fitzone_trainer" sequence="65"/>
+    <menuitem id="menu_fitzone_report_injury" name="Report Injury Incident" parent="menu_fitzone_trainer_root"
+        action="action_fitzone_injury" groups="fitzone.group_fitzone_trainer" sequence="10"/>
 
     <menuitem id="menu_fitzone_maintenance" name="Maintenance" parent="menu_fitzone_root"
         sequence="90" />

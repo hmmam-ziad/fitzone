@@ -27,7 +27,6 @@
         "data/payment_methods.xml",
         "data/maintenance_data.xml",
         "data/product_category_data.xml",
-        "data/product_categories.xml",
         "data/inventory_data.xml",
         "data/employee_sequence.xml",
         "data/sequences.xml",
@@ -48,6 +47,7 @@
         "views/personal_training_views.xml",
         "views/pool_views.xml",
         "views/injuries_views.xml",
+        "views/rehabilitation_views.xml",
         "views/maintenance_views.xml",
         "views/inventory_views.xml",
         "views/purchase_request_views.xml",
@@ -62,6 +62,10 @@
         "point_of_sale._assets_pos": [
             "fitzone/static/src/js/member_discount.js",
             "fitzone/static/src/xml/select_partner_button.xml",
+        ],
+        "web.assets_backend": [
+            "fitzone/static/src/js/menu_badge.js",
+            "fitzone/static/src/xml/menu_badge.xml",
         ],
     },
     "pre_init_hook": "pre_init_hook",
