@@ -28,6 +28,7 @@
         "data/maintenance_data.xml",
         "data/product_category_data.xml",
         "data/product_categories.xml",
+        "data/membership_packages.xml",
         "data/inventory_data.xml",
         "data/employee_sequence.xml",
         "data/sequences.xml",
