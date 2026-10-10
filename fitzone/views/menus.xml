@@ -53,8 +53,21 @@
         sequence="30" />
 
     <menuitem id="menu_fitzone_pool" name="Pool" parent="menu_fitzone_root" sequence="70" />
-    <menuitem id="menu_fitzone_pool_booking" name="Pool Bookings" parent="menu_fitzone_pool"
+
+    <menuitem id="menu_fitzone_pool_access" name="Pool Access Check"
+        parent="menu_fitzone_pool"
+        action="action_fitzone_pool_access_wizard" sequence="5" />
+
+    <menuitem id="menu_fitzone_pool_booking" name="Pool Bookings"
+        parent="menu_fitzone_pool"
         action="action_fitzone_pool_booking" sequence="10" />
+
+    <menuitem id="menu_fitzone_free_swim_slots" name="Free-Swim Slots"
+        parent="menu_fitzone_pool"
+        action="action_fitzone_free_swim_slots"
+        groups="fitzone.group_fitzone_manager" sequence="20" />
+
+        
 
     <menuitem id="menu_fitzone_injuries" name="Injuries" parent="menu_fitzone_root" sequence="80" />
     <menuitem id="menu_fitzone_injury" name="Injuries" parent="menu_fitzone_injuries"

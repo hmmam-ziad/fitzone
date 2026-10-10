@@ -19,6 +19,8 @@ from . import commission_rule
 from . import trainer_commission
 from . import pool
 from . import pool_booking
+from . import pool_access_wizard
+from . import res_partner_pool
 from . import injuries
 from . import injury_type
 from . import rehabilitation
@@ -33,3 +35,4 @@ from . import checkin_wizard
 from . import staff_availability_wizard
 from . import pos_order
 from . import trainer_commission_wizard
+

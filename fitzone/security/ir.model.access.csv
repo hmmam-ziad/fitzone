@@ -33,3 +33,6 @@ access_fitzone_trainer_commission_wizard_user,fitzone trainer commission wizard 
 access_fitzone_fault_report_staff,fitzone.fault.report staff,model_fitzone_fault_report,fitzone.group_fitzone_staff,1,0,1,0
 access_fitzone_fault_report_tech,fitzone.fault.report tech,model_fitzone_fault_report,fitzone.group_fitzone_technician,1,0,0,0
 access_fitzone_fault_report_manager,fitzone.fault.report manager,model_fitzone_fault_report,fitzone.group_fitzone_manager,1,1,1,1
+access_fitzone_pool_slot_user,fitzone_pool_slot user,model_fitzone_pool_slot,base.group_user,1,0,0,0
+access_fitzone_pool_slot_manager,fitzone_pool_slot manager,model_fitzone_pool_slot,fitzone.group_fitzone_manager,1,1,1,1
+access_fitzone_pool_access_wizard_user,fitzone_pool_access_wizard user,model_fitzone_pool_access_wizard,base.group_user,1,1,1,1
