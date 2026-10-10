@@ -7,7 +7,7 @@ class ClassBooking(models.Model):
     _description = 'Class Booking'
     _rec_name = 'member_id'
 
-    member_id = fields.Many2one('res.partner', required=True)
+    member_id = fields.Many2one('res.partner', required=True, domain="[('membership_ids', '!=', False)]")
     membership_id = fields.Many2one('fitzone.membership', readonly=True)
     class_id = fields.Many2one('fitzone.gym.class', required=True)
     booking_date = fields.Datetime(default=fields.Datetime.now)

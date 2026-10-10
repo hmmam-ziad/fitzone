@@ -7,12 +7,12 @@ class PTSession(models.Model):
     _description = 'Personal Training Session'
     _rec_name = 'member_id'
 
-    member_id = fields.Many2one('res.partner', required=True)
+    member_id = fields.Many2one('res.partner', required=True, domain="[('membership_ids', '!=', False)]")
     trainee_id = fields.Many2one(
         'res.partner', related='member_id', readonly=False, string='Trainee',
     )
     trainer_id = fields.Many2one('fitzone.trainer', required=True)
-    membership_id = fields.Many2one('fitzone.membership', required=True)
+    membership_id = fields.Many2one('fitzone.membership', required=True, domain="[('member_id', '=', member_id)]")
     package_id = fields.Many2one('product.template', required=True)
     session_date = fields.Datetime()
     end_datetime = fields.Datetime()

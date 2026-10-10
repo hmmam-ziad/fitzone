@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <t t-name="fitzone.NavBar.SectionsMenu"
+     t-inherit="web.NavBar.SectionsMenu"
+     t-inherit-mode="extension">
+    <xpath expr="//span[@t-att-data-section='section.id']" position="after">
+      <span t-if="section.xmlid === 'fitzone.menu_fitzone_injuries' and fitzoneBadge.count"
+            class="badge rounded-pill text-bg-danger ms-1"
+            t-esc="fitzoneBadge.count"/>
+    </xpath>
+  </t>
+
+</templates>

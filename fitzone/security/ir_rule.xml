@@ -11,8 +11,13 @@
     <record id="rule_fitzone_partner_trainer" model="ir.rule">
         <field name="name">Trainer: My Trainees List</field>
         <field name="model_id" ref="base.model_res_partner" />
-        <field name="domain_force">['|', '|', ('pt_session_ids.trainer_id.employee_id.user_id', '=',
-            user.id), ('id', '=', user.partner_id.id), ('id', '=', user.company_id.partner_id.id)]</field>
+        <field name="domain_force">[
+            '|', '|', '|',
+            ('pt_session_ids.trainer_id.employee_id.user_id', '=', user.id),
+            ('class_booking_ids.class_id.trainer_id.employee_id.user_id', '=', user.id),
+            ('id', '=', user.partner_id.id),
+            ('id', '=', user.company_id.partner_id.id)
+            ]</field>
         <field name="groups" eval="[(6, 0, [ref('group_fitzone_trainer')])]" />
     </record>
 
@@ -31,36 +36,59 @@
     </record>
 
     <!-- Group rules are additive. These global ceilings prevent other group
-         rules from broadening trainer access. Managers retain ordinary access. -->
+         rules from broadening trainer access. Managers retain ordinary access.
+         The last leaf is 1 (always true) unless the user is a trainer and not a manager. -->
     <record id="rule_fitzone_pt_session_trainer_ceiling" model="ir.rule">
         <field name="name">Enforce Trainer PT Session Ownership</field>
         <field name="model_id" ref="model_fitzone_pt_session" />
         <field name="groups" eval="[(5, 0, 0)]" />
-        <field name="domain_force">(
-            [('trainer_id.employee_id.user_id', '=', user.id)]
-            if user.has_group('fitzone.group_fitzone_trainer') and not
-            user.has_group('fitzone.group_fitzone_manager')
-            else [(1, '=', 1)]
-            )</field>
+        <field name="domain_force">['|', ('trainer_id.employee_id.user_id', '=', user.id), ((not
+            user.has_group('fitzone.group_fitzone_trainer') or
+            user.has_group('fitzone.group_fitzone_manager')) and 1 or 0, '=', 1)]</field>
     </record>
 
     <record id="rule_fitzone_partner_trainer_ceiling" model="ir.rule">
         <field name="name">Enforce Trainer Assigned Trainees</field>
         <field name="model_id" ref="base.model_res_partner" />
         <field name="groups" eval="[(5, 0, 0)]" />
-        <field name="domain_force">(
-            ['|', '|', ('pt_session_ids.trainer_id.employee_id.user_id', '=', user.id), ('id', '=',
-            user.partner_id.id), ('id', '=', user.company_id.partner_id.id)]
-            if user.has_group('fitzone.group_fitzone_trainer') and not
-            user.has_group('fitzone.group_fitzone_manager')
-            else [(1, '=', 1)]
-            )</field>
+        <field name="domain_force">['|', '|', '|', '|',
+            ('pt_session_ids.trainer_id.employee_id.user_id', '=', user.id),
+            ('class_booking_ids.class_id.trainer_id.employee_id.user_id', '=', user.id),
+            ('id', '=', user.partner_id.id),
+            ('id', '=', user.company_id.partner_id.id),
+            ((not user.has_group('fitzone.group_fitzone_trainer') or
+            user.has_group('fitzone.group_fitzone_manager')) and 1 or 0, '=', 1)]</field>
     </record>
 
     <record id="rule_fitzone_health_profile_clinic" model="ir.rule">
         <field name="name">Clinic: Health Profiles</field>
-        <field name="model_id" ref="model_fitzone_health_profile"/>
+        <field name="model_id" ref="model_fitzone_health_profile" />
         <field name="domain_force">[('member_id', '!=', False)]</field>
-        <field name="groups" eval="[(4, ref('fitzone.group_fitzone_clinic'))]"/>
+        <field name="groups" eval="[(4, ref('fitzone.group_fitzone_clinic'))]" />
+    </record>
+
+    <!-- Ownership follows the authenticated creator, not an editable reporter. -->
+    <record id="rule_fitzone_injury_trainer_own" model="ir.rule">
+        <field name="name">Trainers: Own Injury Reports</field>
+        <field name="model_id" ref="model_fitzone_injury" />
+        <field name="groups" eval="[(6, 0, [ref('group_fitzone_trainer')])]" />
+        <field name="domain_force">[('create_uid', '=', user.id)]</field>
+    </record>
+
+    <record id="rule_fitzone_injury_clinic_inbox" model="ir.rule">
+        <field name="name">Clinic: Submitted Injury Reports</field>
+        <field name="model_id" ref="model_fitzone_injury" />
+        <field name="groups" eval="[(6, 0, [ref('group_fitzone_clinic')])]" />
+        <field name="domain_force">[('state', 'in', ['submitted', 'processed'])]</field>
+    </record>
+
+    <!-- Global rules intersect with all group rules and cannot be broadened
+         by another group's ACL or record rule. Superuser mode bypasses rules. -->
+    <record id="rule_fitzone_rehabilitation_confidentiality" model="ir.rule">
+        <field name="name">Rehabilitation: Clinic Only</field>
+        <field name="model_id" ref="model_fitzone_rehabilitation" />
+        <field name="groups" eval="[(5, 0, 0)]" />
+        <field name="domain_force">[(user.has_group('fitzone.group_fitzone_clinic') and 1 or 0, '=',
+            1)]</field>
     </record>
 </odoo>

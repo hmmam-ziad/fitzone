@@ -1,4 +1,3 @@
-
 from odoo import api, fields, models
 from odoo.exceptions import ValidationError
 from dateutil.relativedelta import relativedelta
@@ -239,8 +238,7 @@ class Membership(models.Model):
                 'Membership dates are managed automatically by activation.'
             )
 
-        # A draft membership cannot be activated by changing its state
-        # directly; use action_activate instead.
+        # A draft membership cannot be activated by changing its state directly
         if (
             vals.get('state') == 'active'
             and not self.env.context.get('allow_membership_activation')
