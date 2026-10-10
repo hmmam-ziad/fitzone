@@ -52,6 +52,9 @@
 
                 <field name="member_id" />
                 <field name="package_id" />
+                <field name="base_price" />
+                <field name="all_inclusive" />
+                <field name="final_price" />
                 <field name="barcode" />
                 <field name="date_start" />
                 <field name="date_end" />
@@ -77,6 +80,13 @@
 
                 <header>
 
+                    <button
+                        name="action_activate"
+                        type="object"
+                        string="Activate"
+                        class="btn-primary"
+                        invisible="state != 'draft'"
+                    />
                     <!-- Block active membership -->
                     <button
                         name="action_block"
@@ -110,11 +120,26 @@
                             <field name="member_id" />
                             <field name="package_id" />
                             <field name="barcode" />
+                            <field name="base_price" readonly="1" />
+                            <field name="all_inclusive" />
+                            <field name="final_price" readonly="1" />
+                            <field name="package_type" invisible="1"/>
+
+                            <field name="total_sessions"
+                                readonly="1"
+                                invisible="package_type != 'private'"/>
+
+                            <field name="consumed_sessions"
+                                invisible="package_type != 'private'"/>
+
+                            <field name="remaining_sessions"
+                                readonly="1"
+                                invisible="package_type != 'private'"/>
                         </group>
 
                         <group>
-                            <field name="date_start" />
-                            <field name="date_end" />
+                            <field name="date_start" readonly="1" />
+                            <field name="date_end" readonly="1" />
 
                             <field
                                 name="block_reason"
@@ -138,9 +163,6 @@
                         </group>
                     </group>
 
-                    <group>
-                        <field name="all_inclusive" />
-                    </group>
 
                 </sheet>
 
