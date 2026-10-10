@@ -12,6 +12,7 @@ class ResPartner(models.Model):
         'member_id',
         string='Emergency Contacts',
     )
+    class_booking_ids = fields.One2many('fitzone.class.booking', 'member_id', string='Class Bookings',)
 
     membership_ids = fields.One2many(
         'fitzone.membership',
@@ -33,6 +34,28 @@ class ResPartner(models.Model):
     membership_status = fields.Char(
         compute='_compute_membership_status',
     )
+
+    rehabilitation_ids = fields.One2many(
+        'fitzone.rehabilitation', 'member_id', string='Rehabilitation Files',
+    )
+    active_rehab_id = fields.Many2one(
+        'fitzone.rehabilitation', compute='_compute_active_rehab',
+        string='Active Rehabilitation',
+    )
+    prohibited_exercises = fields.Text(
+        related='active_rehab_id.prohibited_exercises', readonly=True,
+    )
+    movement_restrictions = fields.Text(
+        related='active_rehab_id.movement_restrictions', readonly=True,
+    )
+    is_fitzone_member = fields.Boolean(string='FitZone Member', copy=False)
+    
+    @api.depends('rehabilitation_ids', 'rehabilitation_ids.state')
+    def _compute_active_rehab(self):
+        for partner in self:
+            partner.active_rehab_id = partner.rehabilitation_ids.filtered(
+                lambda rehab: rehab.state == 'in_progress'
+            ).sorted('id', reverse=True)[:1]
 
     @api.model_create_multi
     def create(self, vals_list):

@@ -10,6 +10,7 @@ class Membership(models.Model):
     member_id = fields.Many2one(
         'res.partner',
         required=True,
+        domain="[('is_fitzone_member', '=', True)]",
     )
 
     package_id = fields.Many2one(

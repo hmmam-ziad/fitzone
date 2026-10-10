@@ -6,13 +6,15 @@ class PosOrder(models.Model):
 
     @api.model
     def check_member_discount_eligibility(self, membership_no, product_ids):
+        empty = {
+            'eligible': False,
+            'member_name': False,
+            'membership_status': 'Inactive',
+            'eligible_product_ids': [],
+        }
+
         if not membership_no:
-            return {
-                'eligible': False,
-                'member_name': False,
-                'membership_status': 'Inactive',
-                'eligible_product_ids': [],
-            }
+            return empty
 
         Partner = self.env['res.partner'].sudo()
 
@@ -25,28 +27,32 @@ class PosOrder(models.Model):
             membership = self.env['fitzone.membership'].sudo().search([
                 ('barcode', '=', membership_no),
             ], limit=1)
-
             member = membership.member_id if membership else False
 
         if not member:
-            return {
-                'eligible': False,
-                'member_name': False,
-                'membership_status': 'Inactive',
-                'eligible_product_ids': [],
-            }
+            return empty
 
         status = member.membership_status
         eligible_product_ids = []
 
         if status == 'Active':
-            products = self.env['product.product'].sudo().browse(product_ids)
+            # Replace `your_module` with your actual module technical name
+            supplements_categ = self.env.ref(
+                'fitzone.product_category_supplements',
+                raise_if_not_found=False,
+            )
 
-            for product in products:
-                category = product.product_tmpl_id.categ_id
+            if supplements_categ:
+                products = self.env['product.product'].sudo().browse(product_ids)
 
-                if category.name == 'Dietary Supplements':
-                    eligible_product_ids.append(product.id)
+                for product in products:
+                    categ = product.product_tmpl_id.categ_id
+                    # child_of so subcategories also qualify
+                    if categ and (
+                        categ == supplements_categ
+                        or categ.parent_path.startswith(supplements_categ.parent_path)
+                    ):
+                        eligible_product_ids.append(product.id)
 
         return {
             'eligible': status == 'Active',
