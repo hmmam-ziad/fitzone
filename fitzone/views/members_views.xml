@@ -50,6 +50,36 @@
         </field>
     </record>
 
+    <record id="view_partner_form_fitzone_movement_restrictions" model="ir.ui.view">
+        <field name="name">res.partner.form.fitzone.movement.restrictions</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//sheet/notebook" position="before">
+                <div class="alert alert-warning" role="alert"
+                    groups="fitzone.group_fitzone_trainer,fitzone.group_fitzone_clinic">
+                    <group string="Trainer Movement Restrictions">
+                        <field name="prohibited_exercises" readonly="1" />
+                        <field name="movement_restrictions" readonly="1" />
+                    </group>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Members filter on the Contacts search view -->
+    <record id="view_res_partner_search_fitzone" model="ir.ui.view">
+        <field name="name">res.partner.search.fitzone</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_res_partner_filter" />
+        <field name="arch" type="xml">
+            <xpath expr="//search" position="inside">
+                <filter string="Members" name="fitzone_members"
+                    domain="[('is_fitzone_member', '=', True)]" />
+            </xpath>
+        </field>
+    </record>
+
     <!-- ========================================== -->
     <!-- Emergency Contacts Views & Search -->
     <!-- ========================================== -->
@@ -180,7 +210,7 @@
                 <filter string="Trainer" name="group_by_trainer"
                     context="{'group_by': 'trainer_id'}" />
                 <filter string="Record Date" name="group_by_date"
-                    context="{'group_by': 'record_date'}" />
+                    context="{'group_by': 'record_date:month'}" />
             </search>
         </field>
     </record>
