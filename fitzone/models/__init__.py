@@ -35,3 +35,6 @@ from . import checkin_wizard
 from . import staff_availability_wizard
 from . import pos_order
 from . import trainer_commission_wizard
+from . import trainer_schedule  
+from . import trainer_schedule_engine
+

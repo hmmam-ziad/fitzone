@@ -57,6 +57,8 @@
         "views/trainer_commission_wizard_views.xml",
         "report/trainer_commission_statement.xml",
         "views/freeze_views.xml",
+        "views/trainer_schedule_views.xml",
+        "views/trainer_schedule_rules.xml",
         "views/menus.xml",
         "views/inventory_menus.xml",
     ],

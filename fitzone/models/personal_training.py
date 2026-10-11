@@ -122,24 +122,41 @@ class PTSession(models.Model):
                 membership.consumed_sessions += 1
         return True
 
-    @api.constrains('trainer_id', 'session_date', 'end_datetime', 'status')
+    
+    @api.constrains(
+        'trainer_id', 'session_date', 'end_datetime', 'status'
+    )
     def _check_trainer_availability(self):
         for record in self:
             if (
                 not record.trainer_id
                 or not record.session_date
                 or not record.end_datetime
+                or record.status == 'cancelled'
             ):
                 continue
 
-            if record.status == 'cancelled':
-                continue
-
-            if not record.trainer_id.employee_id.is_available_during(
+            if not record.trainer_id.is_available_during(
                 record.session_date,
                 record.end_datetime,
-                exclude_pt_id=record.id,
             ):
                 raise ValidationError(
                     "The trainer is not available during the selected time."
+                )
+
+    @api.constrains(
+        'trainer_id', 'session_date', 'end_datetime', 'state'
+    )
+    def _fz_check_trainer_schedule(self):
+        for rec in self:
+            if (
+                rec.state != 'cancelled'
+                and rec.trainer_id
+                and rec.session_date
+                and rec.end_datetime
+            ):
+                rec.trainer_id._check_available(
+                    rec.session_date,
+                    rec.end_datetime,
+                    exclude=(rec._name, rec.id),
                 )

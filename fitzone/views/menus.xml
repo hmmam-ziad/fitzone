@@ -40,6 +40,15 @@
     <menuitem id="menu_fitzone_checkin" name="Class Check-in" parent="menu_fitzone_classes"
         action="action_fitzone_checkin_wizard" sequence="40" />
 
+        <menuitem id="menu_fitzone_trainer_schedule" name="Shared Trainer Schedule"
+              parent="menu_fitzone_classes"
+              action="action_fitzone_trainer_schedule" sequence="5"/>
+    <menuitem id="menu_fitzone_trainer_workload" name="Trainer Workload"
+              parent="menu_fitzone_classes"
+              action="action_fitzone_trainer_workload"
+              groups="fitzone.group_fitzone_manager" sequence="6"/>
+    
+
     <menuitem id="menu_fitzone_personal_training" name="Personal Training"
         parent="menu_fitzone_root" sequence="60" />
     <menuitem id="menu_fitzone_pt_session" name="PT Sessions"
