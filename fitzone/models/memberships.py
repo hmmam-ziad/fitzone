@@ -1,3 +1,8 @@
+import base64
+import io
+
+from PIL import Image, ImageDraw, ImageFont
+from reportlab.graphics.barcode.code128 import Code128
 from odoo import api, fields, models
 from odoo.exceptions import ValidationError
 from dateutil.relativedelta import relativedelta
@@ -24,6 +29,71 @@ class Membership(models.Model):
     )
 
     barcode = fields.Char()
+    barcode_image = fields.Binary(
+        string='Barcode Image',
+        compute='_compute_barcode_image',
+    )
+
+    @api.depends('barcode')
+    def _compute_barcode_image(self):
+        for membership in self:
+            if not membership.barcode:
+                membership.barcode_image = False
+                continue
+
+            barcode = Code128(membership.barcode)
+            barcode.validate()
+            barcode.encode()
+            pattern = barcode.decompose()
+
+            scale = 3
+            quiet_zone = 30
+            bar_height = 70
+            text_height = 25
+
+            def module_width(char):
+                base = ord('A') if char.isupper() else ord('a')
+                return ord(char) - base + 1
+
+            pattern_width = sum(
+                module_width(char) for char in pattern
+            ) * scale
+
+            image = Image.new(
+                'RGB',
+                (
+                    pattern_width + 2 * quiet_zone,
+                    bar_height + text_height,
+                ),
+                'white',
+            )
+            draw = ImageDraw.Draw(image)
+            x = quiet_zone
+
+            for char in pattern:
+                width = module_width(char) * scale
+                if char.isupper():
+                    draw.rectangle(
+                        (x, 0, x + width - 1, bar_height - 1),
+                        fill='black',
+                    )
+                x += width
+
+            font = ImageFont.load_default()
+            text = membership.barcode
+            text_width = draw.textbbox((0, 0), text, font=font)[2]
+            draw.text(
+                ((image.width - text_width) // 2, bar_height + 4),
+                text,
+                fill='black',
+                font=font,
+            )
+
+            output = io.BytesIO()
+            image.save(output, format='PNG')
+            membership.barcode_image = base64.b64encode(
+                output.getvalue()
+            )
 
     # Dates are assigned when the membership is activated.
     date_start = fields.Date(

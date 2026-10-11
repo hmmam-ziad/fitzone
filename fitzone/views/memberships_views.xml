@@ -160,6 +160,7 @@
                             <field name="member_id" />
                             <field name="package_id" />
                             <field name="barcode" />
+                            <field name="barcode_image" widget="image" string="Membership Barcode" readonly="1" invisible="not barcode" options="{'size': [400, 120]}"/>
                             <field name="base_price" readonly="1" />
                             <field name="all_inclusive" />
                             <field name="final_price" readonly="1" />
