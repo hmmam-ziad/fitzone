@@ -1,0 +1,25 @@
+<odoo>
+    <record id="view_nutrition_consultation_list" model="ir.ui.view">
+        <field name="name">fitzone.nutrition.consultation.list</field>
+        <field name="model">fitzone.nutrition.consultation</field>
+        <field name="arch" type="xml"><list><field name="member_id"/><field name="consult_date"/><field name="nutritionist_id"/></list></field>
+    </record>
+    <record id="view_nutrition_consultation_form" model="ir.ui.view">
+        <field name="name">fitzone.nutrition.consultation.form</field>
+        <field name="model">fitzone.nutrition.consultation</field>
+        <field name="arch" type="xml"><form><sheet><group><field name="member_id"/><field name="consult_date"/><field name="nutritionist_id"/><field name="goal"/><field name="notes"/></group></sheet></form></field>
+    </record>
+    <record id="action_nutrition_consultation" model="ir.actions.act_window">
+        <field name="name">Nutrition Consultations</field><field name="res_model">fitzone.nutrition.consultation</field><field name="view_mode">list,form</field>
+    </record>
+    <menuitem id="menu_nutrition_consultation" name="Nutrition Consultations" parent="menu_fitzone_members" action="action_nutrition_consultation" groups="fitzone.group_fitzone_physiotherapist,fitzone.group_fitzone_nutritionist"/>
+    <record id="view_injury_aggregate_list" model="ir.ui.view">
+        <field name="name">fitzone.injury.aggregate.list</field><field name="model">fitzone.injury.aggregate</field>
+        <field name="arch" type="xml"><list create="0" edit="0" delete="0"><field name="injury_cause"/><field name="sport_type"/><field name="count"/></list></field>
+    </record>
+    <record id="action_injury_aggregate" model="ir.actions.act_window">
+        <field name="name">Injury Statistics</field><field name="res_model">fitzone.injury.aggregate</field><field name="view_mode">list</field>
+    </record>
+    <menuitem id="menu_fitzone_reports" name="Reports" parent="menu_fitzone_root" groups="fitzone.group_fitzone_manager"/>
+    <menuitem id="menu_injury_aggregate" name="Injury Statistics" parent="menu_fitzone_reports" action="action_injury_aggregate" groups="fitzone.group_fitzone_manager"/>
+</odoo>
