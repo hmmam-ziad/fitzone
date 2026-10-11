@@ -38,7 +38,7 @@ class PoolSlot(models.Model):
         default='free_swim',
     )
     active = fields.Boolean(default=True)
-
+  # create the name pool slot
     @api.depends('day_of_week', 'start_time', 'end_time', 'slot_type')
     def _compute_display_name(self):
         days = dict(self._fields['day_of_week'].selection)
@@ -50,7 +50,7 @@ class PoolSlot(models.Model):
                 _hhmm(rec.end_time),
                 types.get(rec.slot_type, ''),
             )
-
+ #check the time 
     @api.constrains('start_time', 'end_time', 'capacity')
     def _check_slot(self):
         for rec in self:

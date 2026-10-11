@@ -56,7 +56,8 @@
                 <field name="member_id"/>
                 <field name="membership_id"/>
                 <field name="pool_slot_id"/>
-                <field name="trainer_id"/>
+                <field name="trainer_id"
+                       column_invisible="context.get('hide_trainer_column', False)"/>
                 <field name="booking_date"/>
                 <field name="status"/>
             </list>
@@ -80,7 +81,10 @@
                         <field name="member_id"/>
                         <field name="membership_id"/>
                         <field name="pool_slot_id"/>
-                        <field name="trainer_id"/>
+                        <field name="pool_slot_id" invisible="1"/>
+                        <field name="trainer_id"
+                               invisible="pool_slot_id.slot_type == 'free_swim'"
+                               required="pool_slot_id.slot_type in ['lesson', 'private_pt']"/>
                         <field name="booking_date"/>
                         <field name="status"/>
                     </group>

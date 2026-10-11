@@ -1,4 +1,3 @@
-
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
@@ -24,7 +23,8 @@ class PoolBooking(models.Model):
     )
     trainer_id = fields.Many2one(
         'fitzone.trainer',
-        help="Only for Private Session slots.",
+        string='Trainer',
+        help="Required for Group and Private Sessions; not used for Free Swim.",
     )
     booking_date = fields.Datetime(
         default=fields.Datetime.now,
@@ -49,21 +49,19 @@ class PoolBooking(models.Model):
     @api.constrains('trainer_id', 'pool_slot_id')
     def _check_trainer(self):
         for rec in self:
-            is_private = (
-                rec.pool_slot_id.slot_type == 'private_pt'
-            )
+            if not rec.pool_slot_id:
+                continue
 
-            if is_private and not rec.trainer_id:
+            slot_type = rec.pool_slot_id.slot_type
+
+            if slot_type in ('lesson', 'private_pt') and not rec.trainer_id:
                 raise ValidationError(
-                    _("A private session needs a trainer.")
+                    _("A trainer is required for Group and Private Sessions.")
                 )
 
-            if not is_private and rec.trainer_id:
+            if slot_type == 'free_swim' and rec.trainer_id:
                 raise ValidationError(
-                    _(
-                        "A trainer can only be set on "
-                        "Private Session slots."
-                    )
+                    _("Free Swim bookings must not have a trainer.")
                 )
 
     @api.constrains('member_id')
@@ -126,6 +124,8 @@ class PoolBooking(models.Model):
                     )
                 )
 
+    
+    
     @api.constrains(
         'member_id', 'pool_slot_id', 'booking_date', 'status'
     )
@@ -134,14 +134,9 @@ class PoolBooking(models.Model):
             if (
                 not rec.member_id
                 or not rec.pool_slot_id
-                or not rec.booking_date
                 or rec.status == 'cancelled'
             ):
                 continue
-
-            booking_day = fields.Datetime.to_datetime(
-                rec.booking_date
-            ).date()
 
             duplicates = self.search([
                 ('id', '!=', rec.id),
@@ -150,18 +145,10 @@ class PoolBooking(models.Model):
                 ('status', '!=', 'cancelled'),
             ])
 
-            for booking in duplicates:
-                if not booking.booking_date:
-                    continue
-
-                existing_day = fields.Datetime.to_datetime(
-                    booking.booking_date
-                ).date()
-
-                if existing_day == booking_day:
-                    raise ValidationError(
-                        _(
-                            "This member already has a booking "
-                            "for the same pool slot on this date."
-                        )
+            if duplicates:
+                raise ValidationError(
+                    _(
+                        "You have already booked this pool slot. "
+                        "Duplicate bookings are not allowed."
                     )
+                )
