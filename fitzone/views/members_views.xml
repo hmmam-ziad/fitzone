@@ -1,24 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
+    <record id="action_fitzone_members" model="ir.actions.act_window">
+        <field name="name">Members</field>
+        <field name="res_model">res.partner</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('is_fitzone_member', '=', True)]</field>
+    </record>
+
     <!-- Member fields on the contact form (res.partner) -->
     <record id="view_partner_form_fitzone" model="ir.ui.view">
         <field name="name">res.partner.form.fitzone</field>
         <field name="model">res.partner</field>
         <field name="inherit_id" ref="base.view_partner_form" />
         <field name="arch" type="xml">
+            <!-- Salesperson defaults cannot refer to a server-restricted field. -->
+            <xpath expr="//field[@name='parent_id']" position="attributes">
+                <attribute name="context">{'default_is_company': True, 'show_address': False}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='child_ids']" position="attributes">
+                <attribute name="context">{'default_parent_id': id, 'default_street': street, 'default_street2': street2, 'default_city': city, 'default_state_id': state_id, 'default_zip': zip, 'default_country_id': country_id, 'default_lang': lang, 'default_type': is_company and 'contact' or 'other'}</attribute>
+            </xpath>
+            <xpath expr="//chatter" position="attributes">
+                <attribute name="groups">fitzone.group_fitzone_manager,fitzone.group_fitzone_reception</attribute>
+            </xpath>
             <xpath expr="//notebook" position="inside">
                 <page string="FitZone Member">
 
+                    <button name="action_report_incident" type="object" string="Report incident" groups="fitzone.group_fitzone_trainer"/>
                     <group string="Basic Information">
                         <field name="is_fitzone_member" />
                         <field name="membership_no" readonly="1" />
                         <field name="birth_date" />
                     </group>
 
-                    <separator string="Emergency Contacts" />
+                    <separator string="Emergency Contacts" groups="fitzone.group_fitzone_manager,fitzone.group_fitzone_reception" />
 
-                    <field name="emergency_contact_ids">
+                    <field name="emergency_contact_ids" groups="fitzone.group_fitzone_manager,fitzone.group_fitzone_reception">
                         <list editable="bottom">
                             <field name="name" />
                             <field name="phone" />
@@ -26,16 +44,26 @@
                         </list>
                     </field>
 
-                    <separator string="Memberships" />
+                    <separator string="Memberships" groups="fitzone.group_fitzone_manager,fitzone.group_fitzone_reception,fitzone.group_fitzone_trainer,fitzone.group_fitzone_physiotherapist,fitzone.group_fitzone_nutritionist" />
 
-                    <field name="membership_ids">
+                    <field name="membership_ids" groups="fitzone.group_fitzone_manager,fitzone.group_fitzone_reception,fitzone.group_fitzone_trainer,fitzone.group_fitzone_physiotherapist,fitzone.group_fitzone_nutritionist">
                         <list>
                             <field name="package_id" />
                             <field name="barcode" />
                         </list>
                     </field>
 
-                    <separator string="Health &amp; Nutrition" />
+                </page>
+                <page name="fitzone_training_progress" string="Training plan / progress / sports notes" groups="fitzone.group_fitzone_manager,fitzone.group_fitzone_trainer">
+                    <field name="progress_ids" context="{'default_member_id': id}"><list><field name="trainer_id"/><field name="record_date"/><field name="weight"/><field name="notes"/></list></field>
+                </page>
+                <page name="fitzone_visits" string="Visit history" groups="fitzone.group_fitzone_manager,fitzone.group_fitzone_reception,fitzone.group_fitzone_trainer">
+                    <field name="visit_ids" readonly="1"><list create="0" edit="0" delete="0"><field name="visit_date"/><field name="status"/></list></field>
+                </page>
+                <page name="fitzone_restrictions" string="Injury restrictions &amp; forbidden movements" groups="fitzone.group_fitzone_physiotherapist,fitzone.group_fitzone_trainer">
+                    <field name="prohibited_exercises"/><field name="movement_restrictions"/>
+                </page>
+                <page name="fitzone_health_nutrition" string="Health &amp; Nutrition" groups="fitzone.group_fitzone_physiotherapist,fitzone.group_fitzone_nutritionist">
 
                     <field name="health_profile_ids">
                         <list>
@@ -44,7 +72,6 @@
                             <field name="height" />
                         </list>
                     </field>
-
                 </page>
             </xpath>
         </field>
@@ -57,7 +84,7 @@
         <field name="arch" type="xml">
             <xpath expr="//sheet/notebook" position="before">
                 <div class="alert alert-warning" role="alert"
-                    groups="fitzone.group_fitzone_trainer,fitzone.group_fitzone_clinic">
+                    groups="fitzone.group_fitzone_physiotherapist,fitzone.group_fitzone_trainer">
                     <group string="Trainer Movement Restrictions">
                         <field name="prohibited_exercises" readonly="1" />
                         <field name="movement_restrictions" readonly="1" />
@@ -255,4 +282,56 @@
         <field name="search_view_id" ref="view_fitzone_progress_tracking_search" />
     </record>
 
+    <record id="view_partner_search_chatter_fitzone" model="ir.ui.view">
+        <field name="name">res.partner.search.chatter.fitzone</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="mail.res_partner_view_search_inherit_mail"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='filter_activities_my']" position="attributes">
+                <attribute name="groups">fitzone.group_fitzone_manager,fitzone.group_fitzone_reception</attribute>
+            </xpath>
+            <xpath expr="//filter[@name='activities_overdue']" position="attributes">
+                <attribute name="groups">fitzone.group_fitzone_manager,fitzone.group_fitzone_reception</attribute>
+            </xpath>
+            <xpath expr="//filter[@name='activities_today']" position="attributes">
+                <attribute name="groups">fitzone.group_fitzone_manager,fitzone.group_fitzone_reception</attribute>
+            </xpath>
+            <xpath expr="//filter[@name='activities_upcoming_all']" position="attributes">
+                <attribute name="groups">fitzone.group_fitzone_manager,fitzone.group_fitzone_reception</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Statistics invoke cross-addon computes, including calendar meeting_count.
+         Keep them out of restricted clients before their field specs are built. -->
+    <record id="view_partner_calendar_buttons_fitzone" model="ir.ui.view">
+        <field name="name">res.partner.calendar.buttons.fitzone</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="calendar.view_partners_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='schedule_meeting']" position="attributes">
+                <attribute name="groups">fitzone.group_fitzone_manager,fitzone.group_fitzone_reception,fitzone.group_fitzone_sales,fitzone.group_fitzone_physiotherapist,fitzone.group_fitzone_nutritionist</attribute>
+            </xpath>
+        </field>
+    </record>
+    <record id="view_partner_list_statistics_fitzone" model="ir.ui.view">
+        <field name="name">res.partner.list.statistics.fitzone</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='application_statistics']" position="attributes">
+                <attribute name="groups">fitzone.group_fitzone_manager,fitzone.group_fitzone_reception</attribute>
+            </xpath>
+        </field>
+    </record>
+    <record id="view_partner_kanban_statistics_fitzone" model="ir.ui.view">
+        <field name="name">res.partner.kanban.statistics.fitzone</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.res_partner_kanban_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='application_statistics']" position="attributes">
+                <attribute name="groups">fitzone.group_fitzone_manager,fitzone.group_fitzone_reception</attribute>
+            </xpath>
+        </field>
+    </record>
 </odoo>

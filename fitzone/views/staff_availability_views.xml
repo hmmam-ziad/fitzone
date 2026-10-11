@@ -30,6 +30,7 @@
         <field name="res_model">fitzone.staff.availability.wizard</field>
         <field name="view_mode">form</field>
         <field name="target">new</field>
+        <field name="group_ids" eval="[(6, 0, [ref('fitzone.group_fitzone_manager')])]"/>
     </record>
 
 </odoo>

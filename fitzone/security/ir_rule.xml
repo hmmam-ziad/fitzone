@@ -13,8 +13,8 @@
         <field name="model_id" ref="base.model_res_partner" />
         <field name="domain_force">[
             '|', '|', '|',
+            ('class_booking_ids', 'any', [('class_id.trainer_id.employee_id.user_id', '=', user.id), ('status', '!=', 'cancelled')]),
             ('pt_session_ids.trainer_id.employee_id.user_id', '=', user.id),
-            ('class_booking_ids.class_id.trainer_id.employee_id.user_id', '=', user.id),
             ('id', '=', user.partner_id.id),
             ('id', '=', user.company_id.partner_id.id)
             ]</field>
@@ -44,7 +44,7 @@
         <field name="groups" eval="[(5, 0, 0)]" />
         <field name="domain_force">['|', ('trainer_id.employee_id.user_id', '=', user.id), ((not
             user.has_group('fitzone.group_fitzone_trainer') or
-            user.has_group('fitzone.group_fitzone_manager')) and 1 or 0, '=', 1)]</field>
+            any(user.has_group('fitzone.group_fitzone_' + role) for role in ('manager', 'reception'))) and 1 or 0, '=', 1)]</field>
     </record>
 
     <record id="rule_fitzone_partner_trainer_ceiling" model="ir.rule">
@@ -52,19 +52,21 @@
         <field name="model_id" ref="base.model_res_partner" />
         <field name="groups" eval="[(5, 0, 0)]" />
         <field name="domain_force">['|', '|', '|', '|',
+            ('class_booking_ids', 'any', [('class_id.trainer_id.employee_id.user_id', '=', user.id), ('status', '!=', 'cancelled')]),
             ('pt_session_ids.trainer_id.employee_id.user_id', '=', user.id),
-            ('class_booking_ids.class_id.trainer_id.employee_id.user_id', '=', user.id),
             ('id', '=', user.partner_id.id),
             ('id', '=', user.company_id.partner_id.id),
             ((not user.has_group('fitzone.group_fitzone_trainer') or
-            user.has_group('fitzone.group_fitzone_manager')) and 1 or 0, '=', 1)]</field>
+            any(user.has_group('fitzone.group_fitzone_' + role) for role in ('manager', 'reception', 'physiotherapist', 'nutritionist'))) and 1 or 0, '=', 1)]</field>
     </record>
 
     <record id="rule_fitzone_health_profile_clinic" model="ir.rule">
         <field name="name">Clinic: Health Profiles</field>
         <field name="model_id" ref="model_fitzone_health_profile" />
         <field name="domain_force">[('member_id', '!=', False)]</field>
-        <field name="groups" eval="[(4, ref('fitzone.group_fitzone_clinic'))]" />
+        <field name="groups" eval="[(6, 0, [ref('fitzone.group_fitzone_physiotherapist'), ref('fitzone.group_fitzone_nutritionist')])]" />
+        <field name="perm_write" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
     </record>
 
     <!-- Ownership follows the authenticated creator, not an editable reporter. -->
@@ -78,7 +80,7 @@
     <record id="rule_fitzone_injury_clinic_inbox" model="ir.rule">
         <field name="name">Clinic: Submitted Injury Reports</field>
         <field name="model_id" ref="model_fitzone_injury" />
-        <field name="groups" eval="[(6, 0, [ref('group_fitzone_clinic')])]" />
+        <field name="groups" eval="[(6, 0, [ref('group_fitzone_physiotherapist')])]" />
         <field name="domain_force">[('state', 'in', ['submitted', 'processed'])]</field>
     </record>
 
@@ -88,7 +90,145 @@
         <field name="name">Rehabilitation: Clinic Only</field>
         <field name="model_id" ref="model_fitzone_rehabilitation" />
         <field name="groups" eval="[(5, 0, 0)]" />
-        <field name="domain_force">[(user.has_group('fitzone.group_fitzone_clinic') and 1 or 0, '=',
+        <field name="domain_force">[(user.has_group('fitzone.group_fitzone_physiotherapist') and 1 or 0, '=',
             1)]</field>
+    </record>
+    <record id="rule_health_assessment_author" model="ir.rule">
+        <field name="name">Health assessments: edit own, shared read</field>
+        <field name="model_id" ref="model_fitzone_health_profile"/>
+        <field name="groups" eval="[(6, 0, [ref('group_fitzone_physiotherapist'), ref('group_fitzone_nutritionist')])]"/>
+        <field name="domain_force">[('create_uid', '=', user.id)]</field>
+        <field name="perm_read" eval="False"/>
+        <field name="perm_create" eval="False"/>
+    </record>
+    <record id="rule_partner_reception" model="ir.rule">
+        <field name="name">Reception: registration and invoice partners</field>
+        <field name="model_id" ref="base.model_res_partner"/>
+        <field name="groups" eval="[(6, 0, [ref('group_fitzone_reception')])]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+    <record id="rule_partner_sales" model="ir.rule">
+        <field name="name">Sales: non-member partners and self</field>
+        <field name="model_id" ref="base.model_res_partner"/>
+        <field name="groups" eval="[(6, 0, [ref('group_fitzone_sales')])]"/>
+        <field name="domain_force">['|', ('id', '=', user.partner_id.id), ('id', 'not in', user.env['res.partner']._sales_hidden_partner_ids())] if user.has_group('fitzone.group_fitzone_sales') and not any(user.has_group('fitzone.group_fitzone_' + role) for role in ('manager', 'reception', 'trainer', 'physiotherapist', 'nutritionist')) else [(1, '=', 1)]</field>
+    </record>
+    <record id="rule_partner_sales_ceiling" model="ir.rule">
+        <field name="name">Sales isolation ceiling (role union)</field>
+        <field name="model_id" ref="base.model_res_partner"/>
+        <field name="domain_force">['|', ('id', '=', user.partner_id.id), ('id', 'not in', user.env['res.partner']._sales_hidden_partner_ids())] if user.has_group('fitzone.group_fitzone_sales') and not any(user.has_group('fitzone.group_fitzone_' + role) for role in ('manager', 'reception', 'trainer', 'physiotherapist', 'nutritionist')) else [(1, '=', 1)]</field>
+    </record>
+    <record id="rule_phase4_pt_session" model="ir.rule">
+        <field name="name">Phase 4: pt.session scope</field>
+        <field name="model_id" ref="model_fitzone_pt_session"/>
+        <field name="groups" eval="[(6, 0, [ref('group_fitzone_reception')])]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+    <record id="rule_phase4_membership" model="ir.rule">
+        <field name="name">Phase 4: membership scope</field>
+        <field name="model_id" ref="model_fitzone_membership"/>
+        <field name="groups" eval="[(6, 0, [ref('group_fitzone_trainer')])]"/>
+        <field name="domain_force">['|', ('member_id.pt_session_ids.trainer_id.employee_id.user_id', '=', user.id), ('member_id.class_booking_ids', 'any', [('class_id.trainer_id.employee_id.user_id', '=', user.id), ('status', '!=', 'cancelled')])]</field>
+    </record>
+    <record id="rule_phase4_visit" model="ir.rule">
+        <field name="name">Phase 4: visit scope</field>
+        <field name="model_id" ref="model_fitzone_visit"/>
+        <field name="groups" eval="[(6, 0, [ref('group_fitzone_trainer')])]"/>
+        <field name="domain_force">['|', ('member_id.pt_session_ids.trainer_id.employee_id.user_id', '=', user.id), ('member_id.class_booking_ids', 'any', [('class_id.trainer_id.employee_id.user_id', '=', user.id), ('status', '!=', 'cancelled')])]</field>
+    </record>
+    <record id="rule_phase4_class_booking" model="ir.rule">
+        <field name="name">Phase 4: class.booking scope</field>
+        <field name="model_id" ref="model_fitzone_class_booking"/>
+        <field name="groups" eval="[(6, 0, [ref('group_fitzone_trainer')])]"/>
+        <field name="domain_force">[('class_id.trainer_id.employee_id.user_id', '=', user.id)]</field>
+    </record>
+    <record id="rule_phase4_attendance" model="ir.rule">
+        <field name="name">Phase 4: attendance scope</field>
+        <field name="model_id" ref="model_fitzone_attendance"/>
+        <field name="groups" eval="[(6, 0, [ref('group_fitzone_trainer')])]"/>
+        <field name="domain_force">[('booking_id.class_id.trainer_id.employee_id.user_id', '=', user.id)]</field>
+    </record>
+    <record id="rule_phase4_pool_booking" model="ir.rule">
+        <field name="name">Phase 4: pool.booking scope</field>
+        <field name="model_id" ref="model_fitzone_pool_booking"/>
+        <field name="groups" eval="[(6, 0, [ref('group_fitzone_trainer')])]"/>
+        <field name="domain_force">[('trainer_id.employee_id.user_id', '=', user.id)]</field>
+    </record>
+    <record id="rule_phase4_progress_tracking" model="ir.rule">
+        <field name="name">Phase 4: progress.tracking scope</field>
+        <field name="model_id" ref="model_fitzone_progress_tracking"/>
+        <field name="groups" eval="[(6, 0, [ref('group_fitzone_trainer')])]"/>
+        <field name="domain_force">[('trainer_id.employee_id.user_id', '=', user.id), ('member_id.pt_session_ids.trainer_id.employee_id.user_id', '=', user.id)]</field>
+    </record>
+    <record id="rule_phase4_injury_type" model="ir.rule">
+        <field name="name">Phase 4: injury.type scope</field>
+        <field name="model_id" ref="model_fitzone_injury_type"/>
+        <field name="groups" eval="[(6, 0, [ref('group_fitzone_trainer')])]"/>
+        <field name="domain_force">['|', ('member_id.pt_session_ids.trainer_id.employee_id.user_id', '=', user.id), ('member_id.class_booking_ids', 'any', [('class_id.trainer_id.employee_id.user_id', '=', user.id), ('status', '!=', 'cancelled')])]</field>
+    </record>
+    <record id="rule_phase4_membership_other_roles" model="ir.rule">
+        <field name="name">Phase 4: membership other authorized roles</field>
+        <field name="model_id" ref="model_fitzone_membership"/>
+        <field name="groups" eval="[(6, 0, [ref('group_fitzone_manager'), ref('group_fitzone_reception'), ref('group_fitzone_physiotherapist'), ref('group_fitzone_nutritionist')])]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+    <record id="rule_phase4_visit_other_roles" model="ir.rule">
+        <field name="name">Phase 4: visit other authorized roles</field>
+        <field name="model_id" ref="model_fitzone_visit"/>
+        <field name="groups" eval="[(6, 0, [ref('group_fitzone_manager'), ref('group_fitzone_reception')])]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+    <record id="rule_phase4_class_booking_other_roles" model="ir.rule">
+        <field name="name">Phase 4: class.booking other authorized roles</field>
+        <field name="model_id" ref="model_fitzone_class_booking"/>
+        <field name="groups" eval="[(6, 0, [ref('group_fitzone_manager'), ref('group_fitzone_reception')])]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+    <record id="rule_phase4_attendance_other_roles" model="ir.rule">
+        <field name="name">Phase 4: attendance other authorized roles</field>
+        <field name="model_id" ref="model_fitzone_attendance"/>
+        <field name="groups" eval="[(6, 0, [ref('group_fitzone_manager')])]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+    <record id="rule_phase4_pool_booking_other_roles" model="ir.rule">
+        <field name="name">Phase 4: pool.booking other authorized roles</field>
+        <field name="model_id" ref="model_fitzone_pool_booking"/>
+        <field name="groups" eval="[(6, 0, [ref('group_fitzone_manager'), ref('group_fitzone_reception')])]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+    <record id="rule_phase4_progress_tracking_other_roles" model="ir.rule">
+        <field name="name">Phase 4: progress.tracking other authorized roles</field>
+        <field name="model_id" ref="model_fitzone_progress_tracking"/>
+        <field name="groups" eval="[(6, 0, [ref('group_fitzone_manager')])]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+    <record id="rule_phase4_injury_type_other_roles" model="ir.rule">
+        <field name="name">Phase 4: injury.type other authorized roles</field>
+        <field name="model_id" ref="model_fitzone_injury_type"/>
+        <field name="groups" eval="[(6, 0, [ref('group_fitzone_physiotherapist')])]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+    <record id="rule_attendance_reception_read" model="ir.rule">
+        <field name="name">Reception: attendance read only</field>
+        <field name="model_id" ref="model_fitzone_attendance"/>
+        <field name="groups" eval="[(6, 0, [ref('group_fitzone_reception')])]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="perm_write" eval="False"/><field name="perm_create" eval="False"/><field name="perm_unlink" eval="False"/>
+    </record>
+    <record id="rule_partner_medical_read" model="ir.rule">
+        <field name="name">Medical roles: member list read</field><field name="model_id" ref="base.model_res_partner"/>
+        <field name="groups" eval="[(6, 0, [ref('group_fitzone_physiotherapist'), ref('group_fitzone_nutritionist')])]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="perm_write" eval="False"/><field name="perm_create" eval="False"/><field name="perm_unlink" eval="False"/>
+    </record>
+    <record id="rule_trainer_product_pricelist_ceiling" model="ir.rule">
+        <field name="name">Trainer: no pricing records</field>
+        <field name="model_id" ref="product.model_product_pricelist"/>
+        <field name="domain_force">[(0, '=', 1)] if user.has_group('fitzone.group_fitzone_trainer') and not any(user.has_group('fitzone.group_fitzone_' + role) for role in ('manager', 'reception', 'sales', 'physiotherapist', 'nutritionist')) else [(1, '=', 1)]</field>
+    </record>
+    <record id="rule_trainer_product_pricelist_item_ceiling" model="ir.rule">
+        <field name="name">Trainer: no pricing records</field>
+        <field name="model_id" ref="product.model_product_pricelist_item"/>
+        <field name="domain_force">[(0, '=', 1)] if user.has_group('fitzone.group_fitzone_trainer') and not any(user.has_group('fitzone.group_fitzone_' + role) for role in ('manager', 'reception', 'sales', 'physiotherapist', 'nutritionist')) else [(1, '=', 1)]</field>
     </record>
 </odoo>

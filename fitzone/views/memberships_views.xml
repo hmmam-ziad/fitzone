@@ -135,15 +135,6 @@
                         invisible="state != 'active'"
                     />
 
-                    <!-- Unblock blocked membership -->
-                    <button
-                        name="action_unblock"
-                        type="object"
-                        string="Unblock"
-                        class="btn-primary"
-                        invisible="state != 'blocked'"
-                    />
-
                     <field
                         name="state"
                         widget="statusbar"

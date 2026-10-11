@@ -1,5 +1,5 @@
 from odoo import api, fields, models
-from odoo.exceptions import ValidationError
+from odoo.exceptions import AccessError, ValidationError
 from dateutil.relativedelta import relativedelta
 
 
@@ -11,6 +11,7 @@ class Membership(models.Model):
     member_id = fields.Many2one(
         'res.partner',
         required=True,
+        domain=[('is_fitzone_member', '=', True)]
     )
 
     package_id = fields.Many2one(
@@ -51,7 +52,7 @@ class Membership(models.Model):
         copy=False,
     )
 
-    block_reason = fields.Char()
+    block_reason = fields.Char(groups='fitzone.group_fitzone_manager,fitzone.group_fitzone_reception,fitzone.group_fitzone_physiotherapist,fitzone.group_fitzone_nutritionist', )
 
     total_sessions = fields.Integer(
         string='Total PT Sessions',
@@ -87,12 +88,14 @@ class Membership(models.Model):
     )
 
     base_price = fields.Float(
+        groups='fitzone.group_fitzone_manager,fitzone.group_fitzone_reception,fitzone.group_fitzone_physiotherapist,fitzone.group_fitzone_nutritionist',
         string='Base Price',
         related='package_id.list_price',
         readonly=True,
     )
 
     final_price = fields.Float(
+        groups='fitzone.group_fitzone_manager,fitzone.group_fitzone_reception,fitzone.group_fitzone_physiotherapist,fitzone.group_fitzone_nutritionist',
         string='Final Price',
         compute='_compute_final_price',
         store=True,
@@ -107,37 +110,37 @@ class Membership(models.Model):
                 else membership.base_price
             )
 
-    physio_sessions_consumed = fields.Integer(
+    physio_sessions_consumed = fields.Integer(groups='fitzone.group_fitzone_manager,fitzone.group_fitzone_reception,fitzone.group_fitzone_physiotherapist,fitzone.group_fitzone_nutritionist',
         string='Physiotherapy Sessions Consumed',
         default=0,
         copy=False,
     )
 
-    physio_sessions_total = fields.Integer(
+    physio_sessions_total = fields.Integer(groups='fitzone.group_fitzone_manager,fitzone.group_fitzone_reception,fitzone.group_fitzone_physiotherapist,fitzone.group_fitzone_nutritionist',
         string='Total Physiotherapy Sessions',
         compute='_compute_medical_credits',
         store=True,
     )
 
-    physio_sessions_remaining = fields.Integer(
+    physio_sessions_remaining = fields.Integer(groups='fitzone.group_fitzone_manager,fitzone.group_fitzone_reception,fitzone.group_fitzone_physiotherapist,fitzone.group_fitzone_nutritionist',
         string='Remaining Physiotherapy Sessions',
         compute='_compute_medical_credits',
         store=True,
     )
 
-    nutrition_sessions_consumed = fields.Integer(
+    nutrition_sessions_consumed = fields.Integer(groups='fitzone.group_fitzone_manager,fitzone.group_fitzone_reception,fitzone.group_fitzone_physiotherapist,fitzone.group_fitzone_nutritionist',
         string='Nutrition Consultations Consumed',
         default=0,
         copy=False,
     )
 
-    nutrition_sessions_total = fields.Integer(
+    nutrition_sessions_total = fields.Integer(groups='fitzone.group_fitzone_manager,fitzone.group_fitzone_reception,fitzone.group_fitzone_physiotherapist,fitzone.group_fitzone_nutritionist',
         string='Total Nutrition Consultations',
         compute='_compute_medical_credits',
         store=True,
     )
 
-    nutrition_sessions_remaining = fields.Integer(
+    nutrition_sessions_remaining = fields.Integer(groups='fitzone.group_fitzone_manager,fitzone.group_fitzone_reception,fitzone.group_fitzone_physiotherapist,fitzone.group_fitzone_nutritionist',
         string='Remaining Nutrition Consultations',
         compute='_compute_medical_credits',
         store=True,
@@ -189,11 +192,7 @@ class Membership(models.Model):
             if member_id:
                 member = self.env['res.partner'].browse(member_id)
                 if member.exists() and not member.membership_no:
-                    member.membership_no = (
-                        self.env['ir.sequence'].next_by_code(
-                            'fitzone.member'
-                        )
-                    )
+                    member._assign_membership_number()
 
             # A draft membership has no activation dates.
             if vals.get('state', 'draft') == 'draft':
@@ -324,26 +323,7 @@ class Membership(models.Model):
         })
 
     def action_unblock(self):
-        today = fields.Date.context_today(self)
-
-        for membership in self:
-            if not membership.date_start or not membership.date_end:
-                raise ValidationError(
-                    'This membership has no activation dates.'
-                )
-
-            if membership.date_end < today:
-                membership.write({
-                    'state': 'expired',
-                    'block_reason': False,
-                })
-            else:
-                membership.with_context(
-                    allow_membership_activation=True,
-                ).write({
-                    'state': 'active',
-                    'block_reason': False,
-                })
+        raise AccessError('Auto-Block cannot be overridden manually.')
 
     @api.model
     def action_expire_memberships(self):

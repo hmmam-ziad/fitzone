@@ -27,7 +27,6 @@
         "data/payment_methods.xml",
         "data/maintenance_data.xml",
         "data/product_category_data.xml",
-        "data/product_categories.xml",
         "data/membership_packages.xml",
         "data/inventory_data.xml",
         "data/employee_sequence.xml",
@@ -59,6 +58,7 @@
         "report/trainer_commission_statement.xml",
         "views/menus.xml",
         "views/inventory_menus.xml",
+        "views/medical_security_views.xml",
     ],
     "assets": {
         "point_of_sale._assets_pos": [

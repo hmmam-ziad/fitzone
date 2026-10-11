@@ -26,10 +26,10 @@
                             class="btn-primary" invisible="state != 'draft'"/>
                     <button name="action_approve" string="Approve" type="object"
                             class="btn-primary" invisible="state != 'to_approve'"
-                            groups="purchase.group_purchase_manager"/>
+                            groups="purchase.group_purchase_manager,fitzone.group_fitzone_manager"/>
                     <button name="action_reject" string="Reject" type="object"
                             invisible="state != 'to_approve'"
-                            groups="purchase.group_purchase_manager"/>
+                            groups="purchase.group_purchase_manager,fitzone.group_fitzone_manager"/>
                     <button name="action_create_rfq" string="Create RFQ" type="object"
                             class="btn-primary" invisible="state != 'approved'"
                             groups="purchase.group_purchase_user"/>

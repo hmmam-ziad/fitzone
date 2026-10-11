@@ -116,6 +116,11 @@
         <field name="model">fitzone.gym.class</field>
         <field name="arch" type="xml">
             <form>
+                <header>
+                    <button name="action_attendance" type="object" string="Class attendance"
+                        class="oe_highlight"
+                        groups="fitzone.group_fitzone_manager,fitzone.group_fitzone_reception,fitzone.group_fitzone_trainer" />
+                </header>
                 <sheet>
                     <div class="alert alert-warning" role="alert"
                         invisible="alert_level != 'near_full'"> Almost full: only <field
@@ -165,7 +170,10 @@
         <field name="model">fitzone.class.booking</field>
         <field name="arch" type="xml">
             <search>
-                <field name="member_id" />
+                <field name="member_id"
+                    groups="fitzone.group_fitzone_manager,fitzone.group_fitzone_reception" />
+                <field name="member_name" />
+                <field name="membership_number" />
                 <field name="class_id" />
                 <field name="membership_id" />
                 <field name="booking_date" />
@@ -177,7 +185,8 @@
                 <filter string="Cancelled" name="filter_cancelled"
                     domain="[('status', '=', 'cancelled')]" />
                 <separator />
-                <filter string="Member" name="group_by_member"
+                <filter groups="fitzone.group_fitzone_manager,fitzone.group_fitzone_reception"
+                    string="Member" name="group_by_member"
                     context="{'group_by': 'member_id'}" />
                 <filter string="Class" name="group_by_class"
                     context="{'group_by': 'class_id'}" />
@@ -195,7 +204,10 @@
         <field name="arch" type="xml">
             <list decoration-muted="status == 'cancelled'"
                 decoration-success="status == 'attended'">
-                <field name="member_id" />
+                <field name="member_id"
+                    groups="fitzone.group_fitzone_manager,fitzone.group_fitzone_reception" />
+                <field name="member_name" />
+                <field name="membership_number" />
                 <field name="membership_id" />
                 <field name="class_id" />
                 <field name="booking_date" />
@@ -219,6 +231,8 @@
                 <sheet>
                     <group>
                         <field name="member_id" readonly="id" />
+                        <field name="member_name" />
+                        <field name="membership_number" />
                         <field name="class_id" readonly="id" />
                         <field name="membership_id" />
                         <field name="booking_date" />
@@ -244,14 +258,19 @@
         <field name="model">fitzone.attendance</field>
         <field name="arch" type="xml">
             <search>
-                <field name="booking_id" />
+                <field name="booking_id"
+                    groups="fitzone.group_fitzone_manager,fitzone.group_fitzone_reception" />
+                <field name="class_id" />
+                <field name="member_name" />
+                <field name="membership_number" />
                 <separator />
                 <filter string="Attended" name="filter_attended"
                     domain="[('attended', '=', True)]" />
                 <filter string="Absent" name="filter_absent"
                     domain="[('attended', '=', False)]" />
                 <separator />
-                <filter string="Booking" name="group_by_booking"
+                <filter groups="fitzone.group_fitzone_manager,fitzone.group_fitzone_reception"
+                    string="Booking" name="group_by_booking"
                     context="{'group_by': 'booking_id'}" />
                 <filter string="Attended" name="group_by_attended"
                     context="{'group_by': 'attended'}" />
@@ -263,9 +282,20 @@
         <field name="name">fitzone.attendance.list</field>
         <field name="model">fitzone.attendance</field>
         <field name="arch" type="xml">
-            <list>
-                <field name="booking_id" />
+            <list decoration-warning="safe_restrictions">
+                <field name="booking_id"
+                    groups="fitzone.group_fitzone_manager,fitzone.group_fitzone_reception" />
+                <field name="class_id" />
+                <field name="member_name" />
+                <field name="membership_number" />
+                <field name="safe_restrictions" readonly="1" />
                 <field name="attended" />
+                <button name="action_report_incident" type="object"
+                    string="Report incident — restrictions" icon="fa-exclamation-triangle"
+                    class="text-warning" invisible="not safe_restrictions"
+                    groups="fitzone.group_fitzone_trainer" />
+                <button name="action_report_incident" type="object" string="Report incident"
+                    invisible="safe_restrictions" groups="fitzone.group_fitzone_trainer" />
             </list>
         </field>
     </record>
@@ -277,8 +307,19 @@
             <form>
                 <sheet>
                     <group>
-                        <field name="booking_id" />
+                        <field name="booking_id"
+                            groups="fitzone.group_fitzone_manager,fitzone.group_fitzone_reception" />
+                        <field name="class_id" />
+                        <field name="member_name" />
+                        <field name="membership_number" />
+                        <field name="safe_restrictions" readonly="1" />
                         <field name="attended" />
+                        <button name="action_report_incident" type="object"
+                            string="Report incident — restrictions" icon="fa-exclamation-triangle"
+                            class="text-warning" invisible="not safe_restrictions"
+                            groups="fitzone.group_fitzone_trainer" />
+                        <button name="action_report_incident" type="object" string="Report incident"
+                            invisible="safe_restrictions" groups="fitzone.group_fitzone_trainer" />
                     </group>
                 </sheet>
             </form>
