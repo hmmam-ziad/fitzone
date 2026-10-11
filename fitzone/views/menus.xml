@@ -16,6 +16,9 @@
         action="action_fitzone_membership" sequence="10" />
     <menuitem id="menu_fitzone_freeze" name="Freezes" parent="menu_fitzone_memberships"
         action="action_fitzone_freeze" sequence="20" />
+    <menuitem id="menu_fitzone_freeze_request" name="Freeze Request"
+              parent="menu_fitzone_memberships"
+              action="action_fitzone_freeze_request_wizard" sequence="15"/>
 
     <menuitem id="menu_fitzone_payments" name="Payments" parent="menu_fitzone_root" sequence="30" />
     <menuitem id="menu_fitzone_installment_plan" name="Installment Plans"

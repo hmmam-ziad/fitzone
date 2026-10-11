@@ -50,6 +50,9 @@ class ResPartner(models.Model):
     )
     is_fitzone_member = fields.Boolean(string='FitZone Member', copy=False)
     
+    freeze_history_ids = fields.One2many(
+    'fitzone.freeze', 'member_id', string='Freeze History')
+    
     @api.depends('rehabilitation_ids', 'rehabilitation_ids.state')
     def _compute_active_rehab(self):
         for partner in self:

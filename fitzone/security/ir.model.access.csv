@@ -37,3 +37,5 @@ access_fitzone_injury_cause_user,fitzone_injury_cause trainer,model_fitzone_inju
 access_fitzone_injury_cause_clinic,fitzone_injury_cause clinic,model_fitzone_injury_cause,fitzone.group_fitzone_clinic,1,1,1,1
 access_fitzone_injury_clinic,fitzone_injury clinic,model_fitzone_injury,fitzone.group_fitzone_clinic,1,1,1,1
 access_fitzone_rehabilitation_trainer,fitzone_rehabilitation trainer,model_fitzone_rehabilitation,fitzone.group_fitzone_trainer,0,0,0,0
+access_fitzone_freeze_user,fitzone_freeze user,model_fitzone_freeze,base.group_user,1,1,1,1
+access_fitzone_freeze_request_wizard_user,fitzone_freeze_request_wizard user,model_fitzone_freeze_request_wizard,base.group_user,1,1,1,1
