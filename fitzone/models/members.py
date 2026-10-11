@@ -49,13 +49,14 @@ class ResPartner(models.Model):
         related='active_rehab_id.movement_restrictions', readonly=True,
     )
     is_fitzone_member = fields.Boolean(string='FitZone Member', copy=False)
-    
+
     @api.depends('rehabilitation_ids', 'rehabilitation_ids.state')
     def _compute_active_rehab(self):
         for partner in self:
             partner.active_rehab_id = partner.rehabilitation_ids.filtered(
                 lambda rehab: rehab.state == 'in_progress'
             ).sorted('id', reverse=True)[:1]
+
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -65,6 +66,7 @@ class ResPartner(models.Model):
                     vals['membership_no'] = self.env['ir.sequence'].next_by_code(
                         'fitzone.member'
                     )
+
         return super().create(vals_list)
 
     @api.model

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- Visits -->
+    <!-- Visits List -->
     <record id="view_fitzone_visit_list" model="ir.ui.view">
         <field name="name">fitzone.visit.list</field>
         <field name="model">fitzone.visit</field>
@@ -16,28 +16,50 @@
         </field>
     </record>
 
+    <!-- Visits Search -->
+    <record id="view_fitzone_visit_search" model="ir.ui.view">
+        <field name="name">fitzone.visit.search</field>
+        <field name="model">fitzone.visit</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="member_id" string="Member"/>
+                <field name="membership_id" string="Membership"/>
+
+                <filter string="Today"
+                        name="filter_today"
+                        domain="[
+                            ('visit_date', '&gt;=', context_today().strftime('%Y-%m-%d 00:00:00')),
+                            ('visit_date', '&lt;=', context_today().strftime('%Y-%m-%d 23:59:59'))
+                        ]"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- Visits Form -->
     <record id="view_fitzone_visit_form" model="ir.ui.view">
         <field name="name">fitzone.visit.form</field>
         <field name="model">fitzone.visit</field>
         <field name="arch" type="xml">
             <form>
                 <sheet>
-                <group>
-                    <field name="member_id"/>
-                    <field name="membership_id"/>
-                    <field name="visit_date"/>
-                    <field name="remaining_sessions"/>
-                    <field name="status"/>
-                </group>
+                    <group>
+                        <field name="member_id"/>
+                        <field name="membership_id"/>
+                        <field name="visit_date"/>
+                        <field name="remaining_sessions"/>
+                        <field name="status"/>
+                    </group>
                 </sheet>
             </form>
         </field>
     </record>
 
+    <!-- Visits Action -->
     <record id="action_fitzone_visit" model="ir.actions.act_window">
         <field name="name">Visits</field>
         <field name="res_model">fitzone.visit</field>
         <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_fitzone_visit_search"/>
     </record>
 
 </odoo>

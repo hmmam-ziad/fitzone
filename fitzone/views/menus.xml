@@ -23,9 +23,10 @@
     <menuitem id="menu_fitzone_installment" name="Installments" parent="menu_fitzone_payments"
         action="action_fitzone_installment" sequence="20" />
 
-    <menuitem id="menu_fitzone_visits" name="Visits" parent="menu_fitzone_root" sequence="40" />
-    <menuitem id="menu_fitzone_visit" name="Visits" parent="menu_fitzone_visits"
-        action="action_fitzone_visit" sequence="10" />
+    <menuitem id="menu_fitzone_visit" name="Visits" parent="menu_fitzone_root"
+        action="action_fitzone_visit"
+        groups="fitzone.group_fitzone_reception,fitzone.group_fitzone_manager"
+        sequence="10" />
 
     <menuitem id="menu_fitzone_classes" name="Classes" parent="menu_fitzone_root" sequence="50" />
     <menuitem id="menu_fitzone_gym_class" name="Group Classes" parent="menu_fitzone_classes"

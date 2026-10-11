@@ -1,24 +1,55 @@
+
 from odoo import fields, models
 
 
 class CheckinWizard(models.TransientModel):
     _name = 'fitzone.checkin.wizard'
-    _description = 'Class Check-in'
+    _description = 'FitZone Reception Check-in'
 
-    class_id = fields.Many2one('fitzone.gym.class', required=True)
-    barcode = fields.Char(string='Member Barcode', required=True)
+    barcode = fields.Char(
+        string='Member Barcode',
+        required=True,
+    )
+    class_id = fields.Many2one(
+        'fitzone.gym.class',
+        string='Class (Optional)',
+    )
 
     def action_check_in(self):
         self.ensure_one()
-        booking = self.env['fitzone.class.booking'].check_in_member(
-            self.class_id.id, (self.barcode or '').strip())
-        self.barcode = False
+        barcode = (self.barcode or '').strip()
+
+        if self.class_id:
+            booking = self.env[
+                'fitzone.class.booking'
+            ].check_in_member(self.class_id.id, barcode)
+
+            message = '%s checked in for the class.' % (
+                booking.member_id.name
+            )
+        else:
+            visit = self.env[
+                'fitzone.visit'
+            ].check_in_by_barcode(barcode)
+
+            if visit.membership_id.package_type == 'private':
+                message = (
+                    '%s checked in successfully. Remaining sessions: %s'
+                ) % (
+                    visit.member_id.name,
+                    visit.remaining_sessions,
+                )
+            else:
+                message = '%s checked in successfully.' % (
+                    visit.member_id.name
+                )
+
         return {
             'type': 'ir.actions.client',
             'tag': 'display_notification',
             'params': {
                 'title': 'Check-in successful',
-                'message': '%s checked in.' % booking.member_id.name,
+                'message': message,
                 'type': 'success',
                 'sticky': False,
             },

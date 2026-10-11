@@ -114,12 +114,6 @@ class PTSession(models.Model):
                 'state': 'completed',
                 'status': 'completed',
             })
-
-            if (
-                session.package_id.package_type == 'private'
-                and session.package_id.total_sessions > 0
-            ):
-                membership.consumed_sessions += 1
         return True
 
     @api.constrains('trainer_id', 'session_date', 'end_datetime', 'status')

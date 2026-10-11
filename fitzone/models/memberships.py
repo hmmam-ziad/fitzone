@@ -287,6 +287,31 @@ class Membership(models.Model):
             if membership.state != 'draft':
                 continue
 
+            plans = self.env['fitzone.installment.plan'].search([
+                ('membership_id', '=', membership.id),
+            ])
+            if plans:
+                first_installment = plans[0].installment_ids.sorted(
+                    lambda installment: (installment.due_date, installment.id)
+                )[:1]
+                if not first_installment:
+                    raise ValidationError(
+                        'The first installment must be paid before activation.'
+                    )
+
+                first_installment = first_installment[0]
+                payment = first_installment.payment_id
+                if (
+                    first_installment.status != 'paid'
+                    or not payment
+                    or payment.state not in ('paid', 'in_process')
+                    or payment.move_id.state != 'posted'
+                ):
+                    raise ValidationError(
+                        'The first installment must have a successful payment '
+                        'before activating this membership.'
+                    )
+
             if not membership.package_id:
                 raise ValidationError('Please select a package.')
 
@@ -308,15 +333,27 @@ class Membership(models.Model):
                 - relativedelta(days=1)
             )
 
+            values = {
+                'date_start': activation_date,
+                'date_end': end_date,
+                'state': 'active',
+            }
+
+            if not membership.barcode:
+                barcode = self.env['ir.sequence'].next_by_code(
+                    'fitzone.membership.barcode'
+                )
+                if not barcode:
+                    raise ValidationError(
+                        'Unable to generate a membership barcode.'
+                    )
+                values['barcode'] = barcode
+
             membership.with_context(
                 allow_membership_dates=True,
                 allow_membership_activation=True,
                 skip_expiry_sync=True,
-            ).write({
-                'date_start': activation_date,
-                'date_end': end_date,
-                'state': 'active',
-            })
+            ).write(values)
 
     def action_block(self):
         self.write({
