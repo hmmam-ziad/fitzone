@@ -12,38 +12,64 @@ class FaultReport(models.Model):
     equipment_id = fields.Many2one('maintenance.equipment', required=True)
     serial_no = fields.Char(related='equipment_id.serial_no', readonly=True)
     reported_by = fields.Many2one(
-        'hr.employee', required=True,
+        'hr.employee',
         default=lambda self: self.env.user.employee_id)
-    member_id = fields.Many2one('res.partner', string='Reported on behalf of member')
+    member_id = fields.Many2one('res.partner', string='Reported on behalf of member', groups='fitzone.group_fitzone_manager,fitzone.group_fitzone_reception')
     report_date = fields.Datetime(default=fields.Datetime.now, readonly=True)
     description = fields.Text(required=True)
     status = fields.Selection(
         [('reported', 'Reported'), ('approved', 'Approved'), ('rejected', 'Rejected')],
-        default='reported', required=True, tracking=True)
+        default='reported', required=True)
 
     # Management review
     technician_id = fields.Many2one(
         'res.users', string='Internal Technician', domain=[('share', '=', False)])
-    vendor_id = fields.Many2one('res.partner', string='External Vendor')
-    estimated_cost = fields.Float()
+    vendor_id = fields.Many2one('res.partner', string='External Vendor', groups='fitzone.group_fitzone_manager')
+    estimated_cost = fields.Float(groups='fitzone.group_fitzone_manager')
     expected_date = fields.Date()
     reject_reason = fields.Char()
     request_id = fields.Many2one(
-        'maintenance.request', string='Maintenance Ticket', readonly=True)
+        'maintenance.request', string='Maintenance Ticket', readonly=True, groups='fitzone.group_fitzone_manager')
 
     @api.model_create_multi
     def create(self, vals_list):
+        # New web forms send the default status explicitly; review is never a create.
+        if any(vals.get('status', 'reported') != 'reported' or 'request_id' in vals
+               for vals in vals_list):
+            raise AccessError('Reports must be submitted before review.')
+        if not self.env.su and not self.env.user.has_group('fitzone.group_fitzone_manager'):
+            allowed = {'equipment_id', 'description', 'reported_by', 'member_id',
+                       'status', 'report_date'}
+            if any(set(vals) - allowed for vals in vals_list):
+                raise AccessError("Employees can only submit a new fault report.")
         records = super().create(vals_list)
-        managers = self.env.ref('fitzone.group_fitzone_manager').user_ids
-        for rec in records:
-            rec.equipment_id.sudo().write({'status': 'out_of_service'})
-            rec.message_post(
-                body="New fault report for %s (%s)."
-                     % (rec.equipment_id.name, rec.serial_no or '-'),
-                partner_ids=managers.partner_id.ids,
-                message_type='comment',
-                subtype_xmlid='mail.mt_comment')
+        if any(rec.status != 'reported' for rec in records):
+            raise AccessError('Reports must be submitted before review.')
+        records._mark_equipment_out_of_service()
         return records
+
+    def _mark_equipment_out_of_service(self):
+        # Elevation is limited to the equipment status after a valid report create.
+        self.mapped('equipment_id').check_access('read')
+        self.mapped('equipment_id').sudo().write({'status': 'out_of_service'})
+
+    def write(self, vals):
+        if not self.env.user.has_group('fitzone.group_fitzone_manager'):
+            raise AccessError('Use the management review actions.')
+        if 'status' in vals or 'request_id' in vals:
+            raise AccessError("Use the management review actions.")
+        return super().write(vals)
+
+    def _create_approved_ticket(self):
+        self.ensure_one()
+        # Management has validated approval; elevate only the assigned ticket create.
+        return self.env['maintenance.request'].sudo().create({
+            'name': 'Fault: %s' % self.equipment_id.name, 'equipment_id': self.equipment_id.id,
+            'maintenance_type': 'corrective', 'user_id': self.technician_id.id,
+            'vendor_id': self.vendor_id.id, 'estimated_cost': self.estimated_cost,
+            'schedule_date': self.expected_date and fields.Datetime.to_datetime(self.expected_date),
+            'fault_id': self.id, 'description': self.description,
+        }).id
 
     def _check_manager(self):
         if not self.env.user.has_group('fitzone.group_fitzone_manager'):
@@ -51,25 +77,14 @@ class FaultReport(models.Model):
 
     def action_approve(self):
         self._check_manager()
-        Request = self.env['maintenance.request']
         for rec in self:
             if rec.status != 'reported':
                 raise ValidationError("Only new reports can be approved.")
             if not (rec.technician_id or rec.vendor_id):
-                raise ValidationError(
-                    "Assign an internal technician or an external vendor first.")
-            request = Request.create({
-                'name': 'Fault: %s' % rec.equipment_id.name,
-                'equipment_id': rec.equipment_id.id,
-                'maintenance_type': 'corrective',
-                'user_id': rec.technician_id.id,
-                'vendor_id': rec.vendor_id.id,
-                'estimated_cost': rec.estimated_cost,
-                'schedule_date': rec.expected_date and fields.Datetime.to_datetime(rec.expected_date),
-                'description': rec.description,
-                'fault_id': rec.id,
-            })
-            rec.write({'status': 'approved', 'request_id': request.id})
+                raise ValidationError("Assign a technician or vendor first.")
+            super(FaultReport, rec).write({'status': 'approved'})
+            request_id = rec._create_approved_ticket()
+            super(FaultReport, rec).write({'request_id': request_id})
 
     def action_reject(self):
         self._check_manager()
@@ -78,4 +93,4 @@ class FaultReport(models.Model):
                 raise ValidationError("Only new reports can be rejected.")
             if not rec.reject_reason:
                 raise ValidationError("Please enter a rejection reason.")
-            rec.status = 'rejected'
+            super(FaultReport, rec).write({'status': 'rejected'})
