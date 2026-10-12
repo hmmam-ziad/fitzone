@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="utf-8"?>
-
+<?xml version='1.0' encoding='utf-8'?>
 <odoo>
+
 
     <menuitem id="menu_fitzone_root" name="FitZone" sequence="10" groups="base.group_user" />
 
@@ -8,17 +8,21 @@
     <menuitem id="menu_fitzone_members" name="Members" parent="menu_fitzone_root" sequence="10"
         groups="fitzone.group_fitzone_manager,fitzone.group_fitzone_reception,fitzone.group_fitzone_trainer,fitzone.group_fitzone_physiotherapist,fitzone.group_fitzone_nutritionist" />
 
+
     <menuitem id="menu_fitzone_member_list" name="Member List" parent="menu_fitzone_members"
         action="action_fitzone_members" sequence="5"
         groups="fitzone.group_fitzone_manager,fitzone.group_fitzone_reception,fitzone.group_fitzone_trainer,fitzone.group_fitzone_physiotherapist,fitzone.group_fitzone_nutritionist" />
+
 
     <menuitem id="menu_fitzone_emergency_contact" name="Emergency Contacts"
         parent="menu_fitzone_members" action="action_fitzone_emergency_contact" sequence="10"
         groups="fitzone.group_fitzone_manager,fitzone.group_fitzone_reception" />
 
+
     <menuitem id="menu_fitzone_health_profile" name="Health Profiles" parent="menu_fitzone_members"
         action="action_fitzone_health_profile" sequence="20"
         groups="fitzone.group_fitzone_physiotherapist,fitzone.group_fitzone_nutritionist" />
+
 
     <menuitem id="menu_fitzone_progress_tracking" name="Progress Tracking"
         parent="menu_fitzone_members" action="action_fitzone_progress_tracking" sequence="30"
@@ -29,21 +33,26 @@
         sequence="20"
         groups="fitzone.group_fitzone_manager,fitzone.group_fitzone_reception,fitzone.group_fitzone_trainer,fitzone.group_fitzone_physiotherapist,fitzone.group_fitzone_nutritionist" />
 
+
     <menuitem id="menu_fitzone_membership" name="Memberships" parent="menu_fitzone_memberships"
         action="action_fitzone_membership" sequence="10"
         groups="fitzone.group_fitzone_manager,fitzone.group_fitzone_reception,fitzone.group_fitzone_trainer,fitzone.group_fitzone_physiotherapist,fitzone.group_fitzone_nutritionist" />
 
+
     <menuitem id="menu_fitzone_freeze" name="Freezes" parent="menu_fitzone_memberships"
         action="action_fitzone_freeze" sequence="20"
-        groups="fitzone.group_fitzone_manager,fitzone.group_fitzone_reception" />
-
-
+        groups="fitzone.group_fitzone_manager" />
+    <menuitem id="menu_fitzone_freeze_request" name="Freeze Request"
+        parent="menu_fitzone_memberships" action="action_fitzone_freeze_request_wizard"
+        sequence="15" groups="fitzone.group_fitzone_manager,fitzone.group_fitzone_reception" />
     <menuitem id="menu_fitzone_payments" name="Payments" parent="menu_fitzone_root" sequence="30"
         groups="fitzone.group_fitzone_manager,fitzone.group_fitzone_reception" />
+
 
     <menuitem id="menu_fitzone_installment_plan" name="Installment Plans"
         parent="menu_fitzone_payments" action="action_fitzone_installment_plan" sequence="10"
         groups="fitzone.group_fitzone_manager,fitzone.group_fitzone_reception" />
+
 
     <menuitem id="menu_fitzone_installment" name="Installments" parent="menu_fitzone_payments"
         action="action_fitzone_installment" sequence="20"
@@ -53,6 +62,7 @@
     <menuitem id="menu_fitzone_visits" name="Visits" parent="menu_fitzone_root" sequence="40"
         groups="fitzone.group_fitzone_manager,fitzone.group_fitzone_reception,fitzone.group_fitzone_trainer" />
 
+
     <menuitem id="menu_fitzone_visit" name="Visits" parent="menu_fitzone_visits"
         action="action_fitzone_visit" sequence="10"
         groups="fitzone.group_fitzone_manager,fitzone.group_fitzone_reception,fitzone.group_fitzone_trainer" />
@@ -61,17 +71,21 @@
     <menuitem id="menu_fitzone_classes" name="Classes" parent="menu_fitzone_root" sequence="50"
         groups="fitzone.group_fitzone_manager,fitzone.group_fitzone_reception,fitzone.group_fitzone_trainer" />
 
+
     <menuitem id="menu_fitzone_gym_class" name="Group Classes" parent="menu_fitzone_classes"
         action="action_fitzone_gym_class" sequence="10"
         groups="fitzone.group_fitzone_manager,fitzone.group_fitzone_reception,fitzone.group_fitzone_trainer" />
+
 
     <menuitem id="menu_fitzone_class_booking" name="Class Bookings" parent="menu_fitzone_classes"
         action="action_fitzone_class_booking" sequence="20"
         groups="fitzone.group_fitzone_manager,fitzone.group_fitzone_reception,fitzone.group_fitzone_trainer" />
 
+
     <menuitem id="menu_fitzone_attendance" name="Attendance" parent="menu_fitzone_classes"
         action="action_fitzone_attendance" sequence="30"
         groups="fitzone.group_fitzone_manager,fitzone.group_fitzone_reception,fitzone.group_fitzone_trainer" />
+
 
     <menuitem id="menu_fitzone_checkin" name="Class Check-in" parent="menu_fitzone_classes"
         action="action_fitzone_checkin_wizard" sequence="40"
@@ -82,9 +96,11 @@
         parent="menu_fitzone_root" sequence="60"
         groups="fitzone.group_fitzone_manager,fitzone.group_fitzone_reception,fitzone.group_fitzone_trainer" />
 
+
     <menuitem id="menu_fitzone_pt_session" name="PT Sessions"
         parent="menu_fitzone_personal_training" action="action_fitzone_pt_session" sequence="10"
         groups="fitzone.group_fitzone_manager,fitzone.group_fitzone_reception,fitzone.group_fitzone_trainer" />
+
 
     <menuitem id="menu_fitzone_trainer_commission" name="Trainer Commissions"
         parent="menu_fitzone_personal_training" action="action_fitzone_trainer_commission"
@@ -95,6 +111,7 @@
         parent="menu_fitzone_personal_training" action="action_fitzone_my_trainees" sequence="5"
         groups="fitzone.group_fitzone_manager,fitzone.group_fitzone_trainer" />
 
+
     <menuitem id="menu_trainer_commission_statement" name="Trainer Commission Statement"
         parent="menu_fitzone_personal_training" action="action_trainer_commission_wizard"
         sequence="30" groups="fitzone.group_fitzone_manager" />
@@ -102,6 +119,7 @@
 
     <menuitem id="menu_fitzone_pool" name="Pool" parent="menu_fitzone_root" sequence="70"
         groups="fitzone.group_fitzone_manager,fitzone.group_fitzone_reception,fitzone.group_fitzone_trainer" />
+
 
     <menuitem id="menu_fitzone_pool_booking" name="Pool Bookings" parent="menu_fitzone_pool"
         action="action_fitzone_pool_booking" sequence="10"
@@ -111,51 +129,60 @@
     <menuitem id="menu_fitzone_pool_access" name="Pool Access Check" parent="menu_fitzone_pool"
         action="action_fitzone_pool_access_wizard" sequence="5"
         groups="fitzone.group_fitzone_manager,fitzone.group_fitzone_reception,fitzone.group_fitzone_trainer" />
+
     <menuitem id="menu_fitzone_free_swim_slots" name="Free-Swim Slots" parent="menu_fitzone_pool"
         action="action_fitzone_free_swim_slots" groups="fitzone.group_fitzone_manager" sequence="20" />
 
+
     <menuitem id="menu_fitzone_injuries" name="Clinic" parent="menu_fitzone_root" sequence="80"
         groups="fitzone.group_fitzone_physiotherapist" />
+
 
     <menuitem id="menu_fitzone_injury" name="Incident Reports Inbox" parent="menu_fitzone_injuries"
         action="action_fitzone_injury_clinic_inbox" sequence="10"
         groups="fitzone.group_fitzone_physiotherapist" />
 
+
     <menuitem id="menu_fitzone_rehabilitation" name="Rehabilitation Files"
-        parent="menu_fitzone_injuries"
-        action="action_fitzone_rehabilitation" sequence="20"
+        parent="menu_fitzone_injuries" action="action_fitzone_rehabilitation" sequence="20"
         groups="fitzone.group_fitzone_physiotherapist" />
+
 
     <menuitem id="menu_fitzone_clinic_configuration" name="Configuration"
         parent="menu_fitzone_injuries" sequence="90" groups="fitzone.group_fitzone_physiotherapist" />
 
+
     <menuitem id="menu_fitzone_injury_cause" name="Injury Causes"
-        parent="menu_fitzone_clinic_configuration"
-        action="action_fitzone_injury_cause" sequence="10"
-        groups="fitzone.group_fitzone_physiotherapist" />
+        parent="menu_fitzone_clinic_configuration" action="action_fitzone_injury_cause"
+        sequence="10" groups="fitzone.group_fitzone_physiotherapist" />
+
 
     <menuitem id="menu_fitzone_injury_type" name="Injury Types"
-        parent="menu_fitzone_clinic_configuration"
-        action="action_fitzone_injury_type" sequence="20"
+        parent="menu_fitzone_clinic_configuration" action="action_fitzone_injury_type" sequence="20"
         groups="fitzone.group_fitzone_physiotherapist" />
+
 
     <menuitem id="menu_fitzone_trainer_root" name="Trainer" parent="menu_fitzone_root" sequence="65"
         groups="fitzone.group_fitzone_trainer" />
 
+
     <menuitem id="menu_fitzone_report_injury" name="Report Injury Incident"
-        parent="menu_fitzone_trainer_root"
-        action="action_fitzone_injury" sequence="10" groups="fitzone.group_fitzone_trainer" />
+        parent="menu_fitzone_trainer_root" action="action_fitzone_injury" sequence="10"
+        groups="fitzone.group_fitzone_trainer" />
 
 
     <menuitem id="menu_fitzone_maintenance" name="Maintenance" parent="menu_fitzone_root"
         sequence="90" groups="base.group_user" />
 
+
     <menuitem id="menu_fitzone_fault_report" name="Fault Reports" parent="menu_fitzone_maintenance"
         action="action_fitzone_fault_report" sequence="10" groups="base.group_user" />
+
 
     <menuitem id="menu_fitzone_equipment" name="Equipment" parent="menu_fitzone_maintenance"
         action="maintenance.hr_equipment_action" sequence="20"
         groups="fitzone.group_fitzone_manager,fitzone.group_fitzone_reception,fitzone.group_fitzone_trainer,fitzone.group_fitzone_technician" />
+
 
     <menuitem id="menu_fitzone_maintenance_request" name="Maintenance Tickets"
         parent="menu_fitzone_maintenance" action="maintenance.hr_equipment_request_action"
@@ -165,82 +192,108 @@
     <menuitem id="menu_fitzone_configuration" name="Configuration" parent="menu_fitzone_root"
         sequence="100" groups="fitzone.group_fitzone_manager" />
 
+
     <menuitem id="menu_fitzone_trainer" name="Trainers" parent="menu_fitzone_configuration"
         action="action_fitzone_trainer" sequence="10" groups="fitzone.group_fitzone_manager" />
+
 
     <menuitem id="menu_fitzone_room" name="Rooms" parent="menu_fitzone_configuration"
         action="action_fitzone_room" sequence="20" groups="fitzone.group_fitzone_manager" />
 
+
     <menuitem id="menu_fitzone_pool_slot" name="Pool Slots" parent="menu_fitzone_configuration"
         action="action_fitzone_pool_slot" sequence="30" groups="fitzone.group_fitzone_manager" />
+
 
     <menuitem id="menu_fitzone_commission_rule" name="Commission Rules"
         parent="menu_fitzone_configuration" action="action_fitzone_commission_rule" sequence="40"
         groups="fitzone.group_fitzone_manager" />
 
 
-    <menuitem
-        id="menu_fitzone_staff_availability"
-        name="Find Available Staff"
-        parent="menu_fitzone_root"
-        action="action_fitzone_staff_availability"
-        sequence="15"
+    <menuitem id="menu_fitzone_staff_availability" name="Find Available Staff"
+        parent="menu_fitzone_root" action="action_fitzone_staff_availability" sequence="15"
         groups="fitzone.group_fitzone_manager" />
+
 
     <record id="menu_fitzone_staff_availability" model="ir.ui.menu">
 
+
         <field name="group_ids" eval="[(6, 0, [ref('fitzone.group_fitzone_manager')])]" />
 
+
     </record>
+
 
     <!-- menuitem groups are additive in Odoo 19; replace legacy Clinic grants on upgrade. -->
 
+
     <record id="menu_fitzone_injuries" model="ir.ui.menu">
+
 
         <field name="group_ids" eval="[(6, 0, [ref('fitzone.group_fitzone_physiotherapist')])]" />
 
+
     </record>
+
 
     <record id="menu_fitzone_injury" model="ir.ui.menu">
 
+
         <field name="group_ids" eval="[(6, 0, [ref('fitzone.group_fitzone_physiotherapist')])]" />
 
+
     </record>
+
 
     <record id="menu_fitzone_rehabilitation" model="ir.ui.menu">
 
+
         <field name="group_ids" eval="[(6, 0, [ref('fitzone.group_fitzone_physiotherapist')])]" />
 
+
     </record>
+
 
     <record id="menu_fitzone_clinic_configuration" model="ir.ui.menu">
 
+
         <field name="group_ids" eval="[(6, 0, [ref('fitzone.group_fitzone_physiotherapist')])]" />
 
+
     </record>
+
 
     <record id="menu_fitzone_injury_cause" model="ir.ui.menu">
 
+
         <field name="group_ids" eval="[(6, 0, [ref('fitzone.group_fitzone_physiotherapist')])]" />
 
+
     </record>
+
 
     <record id="menu_fitzone_injury_type" model="ir.ui.menu">
 
+
         <field name="group_ids" eval="[(6, 0, [ref('fitzone.group_fitzone_physiotherapist')])]" />
 
+
     </record>
+
 
     <menuitem id="menu_pool_maintenance_log" name="Pool Cleaning Log"
         parent="menu_fitzone_maintenance" action="action_pool_maintenance_log"
         groups="fitzone.group_fitzone_manager,fitzone.group_fitzone_technician" />
 
+
     <menuitem id="menu_equipment_status_board" name="Live Status" parent="menu_fitzone_maintenance"
         action="action_equipment_status_board"
         groups="fitzone.group_fitzone_manager,fitzone.group_fitzone_reception,fitzone.group_fitzone_trainer" />
 
+
     <menuitem id="menu_periodic_maintenance" name="Periodic Schedule"
         parent="menu_fitzone_maintenance" action="action_periodic_maintenance"
         groups="fitzone.group_fitzone_manager,fitzone.group_fitzone_technician" />
+
 
 </odoo>

@@ -7,6 +7,8 @@ from . import emergency_contact
 from . import health_profile
 from . import progress_tracking
 from . import freeze
+from . import freeze_request_wizard
+from . import membership_freeze
 from . import installment_plan
 from . import installment
 from . import Account_payments
