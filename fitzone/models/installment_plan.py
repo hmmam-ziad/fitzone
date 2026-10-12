@@ -21,7 +21,11 @@ class InstallmentPlan(models.Model):
         string='Total Amount Including Tax',
         compute='_compute_total_amount', store=True, readonly=True,
     )
-    down_payment = fields.Float(string='Down Payment', required=True)
+    down_payment = fields.Float(
+        string='Down Payment',
+        required=True,
+        default=50.0,
+    )
     installment_ids = fields.One2many(
         'fitzone.installment', 'plan_id',
         string='Installments', copy=False,
@@ -106,35 +110,115 @@ class InstallmentPlan(models.Model):
                 )
 
             membership = plan.membership_id
-            duration = membership.package_id.duration_months
+            package = membership.package_id
+            duration = package.duration_months
+
             if membership.state != 'draft':
                 raise ValidationError(
                     'Create the installment plan before activating the membership.'
                 )
             if not membership.member_id:
                 raise ValidationError('Select a customer for the membership.')
+            if (
+                package.package_type != 'general'
+                or duration < 3
+            ):
+                raise ValidationError(
+                    'Installment plans are available only for General '
+                    'Membership packages of three months or more.'
+                )
+            if duration <= 1:
+                raise ValidationError(
+                    'The package duration must allow multiple installments.'
+                )
+            if plan.total_amount <= 0:
+                raise ValidationError(
+                    'The installment plan total must be greater than zero.'
+                )
+            if (
+                plan.down_payment <= 0
+                or plan.down_payment >= plan.total_amount
+            ):
+                raise ValidationError(
+                    'The down payment must be greater than zero and '
+                    'less than the plan total.'
+                )
 
             company = self.env.company
-            product = membership.package_id.product_variant_id
-            taxes = membership.package_id.taxes_id.filtered(
-                lambda tax: tax.company_id == company
-            )
+            currency = company.currency_id
 
-            invoice = self.env['account.move'].create({
-                'move_type': 'out_invoice',
-                'partner_id': membership.member_id.id,
-                'company_id': company.id,
-                'invoice_date': fields.Date.context_today(plan),
-                'currency_id': company.currency_id.id,
-                'invoice_line_ids': [(0, 0, {
-                    'product_id': product.id,
-                    'name': membership.package_id.name,
-                    'quantity': 1.0,
-                    'price_unit': membership.final_price,
-                    'tax_ids': [(6, 0, taxes.ids)],
-                })],
-            })
-            invoice.action_post()
+            expected_total = package.taxes_id.filtered(
+                lambda tax: tax.company_id == company
+            ).compute_all(
+                membership.final_price,
+                currency=currency,
+                quantity=1.0,
+                product=package.product_variant_id,
+                partner=membership.member_id,
+            )['total_included']
+
+            if currency.compare_amounts(
+                plan.total_amount, expected_total
+            ) != 0:
+                raise ValidationError(
+                    'The installment plan total must match the membership price including tax.'
+                )
+
+            invoice = membership.invoice_id
+
+            if invoice:
+                if invoice.state != 'posted':
+                    raise ValidationError(
+                        'The linked membership invoice must be posted.'
+                    )
+                if invoice.move_type != 'out_invoice':
+                    raise ValidationError(
+                        'The linked document must be a customer invoice.'
+                    )
+                if invoice.partner_id != membership.member_id:
+                    raise ValidationError(
+                        'The invoice customer must match the membership customer.'
+                    )
+                if invoice.currency_id != currency:
+                    raise ValidationError(
+                        'The invoice currency must match the plan currency.'
+                    )
+                if currency.compare_amounts(
+                    invoice.amount_total, plan.total_amount
+                ) != 0:
+                    raise ValidationError(
+                        'The invoice total must match the installment plan total.'
+                    )
+                if currency.compare_amounts(
+                    invoice.amount_residual, plan.total_amount
+                ) != 0:
+                    raise ValidationError(
+                        'The linked invoice already has a payment or adjustment. '
+                        'Review it before creating this installment schedule.'
+                    )
+            else:
+                product = package.product_variant_id
+                taxes = package.taxes_id.filtered(
+                    lambda tax: tax.company_id == company
+                )
+
+                invoice = self.env['account.move'].create({
+                    'move_type': 'out_invoice',
+                    'partner_id': membership.member_id.id,
+                    'company_id': company.id,
+                    'invoice_date': fields.Date.context_today(plan),
+                    'currency_id': currency.id,
+                    'invoice_line_ids': [(0, 0, {
+                        'product_id': product.id,
+                        'name': package.name,
+                        'quantity': 1.0,
+                        'price_unit': membership.final_price,
+                        'tax_ids': [(6, 0, taxes.ids)],
+                    })],
+                })
+                invoice.action_post()
+                membership.invoice_id = invoice.id
+
             plan.invoice_id = invoice.id
 
             remaining = plan.total_amount - plan.down_payment

@@ -28,6 +28,14 @@ class Membership(models.Model):
         readonly=True,
     )
 
+    invoice_id = fields.Many2one(
+        'account.move',
+        string='Customer Invoice',
+        readonly=True,
+        copy=False,
+        ondelete='restrict',
+    )
+
     barcode = fields.Char()
     barcode_image = fields.Binary(
         string='Barcode Image',
@@ -254,6 +262,14 @@ class Membership(models.Model):
     @api.model_create_multi
     def create(self, vals_list):
         for vals in vals_list:
+            if (
+                vals.get('state') == 'active'
+                and not self.env.context.get('allow_membership_activation')
+            ):
+                raise ValidationError(
+                    'Create memberships as Draft and use the Activate action '
+                    'after the required payment.'
+                )
             # Generate a membership number when needed.
             member_id = vals.get('member_id')
             if member_id:
@@ -352,6 +368,74 @@ class Membership(models.Model):
                     'state': target_state,
                 })
 
+    def action_create_invoice(self):
+        self.ensure_one()
+
+        if self.state != 'draft':
+            raise ValidationError(
+                'An invoice can only be created for a draft membership.'
+            )
+        if (
+            self.package_id.package_type == 'general'
+            and self.package_id.duration_months >= 3
+        ):
+            raise ValidationError(
+                'This package requires an installment plan. '
+                'Create the installment plan instead of a regular invoice.'
+            )
+
+        if self.invoice_id:
+            raise ValidationError(
+                'An invoice is already linked to this membership.'
+            )
+
+        plan = self.env['fitzone.installment.plan'].search(
+            [('membership_id', '=', self.id)],
+            limit=1,
+        )
+        if plan:
+            raise ValidationError(
+                'This membership has an installment plan. '
+                'Use the plan to manage its invoice and payments.'
+            )
+
+        if not self.member_id or not self.package_id:
+            raise ValidationError(
+                'Select a member and package before creating an invoice.'
+            )
+
+        company = self.env.company
+        product = self.package_id.product_variant_id
+        taxes = self.package_id.taxes_id.filtered(
+            lambda tax: tax.company_id == company
+        )
+
+        invoice = self.env['account.move'].create({
+            'move_type': 'out_invoice',
+            'partner_id': self.member_id.id,
+            'company_id': company.id,
+            'invoice_date': fields.Date.context_today(self),
+            'currency_id': company.currency_id.id,
+            'invoice_line_ids': [(0, 0, {
+                'product_id': product.id,
+                'name': self.package_id.name,
+                'quantity': 1.0,
+                'price_unit': self.final_price,
+                'tax_ids': [(6, 0, taxes.ids)],
+            })],
+        })
+        invoice.action_post()
+        self.invoice_id = invoice.id
+
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Membership Invoice',
+            'res_model': 'account.move',
+            'res_id': invoice.id,
+            'view_mode': 'form',
+            'target': 'current',
+        }
+
     def action_activate(self):
         for membership in self:
             if membership.state != 'draft':
@@ -380,6 +464,19 @@ class Membership(models.Model):
                     raise ValidationError(
                         'The first installment must have a successful payment '
                         'before activating this membership.'
+                    )
+
+            if not plans:
+                invoice = membership.invoice_id
+                if not invoice or invoice.state != 'posted':
+                    raise ValidationError(
+                        'Create and post the membership invoice, then '
+                        'register the full payment before activation.'
+                    )
+                if not invoice.currency_id.is_zero(invoice.amount_residual):
+                    raise ValidationError(
+                        'The membership invoice must be fully paid '
+                        'before activation.'
                     )
 
             if not membership.package_id:
