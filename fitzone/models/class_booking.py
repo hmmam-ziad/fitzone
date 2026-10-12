@@ -15,7 +15,7 @@ class ClassBooking(models.Model):
         [('booked', 'Booked'), ('cancelled', 'Cancelled'), ('attended', 'Attended')],
         default='booked', required=True)
 
-   
+
     @api.model
     def _check_entitlement(self, member_id, class_start, membership=None):
         """Validate membership status, freeze, day and time.
@@ -61,14 +61,14 @@ class ClassBooking(models.Model):
 
         return membership
 
-    
+
     @api.model_create_multi
     def create(self, vals_list):
         records = self.browse()
-        for vals in vals_list:  
+        for vals in vals_list:
             gym_class = self.env['fitzone.gym.class'].browse(vals['class_id'])
 
-            
+
             self.env.cr.execute(
                 "SELECT id FROM fitzone_gym_class WHERE id = %s FOR UPDATE",
                 (gym_class.id,))
@@ -109,7 +109,7 @@ class ClassBooking(models.Model):
                 raise ValidationError("This booking cannot be cancelled.")
             rec.status = 'cancelled'
 
-   
+
     @api.model
     def check_in_member(self, class_id, barcode):
         membership = self.env['fitzone.membership'].search(
@@ -137,4 +137,27 @@ class ClassBooking(models.Model):
             raise ValidationError("Membership is frozen. Check-in denied.")
 
         booking.status = 'attended'
+
+        attendance = self.env['fitzone.attendance'].search(
+            [('booking_id', '=', booking.id)],
+            limit=1,
+        )
+        if not attendance:
+            self.env['fitzone.attendance'].create({
+                'booking_id': booking.id,
+                'attended': True,
+            })
+        elif not attendance.attended:
+            attendance.attended = True
+
+        self.env['fitzone.visit'].with_context(
+            allow_barcode_checkin=True
+        ).create({
+            'member_id': booking.member_id.id,
+            'membership_id': membership.id,
+            'visit_date': fields.Datetime.now(),
+            'status': 'Checked In',
+            'remaining_sessions': membership.remaining_sessions,
+        })
+
         return booking
