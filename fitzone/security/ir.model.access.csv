@@ -42,6 +42,9 @@ access_fitzone_trainer_commission_wizard_user,fitzone trainer commission wizard 
 access_fitzone_fault_report_staff,fitzone.fault.report staff,model_fitzone_fault_report,base.group_user,1,0,1,0
 access_fitzone_fault_report_tech,fitzone.fault.report tech,model_fitzone_fault_report,fitzone.group_fitzone_technician,1,0,0,0
 access_fitzone_fault_report_manager,fitzone.fault.report manager,model_fitzone_fault_report,fitzone.group_fitzone_manager,1,1,1,1
+access_fitzone_pool_slot_internal_user,fitzone_pool_slot user,model_fitzone_pool_slot,base.group_user,1,0,0,0
+access_fitzone_pool_slot_manager,fitzone_pool_slot manager,model_fitzone_pool_slot,fitzone.group_fitzone_manager,1,1,1,1
+access_fitzone_pool_access_wizard_user,fitzone_pool_access_wizard user,model_fitzone_pool_access_wizard,base.group_user,1,1,1,1
 access_fitzone_injury_cause_user,fitzone_injury_cause trainer,model_fitzone_injury_cause,fitzone.group_fitzone_trainer,0,0,0,0
 access_fitzone_injury_cause_clinic,fitzone_injury_cause clinic,model_fitzone_injury_cause,fitzone.group_fitzone_physiotherapist,1,1,1,0
 access_fitzone_injury_clinic,fitzone_injury clinic,model_fitzone_injury,fitzone.group_fitzone_physiotherapist,1,1,0,0
@@ -66,7 +69,6 @@ access_nutrition_editor,nutrition editor,model_fitzone_nutrition_consultation,fi
 access_nutrition_reader,nutrition reader,model_fitzone_nutrition_consultation,fitzone.group_fitzone_physiotherapist,1,0,0,0
 access_injury_aggregate,injury aggregate,model_fitzone_injury_aggregate,fitzone.group_fitzone_manager,1,0,0,0
 access_medical_audit,medical audit,model_fitzone_medical_audit_log,base.group_system,1,0,0,0
-
 access_partner_reception,Reception registration,base.model_res_partner,fitzone.group_fitzone_reception,1,1,1,0
 access_phase4_membership_trainer,Trainer membership,model_fitzone_membership,fitzone.group_fitzone_trainer,1,0,0,0
 access_phase4_visit_trainer,Trainer visit,model_fitzone_visit,fitzone.group_fitzone_trainer,1,0,0,0
@@ -76,7 +78,6 @@ access_phase4_pool_booking_trainer,Trainer pool.booking,model_fitzone_pool_booki
 access_phase4_progress_tracking_trainer,Trainer progress.tracking,model_fitzone_progress_tracking,fitzone.group_fitzone_trainer,1,1,1,0
 access_phase4_injury_type_trainer,Trainer injury.type,model_fitzone_injury_type,fitzone.group_fitzone_trainer,1,0,0,0
 access_phase4_checkin_wizard_trainer,Trainer checkin.wizard,model_fitzone_checkin_wizard,fitzone.group_fitzone_trainer,1,1,1,1
-
 access_pool_log_owner,pool log owner,model_fitzone_pool_maintenance_log,fitzone.group_fitzone_manager,1,1,1,1
 access_pool_log_maintenance,pool log maintenance,model_fitzone_pool_maintenance_log,fitzone.group_fitzone_technician,1,1,1,0
 access_maintenance_ticket_tech,maintenance tickets progress,maintenance.model_maintenance_request,fitzone.group_fitzone_technician,1,1,0,0
