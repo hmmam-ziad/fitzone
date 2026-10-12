@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- Pool Slots -->
+    <!-- ==================== Pool Slots ==================== -->
+
     <record id="view_fitzone_pool_slot_list" model="ir.ui.view">
         <field name="name">fitzone.pool.slot.list</field>
         <field name="model">fitzone.pool.slot</field>
@@ -20,15 +21,15 @@
         <field name="name">fitzone.pool.slot.form</field>
         <field name="model">fitzone.pool.slot</field>
         <field name="arch" type="xml">
-            <form>
+            <form string="Pool Slot">
                 <sheet>
-                <group>
-                    <field name="day_of_week"/>
-                    <field name="start_time" widget="float_time"/>
-                    <field name="end_time" widget="float_time"/>
-                    <field name="capacity"/>
-                    <field name="slot_type"/>
-                </group>
+                    <group>
+                        <field name="day_of_week"/>
+                        <field name="start_time" widget="float_time"/>
+                        <field name="end_time" widget="float_time"/>
+                        <field name="capacity"/>
+                        <field name="slot_type"/>
+                    </group>
                 </sheet>
             </form>
         </field>
@@ -38,10 +39,14 @@
         <field name="name">Pool Slots</field>
         <field name="res_model">fitzone.pool.slot</field>
         <field name="view_mode">list,form</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'list', 'view_id': ref('view_fitzone_pool_slot_list')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('view_fitzone_pool_slot_form')})
+        ]"/>
     </record>
 
+    <!-- ==================== Pool Bookings ==================== -->
 
-    <!-- Pool Bookings -->
     <record id="view_fitzone_pool_booking_list" model="ir.ui.view">
         <field name="name">fitzone.pool.booking.list</field>
         <field name="model">fitzone.pool.booking</field>
@@ -50,8 +55,10 @@
                 <field name="member_id"/>
                 <field name="membership_id"/>
                 <field name="pool_slot_id"/>
-                <field name="trainer_id"/>
-                <field name="booking_date"/>
+                <field name="trainer_id"
+                       column_invisible="context.get('hide_trainer_column', False)"/>
+                <field name="session_date"/>
+                <field name="booking_date" optional="hide"/>
                 <field name="status"/>
             </list>
         </field>
@@ -61,16 +68,31 @@
         <field name="name">fitzone.pool.booking.form</field>
         <field name="model">fitzone.pool.booking</field>
         <field name="arch" type="xml">
-            <form>
+            <form string="Pool Booking">
+                <header>
+                    <button name="action_cancel"
+                            type="object"
+                            string="Cancel Booking"
+                            class="btn-secondary"
+                            invisible="status != 'confirmed'"/>
+                </header>
+
                 <sheet>
-                <group>
-                    <field name="member_id"/>
-                    <field name="membership_id"/>
-                    <field name="pool_slot_id"/>
-                    <field name="trainer_id"/>
-                    <field name="booking_date"/>
-                    <field name="status"/>
-                </group>
+                    <group>
+                        <field name="member_id"/>
+                        <field name="membership_id"/>
+                        <field name="pool_slot_id"/>
+                        <field name="session_date"/>
+
+                        <field name="is_free_swim" invisible="1"/>
+
+                        <field name="trainer_id"
+                               invisible="is_free_swim"
+                               required="not is_free_swim"/>
+
+                        <field name="booking_date" readonly="1"/>
+                        <field name="status"/>
+                    </group>
                 </sheet>
             </form>
         </field>
@@ -80,6 +102,10 @@
         <field name="name">Pool Bookings</field>
         <field name="res_model">fitzone.pool.booking</field>
         <field name="view_mode">list,form</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'list', 'view_id': ref('view_fitzone_pool_booking_list')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('view_fitzone_pool_booking_form')})
+        ]"/>
     </record>
 
 </odoo>

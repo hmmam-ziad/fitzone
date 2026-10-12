@@ -8,11 +8,10 @@ class Trainer(models.Model):
     _rec_name = 'employee_id'
 
     ACTIVITY_LABELS = {
-        'class': 'Group Class',
-        'pt': 'Personal Training',
-        'pool': 'Pool Private Session',
-        
-    }
+    'class': 'Group Class',
+    'pt': 'Personal Training',
+    'pool': 'Pool Session',
+}
 
     employee_id = fields.Many2one(
         'hr.employee',

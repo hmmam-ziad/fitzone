@@ -16,7 +16,7 @@ class TrainerSchedule(models.Model):
         [
             ('class', 'Group Class'),
             ('pt', 'Personal Training'),
-            ('pool', 'Pool Private Session'),
+            ('pool', 'Pool Session'),
         ],
         readonly=True,
     )
@@ -100,31 +100,61 @@ class TrainerSchedule(models.Model):
 
                     UNION ALL
 
-                    -- Pool bookings
+                    -- Pool private sessions (1:1): one row per booking
                     SELECT
                         (b.id::bigint * 10 + 3) AS id,
                         'pool'::varchar AS activity_type,
                         b.trainer_id AS trainer_id,
                         'Pool Private Session'::varchar AS name,
-                        date_trunc('day', b.booking_date)
-                            + (
-                                sl.start_time * interval '1 hour'
-                            ) AS start_datetime,
-                        date_trunc('day', b.booking_date)
-                            + (
-                                sl.end_time * interval '1 hour'
-                            ) AS end_datetime,
+                        ((b.session_date::timestamp
+                            + sl.start_time * interval '1 hour')
+                            AT TIME ZONE 'Asia/Amman') AT TIME ZONE 'UTC'
+                            AS start_datetime,
+                        ((b.session_date::timestamp
+                            + sl.end_time * interval '1 hour')
+                            AT TIME ZONE 'Asia/Amman') AT TIME ZONE 'UTC'
+                            AS end_datetime,
                         b.member_id AS member_id,
                         0::integer AS member_count,
                         'fitzone.pool.booking'::varchar AS res_model,
                         b.id AS res_id
                     FROM fitzone_pool_booking b
-                    JOIN fitzone_pool_slot sl
-                      ON sl.id = b.pool_slot_id
+                    JOIN fitzone_pool_slot sl ON sl.id = b.pool_slot_id
                     WHERE b.trainer_id IS NOT NULL
-                      AND b.booking_date IS NOT NULL
+                      AND b.session_date IS NOT NULL
+                      AND sl.slot_type = 'private_pt'
                       AND COALESCE(b.status, '') != 'cancelled'
                       AND sl.end_time > sl.start_time
+
+                    UNION ALL
+
+                    -- Pool group lessons: one row per (slot + date + trainer)
+                    SELECT
+                        (MIN(b.id)::bigint * 10 + 4) AS id,
+                        'pool'::varchar AS activity_type,
+                        b.trainer_id AS trainer_id,
+                        'Pool Group Lesson'::varchar AS name,
+                        ((b.session_date::timestamp
+                            + sl.start_time * interval '1 hour')
+                            AT TIME ZONE 'Asia/Amman') AT TIME ZONE 'UTC'
+                            AS start_datetime,
+                        ((b.session_date::timestamp
+                            + sl.end_time * interval '1 hour')
+                            AT TIME ZONE 'Asia/Amman') AT TIME ZONE 'UTC'
+                            AS end_datetime,
+                        NULL::integer AS member_id,
+                        COUNT(*)::integer AS member_count,
+                        'fitzone.pool.slot'::varchar AS res_model,
+                        sl.id AS res_id
+                    FROM fitzone_pool_booking b
+                    JOIN fitzone_pool_slot sl ON sl.id = b.pool_slot_id
+                    WHERE b.trainer_id IS NOT NULL
+                      AND b.session_date IS NOT NULL
+                      AND sl.slot_type = 'lesson'
+                      AND COALESCE(b.status, '') != 'cancelled'
+                      AND sl.end_time > sl.start_time
+                    GROUP BY b.trainer_id, b.session_date, sl.id,
+                             sl.start_time, sl.end_time
                 ) t
             )
         """ % self._table)
