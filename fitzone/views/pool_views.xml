@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
+    <!-- ==================== Pool Slots ==================== -->
 
     <record id="view_fitzone_pool_slot_list" model="ir.ui.view">
         <field name="name">fitzone.pool.slot.list</field>
@@ -21,7 +22,6 @@
         <field name="model">fitzone.pool.slot</field>
         <field name="arch" type="xml">
             <form string="Pool Slot">
-            
                 <sheet>
                     <group>
                         <field name="day_of_week"/>
@@ -44,7 +44,6 @@
             (0, 0, {'view_mode': 'form', 'view_id': ref('view_fitzone_pool_slot_form')})
         ]"/>
     </record>
-
 
     <!-- ==================== Pool Bookings ==================== -->
 
@@ -69,22 +68,26 @@
         <field name="model">fitzone.pool.booking</field>
         <field name="arch" type="xml">
             <form string="Pool Booking">
-            <header>
-                <button name="action_cancel"
-                        type="object"
-                        string="Cancel Booking"
-                        class="btn-secondary"
-                        invisible="status != 'confirmed'"/>
-            </header>
+                <header>
+                    <button name="action_cancel"
+                            type="object"
+                            string="Cancel Booking"
+                            class="btn-secondary"
+                            invisible="status != 'confirmed'"/>
+                </header>
+
                 <sheet>
                     <group>
                         <field name="member_id"/>
                         <field name="membership_id"/>
                         <field name="pool_slot_id"/>
-                        <field name="pool_slot_id" invisible="1"/>
+
+                        <field name="is_free_swim" invisible="1"/>
+
                         <field name="trainer_id"
-                               invisible="pool_slot_id.slot_type == 'free_swim'"
-                               required="pool_slot_id.slot_type in ['lesson', 'private_pt']"/>
+                               invisible="is_free_swim"
+                               required="not is_free_swim"/>
+
                         <field name="booking_date"/>
                         <field name="status"/>
                     </group>

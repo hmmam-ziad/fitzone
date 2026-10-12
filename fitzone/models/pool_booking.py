@@ -38,6 +38,17 @@ class PoolBooking(models.Model):
         default='confirmed',
     )
 
+    is_free_swim = fields.Boolean(
+        compute='_compute_is_free_swim',
+    )
+
+    @api.depends('pool_slot_id', 'pool_slot_id.slot_type')
+    def _compute_is_free_swim(self):
+        for rec in self:
+            rec.is_free_swim = (
+                rec.pool_slot_id.slot_type == 'free_swim'
+            )
+
     def action_cancel(self):
         for rec in self:
             if rec.status != 'confirmed':
@@ -124,8 +135,6 @@ class PoolBooking(models.Model):
                     )
                 )
 
-    
-    
     @api.constrains(
         'member_id', 'pool_slot_id', 'booking_date', 'status'
     )
