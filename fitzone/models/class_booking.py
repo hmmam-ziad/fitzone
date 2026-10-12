@@ -1,5 +1,5 @@
 from odoo import api, fields, models
-from odoo.exceptions import ValidationError
+from odoo.exceptions import AccessError, ValidationError
 
 
 class ClassBooking(models.Model):
@@ -7,8 +7,21 @@ class ClassBooking(models.Model):
     _description = 'Class Booking'
     _rec_name = 'member_id'
 
-    member_id = fields.Many2one('res.partner', required=True, domain="[('membership_ids', '!=', False)]")
-    membership_id = fields.Many2one('fitzone.membership', readonly=True)
+    member_id = fields.Many2one('res.partner', required=True, groups='fitzone.group_fitzone_manager,fitzone.group_fitzone_reception', domain="[('membership_ids', '!=', False)]")
+    membership_id = fields.Many2one('fitzone.membership', readonly=True, groups='fitzone.group_fitzone_manager,fitzone.group_fitzone_reception')
+    member_name = fields.Char(compute='_compute_attendee_identity', compute_sudo=False)
+    membership_number = fields.Char(compute='_compute_attendee_identity', compute_sudo=False)
+
+    def _attendee_identity(self):
+        self.ensure_one()
+        self.check_access('read')
+        # Own-class readers need only these two identity strings, never a partner record.
+        member = self.sudo().member_id
+        return member.name, member.membership_no
+
+    def _compute_attendee_identity(self):
+        for booking in self:
+            booking.member_name, booking.membership_number = booking._attendee_identity()
     class_id = fields.Many2one('fitzone.gym.class', required=True)
     booking_date = fields.Datetime(default=fields.Datetime.now)
     status = fields.Selection(
@@ -92,7 +105,9 @@ class ClassBooking(models.Model):
                 raise ValidationError("The class is full.")
 
             vals['membership_id'] = membership.id
-            records |= super().create([vals])
+            booking = super().create([vals])
+            self.env['fitzone.attendance']._ensure_booking_attendance(booking)
+            records |= booking
         return records
 
     def write(self, vals):
@@ -112,6 +127,9 @@ class ClassBooking(models.Model):
    
     @api.model
     def check_in_member(self, class_id, barcode):
+        if (not self.env.su and self.env.user.has_group('fitzone.group_fitzone_trainer')
+                and not any(self.env.user.has_group('fitzone.group_fitzone_' + role) for role in ('manager', 'reception'))):
+            return self.env['fitzone.attendance']._trainer_check_in(class_id, barcode)
         membership = self.env['fitzone.membership'].search(
             [('barcode', '=', barcode)], limit=1)
         booking = self.browse()
@@ -137,4 +155,14 @@ class ClassBooking(models.Model):
             raise ValidationError("Membership is frozen. Check-in denied.")
 
         booking.status = 'attended'
+        self.env['fitzone.attendance']._ensure_booking_attendance(booking)
         return booking
+
+    @api.depends('member_id')
+    def _compute_display_name(self):
+        if (not self.env.su and self.env.user.has_group('fitzone.group_fitzone_trainer')
+                and not any(self.env.user.has_group('fitzone.group_fitzone_' + role) for role in ('manager', 'reception'))):
+            for booking in self:
+                booking.display_name = booking.member_name
+        else:
+            super()._compute_display_name()

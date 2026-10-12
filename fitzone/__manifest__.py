@@ -57,8 +57,10 @@
         "views/trainer_commission_wizard_views.xml",
         "report/trainer_commission_statement.xml",
         "views/freeze_views.xml",
+        "views/pool_access_views.xml",
         "views/menus.xml",
         "views/inventory_menus.xml",
+        "views/medical_security_views.xml",
     ],
     "assets": {
         "point_of_sale._assets_pos": [

@@ -7,6 +7,7 @@ class FitZoneEmployee(models.Model):
 
     fitzone_employee_no = fields.Char(
         string='FitZone Employee No.',
+        groups='hr.group_hr_user',
         readonly=True,
         copy=False,
         index=True,

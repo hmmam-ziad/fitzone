@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ========== Reception: Pool Access Check ========== -->
+    <record id="view_fitzone_pool_access_wizard_form" model="ir.ui.view">
+        <field name="name">fitzone.pool.access.wizard.form</field>
+        <field name="model">fitzone.pool.access.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Pool Access Check">
+
+                <div class="alert alert-success" role="alert"
+                     invisible="state not in ('allowed', 'registered')">
+                    <field name="message" nolabel="1"/>
+                </div>
+                <div class="alert alert-danger" role="alert"
+                     invisible="state != 'denied'">
+                    <field name="message" nolabel="1"/>
+                </div>
+
+                <group>
+                    <field name="barcode" placeholder="Scan the membership barcode"
+                           readonly="state != 'new'"/>
+                    <field name="member_id" readonly="state != 'new'"/>
+                    <field name="usage_type" readonly="state != 'new'"/>
+                    <field name="fee" invisible="state not in ('allowed', 'registered')"/>
+                    <field name="state" invisible="1"/>
+                </group>
+
+                <footer>
+                    <button name="action_check" type="object" string="Check Access"
+                            class="btn-primary" invisible="state != 'new'"/>
+                    <button name="action_register_entry" type="object"
+                            string="Register Entry" class="btn-primary"
+                            invisible="state != 'allowed'"/>
+                    <button name="action_new_check" type="object" string="New Check"
+                            invisible="state == 'new'"/>
+                    <button string="Close" special="cancel"/>
+                </footer>
+
+            </form>
+        </field>
+    </record>
+
+    <record id="action_fitzone_pool_access_wizard" model="ir.actions.act_window">
+        <field name="name">Pool Access Check</field>
+        <field name="res_model">fitzone.pool.access.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <!-- ========== Management: Free-Swim Slots Setup ========== -->
+    <record id="view_fitzone_free_swim_slot_list" model="ir.ui.view">
+        <field name="name">fitzone.pool.slot.free.swim.list</field>
+        <field name="model">fitzone.pool.slot</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="day_of_week"/>
+                <field name="start_time" widget="float_time"/>
+                <field name="end_time" widget="float_time"/>
+                <field name="capacity"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_fitzone_free_swim_slots" model="ir.actions.act_window">
+        <field name="name">Free-Swim Slots</field>
+        <field name="res_model">fitzone.pool.slot</field>
+        <field name="view_mode">list,form</field>
+        <field name="view_id" ref="view_fitzone_free_swim_slot_list"/>
+        <field name="domain">[('slot_type', '=', 'free_swim')]</field>
+        <field name="context">{'default_slot_type': 'free_swim'}</field>
+    </record>
+
+   
+</odoo>
