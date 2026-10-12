@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ========================================== -->
+    <!-- Rehabilitation Files Views & Search -->
+    <!-- ========================================== -->
+    <record id="view_fitzone_rehabilitation_search" model="ir.ui.view">
+        <field name="name">fitzone.rehabilitation.search</field>
+        <field name="model">fitzone.rehabilitation</field>
+        <field name="group_ids" eval="[(6, 0, [ref('fitzone.group_fitzone_physiotherapist')])]" />
+        <field name="arch" type="xml">
+            <search>
+                <field name="member_id" />
+                <field name="injury_id" />
+                <field name="physiotherapist_id" />
+                <field name="injury_cause_id" />
+                <field name="sport_type" />
+                <field name="start_date" />
+                <separator />
+                <filter string="Draft" name="filter_draft"
+                    domain="[('state', '=', 'draft')]" />
+                <filter string="In Progress" name="filter_in_progress"
+                    domain="[('state', '=', 'in_progress')]" />
+                <filter string="Completed" name="filter_completed"
+                    domain="[('state', '=', 'completed')]" />
+                <separator />
+                <filter string="My Files" name="filter_my_files"
+                    domain="[('physiotherapist_id.user_id', '=', uid)]" />
+                <filter string="Ending in 7 Days" name="filter_ending_soon"
+                    domain="[('state', '=', 'in_progress'),
+                             ('end_date', '&gt;=', context_today().strftime('%Y-%m-%d')),
+                             ('end_date', '&lt;=', (context_today() + datetime.timedelta(days=7)).strftime('%Y-%m-%d'))]" />
+                <separator />
+                <filter string="Member" name="group_by_member"
+                    context="{'group_by': 'member_id'}" />
+                <filter string="Physiotherapist" name="group_by_physiotherapist"
+                    context="{'group_by': 'physiotherapist_id'}" />
+                <filter string="Cause of Injury" name="group_by_cause"
+                    context="{'group_by': 'injury_cause_id'}" />
+                <filter string="Status" name="group_by_state"
+                    context="{'group_by': 'state'}" />
+                <filter string="Start Date" name="group_by_start_date"
+                    context="{'group_by': 'start_date:month'}" />
+            </search>
+        </field>
+    </record>
+
+    <record id="view_fitzone_rehabilitation_list" model="ir.ui.view">
+        <field name="name">fitzone.rehabilitation.list</field>
+        <field name="model">fitzone.rehabilitation</field>
+        <field name="group_ids" eval="[(6, 0, [ref('fitzone.group_fitzone_physiotherapist')])]" />
+        <field name="arch" type="xml">
+            <list string="Rehabilitation Files"
+                decoration-success="state == 'completed'"
+                decoration-info="state == 'in_progress'">
+                <field name="member_id" />
+                <field name="injury_id" />
+                <field name="physiotherapist_id" />
+                <field name="start_date" />
+                <field name="end_date" />
+                <field name="state" widget="badge" />
+            </list>
+        </field>
+    </record>
+
+    <record id="view_fitzone_rehabilitation_form" model="ir.ui.view">
+        <field name="name">fitzone.rehabilitation.form</field>
+        <field name="model">fitzone.rehabilitation</field>
+        <field name="group_ids" eval="[(6, 0, [ref('fitzone.group_fitzone_physiotherapist')])]" />
+        <field name="arch" type="xml">
+            <form string="Rehabilitation File">
+                <header>
+                    <button name="action_start" string="Start" type="object"
+                        class="btn-primary"
+                        invisible="state != 'draft'" />
+                    <button name="action_complete" string="Complete" type="object"
+                        class="btn-primary"
+                        invisible="state != 'in_progress'" />
+                    <button name="action_reset_draft" string="Reset to Draft" type="object"
+                        invisible="state != 'completed'"
+                        confirm="Are you sure you want to reset this file to draft?" />
+                    <field name="state" widget="statusbar"
+                        statusbar_visible="draft,in_progress,completed" />
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="member_id" />
+                            <field name="injury_id" domain="[('member_id', '=', member_id)]" />
+                            <field name="physiotherapist_id" />
+                        </group>
+                        <group>
+                            <field name="start_date" />
+                            <field name="end_date" />
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Injury Classification" name="injury_classification">
+                            <group>
+                                <field name="injury_cause_id" />
+                                <field name="sport_type" />
+                            </group>
+                        </page>
+                        <page string="Clinical Movement Guidance" name="trainer_restrictions">
+                            <div class="alert alert-warning" role="alert">
+                                Text entered in this rehabilitation file is not shown to Trainers.
+                                Enter Trainer-visible forbidden movements and restrictions in the
+                                restrictions editor (Configuration → Injury Types). Keep diagnosis
+                                and clinic notes in the rehabilitation file.
+                            </div>
+                            <group string="Rehabilitation Movement Guidance"
+                                class="bg-warning-subtle p-3">
+                                <field name="prohibited_exercises" />
+                                <field name="movement_restrictions" />
+                            </group>
+                        </page>
+                        <page string="Medical Confidentiality" name="medical_confidentiality"
+                            groups="fitzone.group_fitzone_physiotherapist">
+                            <group>
+                                <field name="medical_notes" />
+                                <field name="notes" string="Additional Confidential Notes" />
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_fitzone_rehabilitation" model="ir.actions.act_window">
+        <field name="name">Rehabilitation Files</field>
+        <field name="res_model">fitzone.rehabilitation</field>
+        <field name="view_mode">list,form</field>
+        <field name="view_id" ref="view_fitzone_rehabilitation_list" />
+        <field name="search_view_id" ref="view_fitzone_rehabilitation_search" />
+    </record>
+</odoo>

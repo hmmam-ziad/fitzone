@@ -1,3 +1,4 @@
+from . import medical_security
 from . import members
 from . import trainer
 from . import employee
@@ -24,6 +25,8 @@ from . import res_partner_pool
 from . import injuries
 from . import injury_type
 from . import rehabilitation
+# Initialize the SQL report after all three source tables.
+from . import injury_aggregate
 from . import product_template
 from . import purchase_order
 from . import maintenance_equipment
@@ -35,4 +38,5 @@ from . import checkin_wizard
 from . import staff_availability_wizard
 from . import pos_order
 from . import trainer_commission_wizard
-
+from . import trainer_price_security
+from . import pool_maintenance_log

@@ -1,23 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- PT Sessions -->
+    <!-- ========================================== -->
+    <!-- PT Sessions Views & Search -->
+    <!-- ========================================== -->
+    <record id="view_fitzone_pt_session_search" model="ir.ui.view">
+        <field name="name">fitzone.pt.session.search</field>
+        <field name="model">fitzone.pt.session</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="member_id" />
+                <field name="trainer_id" />
+                <field name="membership_id" />
+                <field name="package_id" />
+                <field name="session_date" />
+                <separator />
+                <filter string="Draft" name="filter_draft"
+                    domain="[('state', '=', 'draft')]" />
+                <filter string="Completed" name="filter_completed"
+                    domain="[('state', '=', 'completed')]" />
+                <filter string="Cancelled" name="filter_cancelled"
+                    domain="[('state', '=', 'cancelled')]" />
+                <separator />
+                <filter string="Today" name="filter_today"
+                    domain="[('session_date', '&gt;=', context_today().strftime('%Y-%m-%d 00:00:00')),
+                                 ('session_date', '&lt;=', context_today().strftime('%Y-%m-%d 23:59:59'))]" />
+                <filter string="Upcoming" name="filter_upcoming"
+                    domain="[('session_date', '&gt;=', context_today().strftime('%Y-%m-%d'))]" />
+                <filter string="Past" name="filter_past"
+                    domain="[('session_date', '&lt;', context_today().strftime('%Y-%m-%d'))]" />
+                <separator />
+                <filter string="Trainer" name="group_by_trainer"
+                    context="{'group_by': 'trainer_id'}" />
+                <filter string="Member" name="group_by_member"
+                    context="{'group_by': 'member_id'}" />
+                <filter string="Package" name="group_by_package"
+                    context="{'group_by': 'package_id'}" />
+                <filter string="Session Type" name="group_by_session_type"
+                    context="{'group_by': 'session_type'}" />
+                <filter string="Status" name="group_by_state"
+                    context="{'group_by': 'state'}" />
+                <filter string="Session Date" name="group_by_session_date"
+                    context="{'group_by': 'session_date:month'}" />
+            </search>
+        </field>
+    </record>
+
     <record id="view_fitzone_pt_session_list" model="ir.ui.view">
         <field name="name">fitzone.pt.session.list</field>
         <field name="model">fitzone.pt.session</field>
         <field name="arch" type="xml">
             <list decoration-success="state == 'completed'" decoration-muted="state == 'cancelled'">
-                <field name="member_id"/>
-                <field name="trainer_id"/>
-                <field name="membership_id"/>
-                <field name="package_id"/>
-                <field name="session_date"/>
-                <field name="end_datetime"/>
-                <field name="session_type"/>
-                <field name="session_price"/>
-                <field name="applied_commission_rate" string="Locked Rate (%)" readonly="1"/>
-                <field name="calculated_commission" string="Locked Commission" readonly="1"/>
-                <field name="state"/>
+                <field name="can_report_incident" invisible="1"/>
+                    <button name="action_report_incident" type="object" string="Report incident"
+                        groups="fitzone.group_fitzone_trainer" invisible="not can_report_incident"/>
+                <field name="member_id" />
+                <field name="trainer_id" />
+                <field name="membership_id" />
+                <field name="package_id" />
+                <field name="session_date" />
+                <field name="end_datetime" />
+                <field name="session_type" />
+                <field name="session_price" />
+                <field name="applied_commission_rate" string="Locked Rate (%)" readonly="1" />
+                <field name="calculated_commission" string="Locked Commission" readonly="1" />
+                <field name="state" />
             </list>
         </field>
     </record>
@@ -28,25 +75,45 @@
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <button name="action_complete_session" type="object" string="Complete Session" class="oe_highlight" invisible="state != 'draft'"/>
-                    <field name="state" widget="statusbar"/>
+                    <field name="can_report_incident" invisible="1"/>
+                    <button name="action_report_incident" type="object" string="Report incident"
+                        groups="fitzone.group_fitzone_trainer" invisible="not can_report_incident"/>
+                    <button name="action_complete_session" type="object" string="Complete Session"
+                        class="oe_highlight" invisible="state != 'draft'" />
+                    <field name="state" widget="statusbar" />
                 </header>
                 <sheet>
                     <group>
-                        <field name="member_id" readonly="state == 'completed'"/>
-                        <field name="trainer_id" readonly="state == 'completed'"/>
-                        <field name="membership_id"/>
-                        <field name="package_id"/>
-                        <field name="session_date" readonly="state == 'completed'"/>
-                        <field name="end_datetime"/>
-                        <field name="session_type" readonly="state == 'completed'"/>
-                        <field name="session_price" readonly="state == 'completed'"/>
-                        <field name="applied_commission_rate" string="Locked Rate (%)" readonly="1"/>
-                        <field name="calculated_commission" string="Locked Commission" readonly="1"/>
-                        <field name="state" readonly="state == 'completed'"/>
+                        <field name="member_id" readonly="state == 'completed'" />
+                        <field name="trainer_id" readonly="state == 'completed'" />
+                        <field name="membership_id" />
+                        <field name="package_id" />
+                        <field name="session_date" readonly="state == 'completed'" />
+                        <field name="end_datetime" />
+                        <field name="session_type" readonly="state == 'completed'" />
+                        <field name="session_price" readonly="state == 'completed'" />
+                        <field name="applied_commission_rate" string="Locked Rate (%)" readonly="1" />
+                        <field name="calculated_commission" string="Locked Commission" readonly="1" />
+                        <field name="state" readonly="state == 'completed'" />
                     </group>
                 </sheet>
             </form>
+        </field>
+    </record>
+
+    <record id="view_fitzone_pt_session_calendar" model="ir.ui.view">
+        <field name="name">fitzone.pt.session.calendar</field>
+        <field name="model">fitzone.pt.session</field>
+        <field name="arch" type="xml">
+            <calendar string="PT Sessions" date_start="session_date" date_stop="end_datetime"
+                color="trainer_id" quick_create="false" event_open_popup="true">
+                <field name="member_id" />
+                <field name="trainer_id" />
+                <field name="state" />
+                <field name="session_price" />
+                <field name="applied_commission_rate" string="Locked Rate (%)" />
+                <field name="calculated_commission" string="Locked Commission" />
+            </calendar>
         </field>
     </record>
 
@@ -54,44 +121,54 @@
         <field name="name">PT Sessions</field>
         <field name="res_model">fitzone.pt.session</field>
         <field name="view_mode">list,calendar,form</field>
-    </record>
-
-
-    <record id="view_fitzone_pt_session_calendar" model="ir.ui.view">
-        <field name="name">fitzone.pt.session.calendar</field>
-        <field name="model">fitzone.pt.session</field>
-        <field name="arch" type="xml">
-            <calendar string="PT Sessions" date_start="session_date" date_stop="end_datetime" color="trainer_id" quick_create="false" event_open_popup="true">
-                <field name="member_id"/>
-                <field name="trainer_id"/>
-                <field name="state"/>
-                <field name="session_price"/>
-                        <field name="applied_commission_rate" string="Locked Rate (%)"/>
-                        <field name="calculated_commission" string="Locked Commission"/>
-            </calendar>
-        </field>
+        <field name="search_view_id" ref="view_fitzone_pt_session_search" />
     </record>
 
     <record id="action_fitzone_my_trainees" model="ir.actions.act_window">
         <field name="name">My Trainees</field>
         <field name="res_model">res.partner</field>
         <field name="view_mode">list,form</field>
-        <field name="domain">[('pt_session_ids.trainer_id.employee_id.user_id', '=', uid)]</field>
+        <field name="domain">['|', ('pt_session_ids.trainer_id.employee_id.user_id', '=', uid), ('class_booking_ids', 'any', [('class_id.trainer_id.employee_id.user_id', '=', uid), ('status', '!=', 'cancelled')])]</field>
     </record>
 
-    <!-- Commission Rules -->
+
+    <!-- ========================================== -->
+    <!-- Commission Rules Views & Search -->
+    <!-- ========================================== -->
+    <record id="view_fitzone_commission_rule_search" model="ir.ui.view">
+        <field name="name">fitzone.commission.rule.search</field>
+        <field name="model">fitzone.commission.rule</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name" />
+                <field name="trainer_id" />
+                <field name="session_type" />
+                <separator />
+                <filter string="Active" name="filter_active"
+                    domain="[('active', '=', True)]" />
+                <filter string="Archived" name="filter_archived"
+                    domain="[('active', '=', False)]" />
+                <separator />
+                <filter string="Trainer" name="group_by_trainer"
+                    context="{'group_by': 'trainer_id'}" />
+                <filter string="Session Type" name="group_by_session_type"
+                    context="{'group_by': 'session_type'}" />
+            </search>
+        </field>
+    </record>
+
     <record id="view_fitzone_commission_rule_list" model="ir.ui.view">
         <field name="name">fitzone.commission.rule.list</field>
         <field name="model">fitzone.commission.rule</field>
         <field name="arch" type="xml">
             <list>
-                <field name="name"/>
-                <field name="trainer_id"/>
-                        <field name="session_type"/>
-                        <field name="rate"/>
-                <field name="effective_from"/>
-                <field name="effective_to"/>
-                <field name="active"/>
+                <field name="name" />
+                <field name="trainer_id" />
+                <field name="session_type" />
+                <field name="rate" />
+                <field name="effective_from" />
+                <field name="effective_to" />
+                <field name="active" />
             </list>
         </field>
     </record>
@@ -103,13 +180,13 @@
             <form>
                 <sheet>
                     <group>
-                        <field name="name"/>
-                        <field name="trainer_id"/>
-                        <field name="session_type"/>
-                        <field name="rate"/>
-                        <field name="effective_from"/>
-                        <field name="effective_to"/>
-                        <field name="active"/>
+                        <field name="name" />
+                        <field name="trainer_id" />
+                        <field name="session_type" />
+                        <field name="rate" />
+                        <field name="effective_from" />
+                        <field name="effective_to" />
+                        <field name="active" />
                     </group>
                 </sheet>
             </form>
@@ -120,19 +197,39 @@
         <field name="name">Commission Rules</field>
         <field name="res_model">fitzone.commission.rule</field>
         <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_fitzone_commission_rule_search" />
     </record>
 
 
-    <!-- Trainer Commissions -->
+    <!-- ========================================== -->
+    <!-- Trainer Commissions Views & Search -->
+    <!-- ========================================== -->
+    <record id="view_fitzone_trainer_commission_search" model="ir.ui.view">
+        <field name="name">fitzone.trainer.commission.search</field>
+        <field name="model">fitzone.trainer.commission</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="trainer_id" />
+                <field name="pt_session_id" />
+                <field name="commission_rule_id" />
+                <separator />
+                <filter string="Trainer" name="group_by_trainer"
+                    context="{'group_by': 'trainer_id'}" />
+                <filter string="Commission Rule" name="group_by_rule"
+                    context="{'group_by': 'commission_rule_id'}" />
+            </search>
+        </field>
+    </record>
+
     <record id="view_fitzone_trainer_commission_list" model="ir.ui.view">
         <field name="name">fitzone.trainer.commission.list</field>
         <field name="model">fitzone.trainer.commission</field>
         <field name="arch" type="xml">
             <list>
-                <field name="trainer_id"/>
-                <field name="pt_session_id"/>
-                <field name="commission_rule_id"/>
-                <field name="amount"/>
+                <field name="trainer_id" />
+                <field name="pt_session_id" />
+                <field name="commission_rule_id" />
+                <field name="amount" sum="Total" />
             </list>
         </field>
     </record>
@@ -144,10 +241,10 @@
             <form>
                 <sheet>
                     <group>
-                        <field name="trainer_id"/>
-                        <field name="pt_session_id"/>
-                        <field name="commission_rule_id"/>
-                        <field name="amount"/>
+                        <field name="trainer_id" />
+                        <field name="pt_session_id" />
+                        <field name="commission_rule_id" />
+                        <field name="amount" />
                     </group>
                 </sheet>
             </form>
@@ -158,6 +255,7 @@
         <field name="name">Trainer Commissions</field>
         <field name="res_model">fitzone.trainer.commission</field>
         <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_fitzone_trainer_commission_search" />
     </record>
 
 </odoo>

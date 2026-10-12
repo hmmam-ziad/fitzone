@@ -12,23 +12,31 @@ class PoolBooking(models.Model):
         'res.partner',
         string='Member',
         required=True,
+        groups='fitzone.group_fitzone_manager,fitzone.group_fitzone_reception',
+        domain="[('membership_ids', '!=', False)]",
     )
+
     membership_id = fields.Many2one(
         'fitzone.membership',
         required=True,
+        groups='fitzone.group_fitzone_manager,fitzone.group_fitzone_reception',
     )
+
     pool_slot_id = fields.Many2one(
         'fitzone.pool.slot',
         required=True,
     )
+
     trainer_id = fields.Many2one(
         'fitzone.trainer',
         string='Trainer',
         help="Required for Group and Private Sessions; not used for Free Swim.",
     )
+
     booking_date = fields.Datetime(
         default=fields.Datetime.now,
     )
+
     status = fields.Selection(
         [
             ('confirmed', 'Confirmed'),
@@ -38,9 +46,33 @@ class PoolBooking(models.Model):
         default='confirmed',
     )
 
+    member_name = fields.Char(
+        compute='_compute_booking_identity',
+        compute_sudo=False,
+    )
+
+    membership_number = fields.Char(
+        compute='_compute_booking_identity',
+        compute_sudo=False,
+    )
+
     is_free_swim = fields.Boolean(
         compute='_compute_is_free_swim',
     )
+
+    def _booking_identity(self):
+        self.ensure_one()
+        self.check_access('read')
+
+        # Only expose minimal member identity.
+        member = self.sudo().member_id
+        return member.name, member.membership_no
+
+    def _compute_booking_identity(self):
+        for booking in self:
+            booking.member_name, booking.membership_number = (
+                booking._booking_identity()
+            )
 
     @api.depends('pool_slot_id', 'pool_slot_id.slot_type')
     def _compute_is_free_swim(self):
@@ -77,7 +109,6 @@ class PoolBooking(models.Model):
 
     @api.constrains('member_id')
     def _check_min_age(self):
-        # Reception re-checks at the door; here we block known under-age members.
         for rec in self:
             age = rec.member_id._fz_age_years()
 
@@ -105,34 +136,22 @@ class PoolBooking(models.Model):
 
             if membership.member_id != rec.member_id:
                 raise ValidationError(
-                    _(
-                        "The selected membership does not belong "
-                        "to this member."
-                    )
+                    _("The selected membership does not belong to this member.")
                 )
 
             if membership.state != 'active':
                 raise ValidationError(
-                    _(
-                        "Cannot book the pool: the membership "
-                        "is not active."
-                    )
+                    _("Cannot book the pool: the membership is not active.")
                 )
 
             if membership.date_start and membership.date_start > today:
                 raise ValidationError(
-                    _(
-                        "Cannot book the pool: the membership "
-                        "has not started yet."
-                    )
+                    _("Cannot book the pool: the membership has not started yet.")
                 )
 
             if membership.date_end and membership.date_end < today:
                 raise ValidationError(
-                    _(
-                        "Cannot book the pool: the membership "
-                        "has expired."
-                    )
+                    _("Cannot book the pool: the membership has expired.")
                 )
 
     @api.constrains(

@@ -40,7 +40,46 @@
     </record>
 
 
-    <!-- Memberships -->
+    <!-- ========================================== -->
+    <!-- Memberships Views & Search -->
+    <!-- ========================================== -->
+    <record id="view_fitzone_membership_search" model="ir.ui.view">
+        <field name="name">fitzone.membership.search</field>
+        <field name="model">fitzone.membership</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="member_id" />
+                <field name="package_id" />
+                <field name="barcode" />
+                <separator />
+                <filter string="Draft" name="filter_draft"
+                    domain="[('state', '=', 'draft')]" />
+                <filter string="Active" name="filter_active"
+                    domain="[('state', '=', 'active')]" />
+                <filter string="Blocked" name="filter_blocked"
+                    domain="[('state', '=', 'blocked')]" />
+                <filter string="Expired" name="filter_expired"
+                    domain="[('state', '=', 'expired')]" />
+                <filter string="Cancelled" name="filter_cancelled"
+                    domain="[('state', '=', 'cancelled')]" />
+                <separator />
+                <filter string="Expiring in 7 Days" name="filter_expiring_soon"
+                    domain="[('state', '=', 'active'),
+                             ('date_end', '&gt;=', context_today().strftime('%Y-%m-%d')),
+                             ('date_end', '&lt;=', (context_today() + datetime.timedelta(days=7)).strftime('%Y-%m-%d'))]" />
+                <separator />
+                <filter string="Member" name="group_by_member"
+                    context="{'group_by': 'member_id'}" />
+                <filter string="Package" name="group_by_package"
+                    context="{'group_by': 'package_id'}" />
+                <filter string="Status" name="group_by_state"
+                    context="{'group_by': 'state'}" />
+                <filter string="End Date" name="group_by_date_end"
+                    context="{'group_by': 'date_end:month'}" />
+            </search>
+        </field>
+    </record>
+
     <record id="view_fitzone_membership_list" model="ir.ui.view">
         <field name="name">fitzone.membership.list</field>
         <field name="model">fitzone.membership</field>
@@ -52,6 +91,9 @@
 
                 <field name="member_id" />
                 <field name="package_id" />
+                <field name="base_price" />
+                <field name="all_inclusive" />
+                <field name="final_price" />
                 <field name="barcode" />
                 <field name="date_start" />
                 <field name="date_end" />
@@ -66,7 +108,6 @@
         </field>
     </record>
 
-
     <!-- Membership Form -->
     <record id="view_fitzone_membership_form" model="ir.ui.view">
         <field name="name">fitzone.membership.form</field>
@@ -77,6 +118,15 @@
 
                 <header>
 
+                    <!-- Activate draft membership -->
+                    <button
+                        name="action_activate"
+                        type="object"
+                        string="Activate"
+                        class="btn-primary"
+                        invisible="state != 'draft'"
+                    />
+
                     <!-- Block active membership -->
                     <button
                         name="action_block"
@@ -85,19 +135,10 @@
                         invisible="state != 'active'"
                     />
 
-                    <!-- Unblock blocked membership -->
-                    <button
-                        name="action_unblock"
-                        type="object"
-                        string="Unblock"
-                        class="btn-primary"
-                        invisible="state != 'blocked'"
-                    />
-
                     <field
                         name="state"
                         widget="statusbar"
-                        statusbar_visible="active,blocked,expired"
+                        statusbar_visible="draft,active,blocked,expired"
                     />
 
                 </header>
@@ -110,11 +151,26 @@
                             <field name="member_id" />
                             <field name="package_id" />
                             <field name="barcode" />
+                            <field name="base_price" readonly="1" />
+                            <field name="all_inclusive" />
+                            <field name="final_price" readonly="1" />
+                            <field name="package_type" invisible="1" />
+
+                            <field name="total_sessions"
+                                readonly="1"
+                                invisible="package_type != 'private'" />
+
+                            <field name="consumed_sessions"
+                                invisible="package_type != 'private'" />
+
+                            <field name="remaining_sessions"
+                                readonly="1"
+                                invisible="package_type != 'private'" />
                         </group>
 
                         <group>
-                            <field name="date_start" />
-                            <field name="date_end" />
+                            <field name="date_start" readonly="1" />
+                            <field name="date_end" readonly="1" />
 
                             <field
                                 name="block_reason"
@@ -124,6 +180,20 @@
 
                     </group>
 
+                    <group string="All-Inclusive Medical Credits"
+                        invisible="not all_inclusive">
+                        <group string="Physiotherapy">
+                            <field name="physio_sessions_total" />
+                            <field name="physio_sessions_consumed" />
+                            <field name="physio_sessions_remaining" />
+                        </group>
+                        <group string="Nutrition">
+                            <field name="nutrition_sessions_total" />
+                            <field name="nutrition_sessions_consumed" />
+                            <field name="nutrition_sessions_remaining" />
+                        </group>
+                    </group>
+
                 </sheet>
 
             </form>
@@ -131,16 +201,43 @@
         </field>
     </record>
 
-
     <!-- Membership Action -->
     <record id="action_fitzone_membership" model="ir.actions.act_window">
         <field name="name">Memberships</field>
         <field name="res_model">fitzone.membership</field>
         <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_fitzone_membership_search" />
+        <field name="context">{'search_default_filter_active': 1}</field>
     </record>
 
 
-    <!-- Freezes -->
+    <!-- ========================================== -->
+    <!-- Freezes Views & Search -->
+    <!-- ========================================== -->
+    <record id="view_fitzone_freeze_search" model="ir.ui.view">
+        <field name="name">fitzone.freeze.search</field>
+        <field name="model">fitzone.freeze</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="membership_id" />
+                <field name="start_date" />
+                <separator />
+                <filter string="Currently Frozen" name="filter_current"
+                    domain="[('start_date', '&lt;=', context_today().strftime('%Y-%m-%d')),
+                             ('end_date', '&gt;=', context_today().strftime('%Y-%m-%d'))]" />
+                <filter string="Upcoming" name="filter_upcoming"
+                    domain="[('start_date', '&gt;', context_today().strftime('%Y-%m-%d'))]" />
+                <filter string="Past" name="filter_past"
+                    domain="[('end_date', '&lt;', context_today().strftime('%Y-%m-%d'))]" />
+                <separator />
+                <filter string="Membership" name="group_by_membership"
+                    context="{'group_by': 'membership_id'}" />
+                <filter string="Start Date" name="group_by_start"
+                    context="{'group_by': 'start_date:month'}" />
+            </search>
+        </field>
+    </record>
+
     <record id="view_fitzone_freeze_list" model="ir.ui.view">
         <field name="name">fitzone.freeze.list</field>
         <field name="model">fitzone.freeze</field>
@@ -156,9 +253,7 @@
         </field>
     </record>
 
-
     <!-- Freeze Form -->
-    <!-- t -->
     <record id="view_fitzone_freeze_form" model="ir.ui.view">
         <field name="name">fitzone.freeze.form</field>
         <field name="model">fitzone.freeze</field>
@@ -180,12 +275,12 @@
         </field>
     </record>
 
-
     <!-- Freeze Action -->
     <record id="action_fitzone_freeze" model="ir.actions.act_window">
         <field name="name">Freezes</field>
         <field name="res_model">fitzone.freeze</field>
         <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_fitzone_freeze_search" />
     </record>
 
 </odoo>

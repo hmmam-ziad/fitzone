@@ -1,17 +1,106 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- Injuries -->
+    <!-- ========================================== -->
+    <!-- Injury Causes Views & Search -->
+    <!-- ========================================== -->
+    <record id="view_fitzone_injury_cause_search" model="ir.ui.view">
+        <field name="name">fitzone.injury.cause.search</field>
+        <field name="model">fitzone.injury.cause</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name" string="Cause" />
+            </search>
+        </field>
+    </record>
+
+    <record id="view_fitzone_injury_cause_list" model="ir.ui.view">
+        <field name="name">fitzone.injury.cause.list</field>
+        <field name="model">fitzone.injury.cause</field>
+        <field name="arch" type="xml">
+            <list string="Injury Causes" editable="bottom">
+                <field name="name" />
+            </list>
+        </field>
+    </record>
+
+    <record id="view_fitzone_injury_cause_form" model="ir.ui.view">
+        <field name="name">fitzone.injury.cause.form</field>
+        <field name="model">fitzone.injury.cause</field>
+        <field name="arch" type="xml">
+            <form string="Injury Cause">
+                <sheet>
+                    <group>
+                        <field name="name" />
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_fitzone_injury_cause" model="ir.actions.act_window">
+        <field name="name">Injury Causes</field>
+        <field name="res_model">fitzone.injury.cause</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_fitzone_injury_cause_search" />
+    </record>
+
+
+    <!-- ========================================== -->
+    <!-- Injury Reports Views & Search -->
+    <!-- ========================================== -->
+    <record id="view_fitzone_injury_search" model="ir.ui.view">
+        <field name="name">fitzone.injury.search</field>
+        <field name="model">fitzone.injury</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="member_id" groups="fitzone.group_fitzone_physiotherapist"/>
+                <field name="member_name"/><field name="membership_number"/>
+                <field name="reported_by" />
+                <field name="physiotherapist_id" />
+                <field name="injury_cause_id" />
+                <field name="description" />
+                <field name="injury_date" />
+                <separator />
+                <filter string="Draft" name="filter_draft"
+                    domain="[('state', '=', 'draft')]" />
+                <filter string="Submitted to Clinic" name="filter_submitted"
+                    domain="[('state', '=', 'submitted')]" />
+                <filter string="In Rehab" name="filter_processed"
+                    domain="[('state', '=', 'processed')]" />
+                <separator />
+                <filter string="Last 7 Days" name="filter_last_7_days"
+                    domain="[('injury_date', '&gt;=', (context_today() - datetime.timedelta(days=7)).strftime('%Y-%m-%d'))]" />
+                <filter string="Last 30 Days" name="filter_last_30_days"
+                    domain="[('injury_date', '&gt;=', (context_today() - datetime.timedelta(days=30)).strftime('%Y-%m-%d'))]" />
+                <separator />
+                <filter groups="fitzone.group_fitzone_physiotherapist" string="Member" name="group_by_member"
+                    context="{'group_by': 'member_id'}" />
+                <filter string="Reported By" name="group_by_reported_by"
+                    context="{'group_by': 'reported_by'}" />
+                <filter groups="fitzone.group_fitzone_physiotherapist" string="Physiotherapist" name="group_by_physiotherapist"
+                    context="{'group_by': 'physiotherapist_id'}" />
+                <filter groups="fitzone.group_fitzone_physiotherapist" string="Cause" name="group_by_cause"
+                    context="{'group_by': 'injury_cause_id'}" />
+                <filter string="Status" name="group_by_state"
+                    context="{'group_by': 'state'}" />
+                <filter string="Injury Date" name="group_by_injury_date"
+                    context="{'group_by': 'injury_date:month'}" />
+            </search>
+        </field>
+    </record>
+
     <record id="view_fitzone_injury_list" model="ir.ui.view">
         <field name="name">fitzone.injury.list</field>
         <field name="model">fitzone.injury</field>
         <field name="arch" type="xml">
-            <list>
-                <field name="member_id"/>
-                <field name="reported_by"/>
-                <field name="physiotherapist_id"/>
-                <field name="injury_date"/>
-                <field name="cause"/>
+            <list create="0" string="Injury Incident Reports">
+                <field name="member_id" groups="fitzone.group_fitzone_physiotherapist"/>
+                <field name="member_name"/><field name="membership_number"/>
+                <field name="reported_by" />
+                <field name="injury_date" />
+                <field name="description" optional="show" />
+                <field name="state" widget="badge" />
             </list>
         </field>
     </record>
@@ -20,43 +109,137 @@
         <field name="name">fitzone.injury.form</field>
         <field name="model">fitzone.injury</field>
         <field name="arch" type="xml">
-            <form>
+            <form create="0" string="Injury Incident Report">
+                <header>
+                    <button name="action_submit" type="object" string="Submit to Clinic"
+                        class="oe_highlight" invisible="state != 'draft'"
+                        groups="fitzone.group_fitzone_trainer" />
+                    <button name="action_create_rehab_file" type="object"
+                        string="Create Rehabilitation File" class="oe_highlight"
+                        invisible="state != 'submitted'" groups="fitzone.group_fitzone_physiotherapist" />
+                    <field name="state" widget="statusbar"
+                        statusbar_visible="draft,submitted,processed" />
+                </header>
                 <sheet>
-                <group>
-                    <field name="member_id"/>
-                    <field name="reported_by"/>
-                    <field name="physiotherapist_id"/>
-                    <field name="injury_date"/>
-                    <field name="cause"/>
-                </group>
-                <group>
-                    <field name="description"/>
-                </group>
-                <notebook>
-                        <page string="Type">
-                            <field name="type_ids"/>
-                        </page>
-                </notebook>
+                    <group>
+                        <field name="member_id" readonly="1" groups="fitzone.group_fitzone_physiotherapist"/>
+                        <field name="member_name"/><field name="membership_number"/>
+                        <field name="reported_by" readonly="state != 'draft'" />
+                        <field name="injury_date" readonly="state != 'draft'" />
+                    </group>
+                    <group string="Incident Details">
+                        <field name="description" readonly="state != 'draft'" />
+                    </group>
+                    <group string="Clinic Assessment" groups="fitzone.group_fitzone_physiotherapist">
+                        <field name="physiotherapist_id" />
+                        <field name="injury_cause_id" />
+                    </group>
                 </sheet>
             </form>
         </field>
     </record>
 
     <record id="action_fitzone_injury" model="ir.actions.act_window">
-        <field name="name">Injuries</field>
+        <field name="name">Report Injury Incident</field>
         <field name="res_model">fitzone.injury</field>
         <field name="view_mode">list,form</field>
+        <field name="view_id" ref="view_fitzone_injury_list" />
+        <field name="search_view_id" ref="view_fitzone_injury_search" />
+        <field name="context">{'default_state': 'draft'}</field>
     </record>
 
 
-    <!-- Injury Types -->
+    <!-- ========================================== -->
+    <!-- Clinic Inbox -->
+    <!-- ========================================== -->
+    <record id="view_fitzone_injury_clinic_inbox_search" model="ir.ui.view">
+        <field name="name">fitzone.injury.clinic.inbox.search</field>
+        <field name="model">fitzone.injury</field>
+        <field name="priority">30</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="member_id" groups="fitzone.group_fitzone_physiotherapist"/>
+                <field name="member_name"/><field name="membership_number"/>
+                <field name="reported_by" />
+                <field name="physiotherapist_id" />
+                <field name="injury_cause_id" />
+                <field name="description" />
+                <separator />
+                <filter groups="fitzone.group_fitzone_physiotherapist" string="Unassigned" name="filter_unassigned"
+                    domain="[('physiotherapist_id', '=', False)]" />
+                <filter groups="fitzone.group_fitzone_physiotherapist" string="Assigned" name="filter_assigned"
+                    domain="[('physiotherapist_id', '!=', False)]" />
+                <separator />
+                <filter string="Reported By" name="group_by_reported_by"
+                    context="{'group_by': 'reported_by'}" />
+                <filter groups="fitzone.group_fitzone_physiotherapist" string="Physiotherapist" name="group_by_physiotherapist"
+                    context="{'group_by': 'physiotherapist_id'}" />
+                <filter string="Injury Date" name="group_by_injury_date"
+                    context="{'group_by': 'injury_date:month'}" />
+            </search>
+        </field>
+    </record>
+
+    <record id="view_fitzone_injury_clinic_inbox_list" model="ir.ui.view">
+        <field name="name">fitzone.injury.clinic.inbox.list</field>
+        <field name="model">fitzone.injury</field>
+        <field name="priority">30</field>
+        <field name="arch" type="xml">
+            <list string="Incident Reports Inbox" create="0" editable="bottom" open_form_view="1">
+                <header>
+                    <button name="action_create_rehab_file" type="object"
+                        string="Create Rehabilitation File" class="oe_highlight"
+                        groups="fitzone.group_fitzone_physiotherapist" />
+                </header>
+                <field name="member_id" readonly="1" groups="fitzone.group_fitzone_physiotherapist"/>
+                <field name="member_name"/><field name="membership_number"/>
+                <field name="reported_by" readonly="1" />
+                <field name="injury_date" readonly="1" />
+                <field name="description" readonly="1" optional="show" />
+                <field name="physiotherapist_id" />
+                <field name="injury_cause_id" />
+                <field name="state" readonly="1" widget="badge" />
+            </list>
+        </field>
+    </record>
+
+    <record id="action_fitzone_injury_clinic_inbox" model="ir.actions.act_window">
+        <field name="name">Incident Reports Inbox</field>
+        <field name="res_model">fitzone.injury</field>
+        <field name="view_mode">list,form</field>
+        <field name="view_id" ref="view_fitzone_injury_clinic_inbox_list" />
+        <field name="search_view_id" ref="view_fitzone_injury_clinic_inbox_search" />
+        <field name="domain">[('state', '=', 'submitted')]</field>
+    </record>
+
+
+    <!-- ========================================== -->
+    <!-- Injury Types Views & Search -->
+    <!-- ========================================== -->
+    <record id="view_fitzone_injury_type_search" model="ir.ui.view">
+        <field name="name">fitzone.injury.type.search</field>
+        <field name="model">fitzone.injury.type</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="injury_id" />
+                <field name="member_id" />
+                <field name="prohibited_exercises"/><field name="restriction" />
+                <separator />
+                <filter string="Member" name="group_by_member"
+                    context="{'group_by': 'member_id'}" />
+                <filter groups="fitzone.group_fitzone_physiotherapist" string="Injury" name="group_by_injury"
+                    context="{'group_by': 'injury_id'}" />
+            </search>
+        </field>
+    </record>
+
     <record id="view_fitzone_injury_type_list" model="ir.ui.view">
         <field name="name">fitzone.injury.type.list</field>
         <field name="model">fitzone.injury.type</field>
         <field name="arch" type="xml">
             <list>
-                <field name="injury_id"/>
-                <field name="member_id"/>
+                <field name="injury_id" />
+                <field name="member_id" />
             </list>
         </field>
     </record>
@@ -67,13 +250,18 @@
         <field name="arch" type="xml">
             <form>
                 <sheet>
-                <group>
-                    <field name="injury_id"/>
-                    <field name="member_id"/>
-                </group>
-                <group>
-                    <field name="restriction"/>
-                </group>
+                    <div class="alert alert-info" role="alert" groups="fitzone.group_fitzone_physiotherapist">
+                        Trainers assigned to this member's PT sessions or noncancelled class bookings can read the forbidden
+                        movements and restrictions entered here. Enter Trainer-visible text here,
+                        not only in the rehabilitation file. Do not include diagnosis or clinic notes.
+                    </div>
+                    <group>
+                        <field name="injury_id" />
+                        <field name="member_id" />
+                    </group>
+                    <group>
+                        <field name="prohibited_exercises"/><field name="restriction" />
+                    </group>
                 </sheet>
             </form>
         </field>
@@ -83,51 +271,7 @@
         <field name="name">Injury Types</field>
         <field name="res_model">fitzone.injury.type</field>
         <field name="view_mode">list,form</field>
-    </record>
-
-
-    <!-- Rehabilitation -->
-    <record id="view_fitzone_rehabilitation_list" model="ir.ui.view">
-        <field name="name">fitzone.rehabilitation.list</field>
-        <field name="model">fitzone.rehabilitation</field>
-        <field name="arch" type="xml">
-            <list>
-                <field name="member_id"/>
-                <field name="injury_id"/>
-                <field name="physiotherapist_id"/>
-                <field name="start_date"/>
-                <field name="end_date"/>
-                <field name="status"/>
-            </list>
-        </field>
-    </record>
-
-    <record id="view_fitzone_rehabilitation_form" model="ir.ui.view">
-        <field name="name">fitzone.rehabilitation.form</field>
-        <field name="model">fitzone.rehabilitation</field>
-        <field name="arch" type="xml">
-            <form>
-                <sheet>
-                <group>
-                    <field name="member_id"/>
-                    <field name="injury_id"/>
-                    <field name="physiotherapist_id"/>
-                    <field name="start_date"/>
-                    <field name="end_date"/>
-                    <field name="status"/>
-                </group>
-                <group>
-                    <field name="notes"/>
-                </group>
-                </sheet>
-            </form>
-        </field>
-    </record>
-
-    <record id="action_fitzone_rehabilitation" model="ir.actions.act_window">
-        <field name="name">Rehabilitation</field>
-        <field name="res_model">fitzone.rehabilitation</field>
-        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_fitzone_injury_type_search" />
     </record>
 
 </odoo>

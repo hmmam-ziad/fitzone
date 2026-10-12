@@ -1,18 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <record id="privilege_fitzone_trainer" model="res.groups.privilege">
+        <field name="name">Gym Trainers</field>
+        <field name="category_id" ref="base.module_category_services" />
+    </record>
     <record id="group_fitzone_trainer" model="res.groups">
-        <field name="name">FitZone Trainer</field>
-        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        <field name="name">Gym Trainers</field>
+        <field name="privilege_id" ref="privilege_fitzone_trainer" />
+        <field name="implied_ids" eval="[(6, 0, [ref('base.group_user')])]" />
+    </record>
+
+    <record id="privilege_fitzone_reception" model="res.groups.privilege">
+        <field name="name">FitZone Reception</field>
+        <field name="category_id" ref="base.module_category_services" />
     </record>
     <record id="group_fitzone_reception" model="res.groups">
         <field name="name">FitZone Reception</field>
-        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        <field name="privilege_id" ref="privilege_fitzone_reception" />
+        <field name="implied_ids" eval="[(6, 0, [ref('base.group_user')])]" />
+    </record>
+
+    <record id="privilege_fitzone_manager" model="res.groups.privilege">
+        <field name="name">FitZone Manager</field>
+        <field name="category_id" ref="base.module_category_services" />
     </record>
     <record id="group_fitzone_manager" model="res.groups">
         <field name="name">FitZone Manager</field>
-        <field name="implied_ids" eval="[(4, ref('hr.group_hr_manager'))]"/>
+        <field name="privilege_id" ref="privilege_fitzone_manager" />
+        <field name="implied_ids"
+            eval="[(6, 0, [ref('base.group_user'), ref('hr.group_hr_manager'), ref('maintenance.group_equipment_manager'), ref('point_of_sale.group_pos_user')])]" />
     </record>
+
+    <record id="privilege_fitzone_sales" model="res.groups.privilege">
+        <field name="name">FitZone Sales</field>
+        <field name="category_id" ref="base.module_category_services" />
+    </record>
+    <record id="group_fitzone_sales" model="res.groups">
+        <field name="name">FitZone Sales</field>
+        <field name="privilege_id" ref="privilege_fitzone_sales" />
+        <field name="implied_ids"
+            eval="[(6, 0, [ref('base.group_user'), ref('point_of_sale.group_pos_user'), ref('stock.group_stock_user')])]" />
+    </record>
+
+    <record id="privilege_fitzone_physiotherapist" model="res.groups.privilege">
+        <field name="name">FitZone Physiotherapist</field>
+        <field name="category_id" ref="base.module_category_services" />
+    </record>
+    <record id="group_fitzone_physiotherapist" model="res.groups">
+        <field name="name">FitZone Physiotherapist</field>
+        <field name="privilege_id" ref="privilege_fitzone_physiotherapist" />
+        <field name="implied_ids" eval="[(6, 0, [ref('base.group_user')])]" />
+    </record>
+
+    <record id="privilege_fitzone_nutritionist" model="res.groups.privilege">
+        <field name="name">FitZone Nutritionist</field>
+        <field name="category_id" ref="base.module_category_services" />
+    </record>
+    <record id="group_fitzone_nutritionist" model="res.groups">
+        <field name="name">FitZone Nutritionist</field>
+        <field name="privilege_id" ref="privilege_fitzone_nutritionist" />
+        <field name="implied_ids" eval="[(6, 0, [ref('base.group_user')])]" />
+    </record>
+
+    <!-- Retained for XML-ID compatibility; assign medical roles explicitly. -->
     <record id="group_fitzone_clinic" model="res.groups">
-        <field name="name">FitZone Clinic</field>
+        <field name="name">Physiotherapy Clinic Staff (Legacy)</field>
+        <field name="implied_ids" eval="[(6, 0, [ref('base.group_user')])]" />
     </record>
 </odoo>

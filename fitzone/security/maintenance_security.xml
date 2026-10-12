@@ -1,83 +1,92 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <odoo>
-
-    <record id="group_fitzone_staff" model="res.groups">
-        <field name="name">FitZone Staff</field>
-    </record>
-
-    <record id="group_fitzone_manager" model="res.groups">
-        <field name="name">FitZone Manager</field>
-        <field name="implied_ids"
-               eval="[(4, ref('group_fitzone_staff')),
-                      (4, ref('maintenance.group_equipment_manager'))]"/>
-    </record>
-
-    <record id="group_fitzone_technician" model="res.groups">
-        <field name="name">FitZone Maintenance Technician</field>
-    </record>
-
-    <!-- Fault reports -->
-
-    <record id="rule_fault_report_all" model="ir.rule">
-        <field name="name">Fault report: staff and managers see all</field>
-        <field name="model_id" ref="model_fitzone_fault_report"/>
-        <field name="domain_force">[(1, '=', 1)]</field>
-        <field name="groups"
-               eval="[(4, ref('group_fitzone_staff'))]"/>
-    </record>
-
-    <record id="rule_fault_report_technician" model="ir.rule">
-        <field name="name">Fault report: technicians see approved only</field>
-        <field name="model_id" ref="model_fitzone_fault_report"/>
-        <field name="domain_force">[('status', '=', 'approved')]</field>
-        <field name="groups"
-               eval="[(4, ref('group_fitzone_technician'))]"/>
-    </record>
-
-    <!-- Maintenance tickets -->
-
-    <record id="rule_request_manager" model="ir.rule">
-        <field name="name">Maintenance request: managers see all</field>
-        <field name="model_id" ref="maintenance.model_maintenance_request"/>
-        <field name="domain_force">[(1, '=', 1)]</field>
-        <field name="groups"
-               eval="[(4, ref('group_fitzone_manager'))]"/>
-    </record>
-
-    <record id="rule_request_technician" model="ir.rule">
-        <field name="name">
-            Maintenance request: technicians see assigned only
-        </field>
-        <field name="model_id" ref="maintenance.model_maintenance_request"/>
-        <field name="domain_force">
-            [('user_id', '=', user.id)]
-        </field>
-        <field name="groups"
-               eval="[(4, ref('group_fitzone_technician'))]"/>
-    </record>
-
-    <!-- Equipment -->
-
-    <record id="rule_equipment_manager" model="ir.rule">
-        <field name="name">
-            Equipment: managers and staff see all
-        </field>
-        <field name="model_id" ref="maintenance.model_maintenance_equipment"/>
-        <field name="domain_force">[(1, '=', 1)]</field>
-        <field name="groups"
-               eval="[(4, ref('group_fitzone_staff'))]"/>
-    </record>
-
-    <record id="rule_equipment_technician" model="ir.rule">
-        <field name="name">
-            Equipment: technicians see equipment of their tickets
-        </field>
-        <field name="model_id" ref="maintenance.model_maintenance_equipment"/>
-        <field name="domain_force">
-            [('maintenance_ids.user_id', '=', user.id)]
-        </field>
-        <field name="groups"
-               eval="[(4, ref('group_fitzone_technician'))]"/>
-    </record>
-
+  <record id="group_fitzone_staff" model="res.groups">
+    <field name="name">FitZone Staff</field>
+    <field name="implied_ids" eval="[(6, 0, [ref('base.group_user')])]"/>
+  </record>
+  <record id="privilege_fitzone_maintenance" model="res.groups.privilege">
+    <field name="name">FitZone Maintenance Team</field>
+    <field name="category_id" ref="base.module_category_services"/>
+  </record>
+  <record id="group_fitzone_technician" model="res.groups">
+    <field name="name">FitZone Maintenance Team</field>
+    <field name="privilege_id" ref="privilege_fitzone_maintenance"/>
+    <field name="implied_ids" eval="[(6, 0, [ref('base.group_user')])]"/>
+  </record>
+  <!-- Fault reports -->
+  <record id="rule_fault_report_all" model="ir.rule">
+    <field name="name">Fault report: own only except management</field>
+    <field name="model_id" ref="model_fitzone_fault_report"/>
+    <field name="domain_force">[(1, '=', 1)] if user.has_group('fitzone.group_fitzone_manager') else [('create_uid', '=', user.id)]</field>
+    <field name="groups" eval="[(5, 0, 0)]"/>
+  </record>
+  <record id="rule_fault_report_technician" model="ir.rule">
+    <field name="name">Fault report: maintenance own only</field>
+    <field name="model_id" ref="model_fitzone_fault_report"/>
+    <field name="domain_force">[('create_uid', '=', user.id)]</field>
+    <field name="groups" eval="[(4, ref('group_fitzone_technician'))]"/>
+  </record>
+  <!-- Maintenance tickets -->
+  <record id="rule_request_manager" model="ir.rule">
+    <field name="name">Maintenance request: managers see all</field>
+    <field name="model_id" ref="maintenance.model_maintenance_request"/>
+    <field name="domain_force">[(1, '=', 1)]</field>
+    <field name="groups" eval="[(4, ref('group_fitzone_manager'))]"/>
+  </record>
+  <record id="rule_request_technician" model="ir.rule">
+    <field name="name">Maintenance approved tickets and periodic schedule</field>
+    <field name="model_id" ref="maintenance.model_maintenance_request"/>
+    <field name="domain_force">['|', ('approved', '=', True), ('maintenance_type', '=', 'preventive')]</field>
+    <field name="groups" eval="[(4, ref('group_fitzone_technician'))]"/>
+  </record>
+  <!-- Equipment -->
+  <record id="rule_equipment_manager" model="ir.rule">
+    <field name="name">Equipment selector for internal fault reporters</field>
+    <field name="model_id" ref="maintenance.model_maintenance_equipment"/>
+    <field name="domain_force">[(1, '=', 1)]</field>
+    <field name="groups" eval="[(6, 0, [ref('base.group_user')])]"/>
+  </record>
+  <record id="rule_equipment_technician" model="ir.rule">
+    <field name="name">Maintenance equipment read</field>
+    <field name="model_id" ref="maintenance.model_maintenance_equipment"/>
+    <field name="domain_force">[(1, '=', 1)]</field>
+    <field name="groups" eval="[(4, ref('group_fitzone_technician'))]"/>
+  </record>
+  <record id="request_security_ceiling" model="ir.rule">
+    <field name="name">request_security_ceiling</field>
+    <field name="model_id" ref="maintenance.model_maintenance_request"/>
+    <field name="domain_force">[(1, '=', 1)] if user.has_group('fitzone.group_fitzone_manager') else ['|', ('approved', '=', True), ('maintenance_type', '=', 'preventive')] if user.has_group('fitzone.group_fitzone_technician') else [(0, '=', 1)]</field>
+  </record>
+  <record id="maintenance_message_barrier" model="ir.rule">
+    <field name="name">maintenance_message_barrier</field>
+    <field name="model_id" ref="mail.model_mail_message"/>
+    <field name="domain_force">[(1, '=', 1)] if user.has_group('fitzone.group_fitzone_manager') else [('model', 'not in', ['maintenance.request', 'maintenance.equipment', 'fitzone.fault.report'])]</field>
+  </record>
+  <record id="maintenance_attachment_barrier" model="ir.rule">
+    <field name="name">maintenance_attachment_barrier</field>
+    <field name="model_id" ref="base.model_ir_attachment"/>
+    <field name="domain_force">[(1, '=', 1)] if user.has_group('fitzone.group_fitzone_manager') else [('res_model', 'not in', ['maintenance.request', 'maintenance.equipment', 'fitzone.fault.report'])]</field>
+  </record>
+  <record id="request_write_ceiling" model="ir.rule">
+    <field name="name">Only approved maintenance can be edited</field>
+    <field name="domain_force">[(1, '=', 1)] if user.has_group('fitzone.group_fitzone_manager') else [('approved', '=', True)] if user.has_group('fitzone.group_fitzone_technician') else [(0, '=', 1)]</field>
+    <field name="model_id" ref="maintenance.model_maintenance_request"/>
+    <field name="perm_read" eval="False"/>
+    <field name="perm_create" eval="False"/>
+    <field name="perm_unlink" eval="False"/>
+  </record>
+  <record id="maintenance.access_maintenance_system_user" model="ir.model.access">
+    <field name="group_id" ref="fitzone.group_fitzone_manager"/>
+  </record>
+  <record id="maintenance_member_barrier" model="ir.rule">
+    <field name="name">Maintenance has no member access</field>
+    <field name="model_id" ref="base.model_res_partner"/>
+    <field name="domain_force">['|', '|', ('is_fitzone_member', '=', False), ('id', '=', user.partner_id.id), ('id', '=', user.company_id.partner_id.id)] if user.has_group('fitzone.group_fitzone_technician') and not any(user.has_group('fitzone.group_fitzone_' + role) for role in ('manager', 'reception', 'trainer', 'physiotherapist', 'nutritionist')) else [(1, '=', 1)]</field>
+  </record>
+  <record id="fault_management_union" model="ir.rule">
+    <field name="name">Management all fault reports including combined roles</field>
+    <field name="model_id" ref="model_fitzone_fault_report"/>
+    <field name="domain_force">[(1, '=', 1)]</field>
+    <field name="groups" eval="[(4, ref('group_fitzone_manager'))]"/>
+  </record>
 </odoo>
