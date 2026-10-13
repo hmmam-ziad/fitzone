@@ -24,6 +24,8 @@ from . import res_partner_pool
 from . import pool_access_wizard
 from . import pool
 from . import pool_booking
+from . import pool_access_wizard
+from . import res_partner_pool
 from . import injuries
 from . import injury_type
 from . import rehabilitation
@@ -42,4 +44,5 @@ from . import pos_order
 from . import trainer_commission_wizard
 from . import trainer_schedule
 from . import trainer_price_security
+from . import pool_maintenance_log
 from . import pool_maintenance_log

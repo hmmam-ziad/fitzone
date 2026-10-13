@@ -59,7 +59,7 @@
         "views/freeze_views.xml",
         "views/trainer_schedule_views.xml",
         "views/trainer_schedule_rules.xml",
-        "views/pool_access_views.xml",   
+        "views/pool_access_views.xml",
         "views/menus.xml",
 
         "views/inventory_menus.xml",

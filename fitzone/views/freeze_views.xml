@@ -9,35 +9,35 @@
             <form string="Freeze Request">
                 <group>
                     <group string="Request">
-                        <field name="member_id"/>
-                        <field name="membership_id"/>
-                        <field name="start_date"/>
-                        <field name="end_date"/>
+                        <field name="member_id" />
+                        <field name="membership_id" />
+                        <field name="start_date" />
+                        <field name="end_date" />
                     </group>
 
                     <group string="Preview">
-                        <field name="days"/>
-                        <field name="allowed_days"/>
-                        <field name="used_days"/>
-                        <field name="remaining_days"/>
-                        <field name="current_end_date"/>
-                        <field name="new_end_date"/>
+                        <field name="days" />
+                        <field name="allowed_days" />
+                        <field name="used_days" />
+                        <field name="remaining_days" />
+                        <field name="current_end_date" />
+                        <field name="new_end_date" />
                     </group>
                 </group>
 
                 <footer>
                     <button name="action_request_freeze"
-                            type="object"
-                            string="Request Freeze"
-                            class="btn-primary"/>
-                    <button string="Cancel" special="cancel"/>
+                        type="object"
+                        string="Request Freeze"
+                        class="btn-primary" />
+                    <button string="Cancel" special="cancel" />
                 </footer>
             </form>
         </field>
     </record>
 
     <record id="action_fitzone_freeze_request_wizard"
-            model="ir.actions.act_window">
+        model="ir.actions.act_window">
         <field name="name">Freeze Request</field>
         <field name="res_model">fitzone.freeze.request.wizard</field>
         <field name="view_mode">form</field>
@@ -49,15 +49,15 @@
     <record id="view_fitzone_freeze_list_log" model="ir.ui.view">
         <field name="name">fitzone.freeze.list.log</field>
         <field name="model">fitzone.freeze</field>
-        <field name="inherit_id" ref="fitzone.view_fitzone_freeze_list"/>
+        <field name="inherit_id" ref="fitzone.view_fitzone_freeze_list" />
         <field name="arch" type="xml">
             <field name="days" position="after">
-                <field name="state"/>
-                <field name="remaining_days"/>
-                <field name="new_end_date"/>
-                <field name="processed_by"/>
-                <field name="cancelled_by"/>
-                <field name="cancelled_at"/>
+                <field name="state" />
+                <field name="remaining_days" />
+                <field name="new_end_date" />
+                <field name="processed_by" />
+                <field name="cancelled_by" />
+                <field name="cancelled_at" />
             </field>
         </field>
     </record>
@@ -67,20 +67,20 @@
     <record id="view_fitzone_freeze_form_log" model="ir.ui.view">
         <field name="name">fitzone.freeze.form.log</field>
         <field name="model">fitzone.freeze</field>
-        <field name="inherit_id" ref="fitzone.view_fitzone_freeze_form"/>
+        <field name="inherit_id" ref="fitzone.view_fitzone_freeze_form" />
         <field name="arch" type="xml">
 
-            <!-- وضع الزر الأحمر وشريط المراحل في الأعلى قبل الـ sheet -->
             <xpath expr="//sheet" position="before">
                 <header>
                     <button name="action_cancel_freeze"
-                            type="object"
-                            string="Cancel Freeze"
-                            class="btn-danger"
-                            invisible="state != 'active'"
-                            confirm="Are you sure you want to cancel this freeze?"/>
-                    
-                    <field name="state" widget="statusbar" statusbar_visible="active,cancelled"/>
+                        type="object"
+                        string="Cancel Freeze"
+                        class="btn-danger"
+                        invisible="state != 'active'"
+                        groups="fitzone.group_fitzone_manager"
+                        confirm="Are you sure you want to cancel this freeze?" />
+
+                    <field name="state" widget="statusbar" statusbar_visible="active,cancelled" />
                 </header>
             </xpath>
 
@@ -99,13 +99,13 @@
 
             <!-- Freeze details and cancellation history -->
             <field name="days" position="after">
-                <field name="allowed_days" readonly="1"/>
-                <field name="remaining_days" readonly="1"/>
-                <field name="previous_end_date" readonly="1"/>
-                <field name="new_end_date" readonly="1"/>
-                <field name="processed_by" readonly="1"/>
-                <field name="cancelled_by" readonly="1"/>
-                <field name="cancelled_at" readonly="1"/>
+                <field name="allowed_days" readonly="1" />
+                <field name="remaining_days" readonly="1" />
+                <field name="previous_end_date" readonly="1" />
+                <field name="new_end_date" readonly="1" />
+                <field name="processed_by" readonly="1" />
+                <field name="cancelled_by" readonly="1" />
+                <field name="cancelled_at" readonly="1" />
             </field>
 
         </field>
@@ -116,15 +116,15 @@
     <record id="view_fitzone_membership_form_freeze" model="ir.ui.view">
         <field name="name">fitzone.membership.form.freeze</field>
         <field name="model">fitzone.membership</field>
-        <field name="inherit_id" ref="fitzone.view_fitzone_membership_form"/>
+        <field name="inherit_id" ref="fitzone.view_fitzone_membership_form" />
         <field name="arch" type="xml">
 
             <!-- Freeze balance -->
             <field name="date_end" position="after">
-                <field name="freeze_allowed_days" readonly="1"/>
-                <field name="freeze_used_days" readonly="1"/>
-                <field name="freeze_remaining_days" readonly="1"/>
-                <field name="freeze_grace_end" readonly="1"/>
+                <field name="freeze_allowed_days" readonly="1" />
+                <field name="freeze_used_days" readonly="1" />
+                <field name="freeze_remaining_days" readonly="1" />
+                <field name="freeze_grace_end" readonly="1" />
             </field>
 
             <!-- Freeze history -->
@@ -132,16 +132,16 @@
                 <group string="Freeze History">
                     <field name="freeze_ids" nolabel="1" readonly="1">
                         <list>
-                            <field name="start_date"/>
-                            <field name="end_date"/>
-                            <field name="days"/>
-                            <field name="state"/>
-                            <field name="remaining_days"/>
-                            <field name="previous_end_date"/>
-                            <field name="new_end_date"/>
-                            <field name="processed_by"/>
-                            <field name="cancelled_by"/>
-                            <field name="cancelled_at"/>
+                            <field name="start_date" />
+                            <field name="end_date" />
+                            <field name="days" />
+                            <field name="state" />
+                            <field name="remaining_days" />
+                            <field name="previous_end_date" />
+                            <field name="new_end_date" />
+                            <field name="processed_by" />
+                            <field name="cancelled_by" />
+                            <field name="cancelled_at" />
                         </list>
                     </field>
                 </group>
@@ -155,24 +155,24 @@
     <record id="view_partner_form_freeze_history" model="ir.ui.view">
         <field name="name">res.partner.form.freeze.history</field>
         <field name="model">res.partner</field>
-        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="inherit_id" ref="base.view_partner_form" />
         <field name="arch" type="xml">
 
             <xpath expr="//notebook" position="inside">
                 <page string="Freeze History">
                     <field name="freeze_history_ids" readonly="1">
                         <list>
-                            <field name="membership_id"/>
-                            <field name="start_date"/>
-                            <field name="end_date"/>
-                            <field name="days"/>
-                            <field name="state"/>
-                            <field name="remaining_days"/>
-                            <field name="previous_end_date"/>
-                            <field name="new_end_date"/>
-                            <field name="processed_by"/>
-                            <field name="cancelled_by"/>
-                            <field name="cancelled_at"/>
+                            <field name="membership_id" />
+                            <field name="start_date" />
+                            <field name="end_date" />
+                            <field name="days" />
+                            <field name="state" />
+                            <field name="remaining_days" />
+                            <field name="previous_end_date" />
+                            <field name="new_end_date" />
+                            <field name="processed_by" />
+                            <field name="cancelled_by" />
+                            <field name="cancelled_at" />
                         </list>
                     </field>
                 </page>
