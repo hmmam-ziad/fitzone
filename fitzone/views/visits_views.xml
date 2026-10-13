@@ -23,6 +23,7 @@
         <field name="arch" type="xml">
             <search>
                 <field name="member_id" string="Member"/>
+                <field name="member_number" string="Member ID"/>
                 <field name="membership_id" string="Membership"/>
 
                 <filter string="Today"
@@ -44,6 +45,7 @@
                 <sheet>
                     <group>
                         <field name="member_id"/>
+                        <field name="member_number" string="Member ID" readonly="1"/>
                         <field name="membership_id"/>
                         <field name="visit_date"/>
                         <field name="remaining_sessions"/>

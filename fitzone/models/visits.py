@@ -14,6 +14,14 @@ class Visit(models.Model):
         domain="[('membership_ids', '!=', False)]",
     )
 
+    member_number = fields.Char(
+        related='member_id.membership_no',
+        string='Member ID',
+        store=True,
+        index=True,
+        readonly=True,
+    )
+
     membership_id = fields.Many2one(
         'fitzone.membership',
         required=True,
