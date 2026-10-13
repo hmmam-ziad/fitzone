@@ -4,6 +4,8 @@ from odoo.exceptions import ValidationError
 
 class Rehabilitation(models.Model):
     _name = 'fitzone.rehabilitation'
+    _inherit = 'fitzone.medical.audit.mixin'
+    _rec_name = 'id'
     _description = 'Rehabilitation'
 
     member_id = fields.Many2one('res.partner', required=True)
@@ -26,7 +28,7 @@ class Rehabilitation(models.Model):
     movement_restrictions = fields.Text(string='Movement Restrictions')
     medical_notes = fields.Text(
         string='Confidential Medical Notes',
-        groups='fitzone.group_fitzone_clinic',
+        groups='fitzone.group_fitzone_physiotherapist',
     )
     state = fields.Selection(
         [('draft', 'Draft'), ('in_progress', 'In Progress'),

@@ -1,0 +1,82 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Language: ar\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. module: fitzone
+#: model:res.groups.privilege,name:fitzone.privilege_fitzone_sales
+#: model:res.groups,name:fitzone.group_fitzone_sales
+msgid "FitZone Sales"
+msgstr "مبيعات فيت زون"
+
+#. module: fitzone
+#: model:res.groups.privilege,name:fitzone.privilege_fitzone_physiotherapist
+#: model:res.groups,name:fitzone.group_fitzone_physiotherapist
+msgid "FitZone Physiotherapist"
+msgstr "أخصائي العلاج الطبيعي في فيت زون"
+
+#. module: fitzone
+#: model:res.groups.privilege,name:fitzone.privilege_fitzone_nutritionist
+#: model:res.groups,name:fitzone.group_fitzone_nutritionist
+msgid "FitZone Nutritionist"
+msgstr "أخصائي التغذية في فيت زون"
+
+#. module: fitzone
+#: model:res.groups.privilege,name:fitzone.privilege_fitzone_maintenance
+#: model:res.groups,name:fitzone.group_fitzone_technician
+msgid "FitZone Maintenance Team"
+msgstr "فريق الصيانة في فيت زون"
+
+#. module: fitzone
+#: model:ir.ui.menu,name:fitzone.menu_fitzone_health_profile
+msgid "Health Profiles"
+msgstr "الملفات الصحية"
+
+#. module: fitzone
+#: model:ir.ui.menu,name:fitzone.menu_fitzone_injuries
+msgid "Clinic"
+msgstr "العيادة"
+
+#. module: fitzone
+#: model:ir.ui.menu,name:fitzone.menu_fitzone_injury
+msgid "Incident Reports Inbox"
+msgstr "تقارير الإصابات الواردة"
+
+#. module: fitzone
+#: model:ir.ui.menu,name:fitzone.menu_fitzone_rehabilitation
+msgid "Rehabilitation Files"
+msgstr "ملفات إعادة التأهيل"
+
+#. module: fitzone
+#: model:ir.ui.menu,name:fitzone.menu_fitzone_injury_cause
+msgid "Injury Causes"
+msgstr "أسباب الإصابات"
+
+#. module: fitzone
+#: model:ir.ui.menu,name:fitzone.menu_fitzone_injury_type
+msgid "Injury Types"
+msgstr "أنواع الإصابات"
+
+#. module: fitzone
+#: model:ir.ui.menu,name:fitzone.menu_fitzone_inventory
+msgid "Inventory & Procurement"
+msgstr "المخزون والمشتريات"
+
+#. module: fitzone
+#: model:ir.ui.menu,name:fitzone.menu_fitzone_product_inventory
+msgid "Supplements & Health Products"
+msgstr "المكملات والمنتجات الصحية"
+
+#. module: fitzone
+#: model:ir.ui.menu,name:fitzone.menu_fitzone_low_stock
+msgid "Low Stock Alerts"
+msgstr "تنبيهات انخفاض المخزون"
+
+#. module: fitzone
+#: model:ir.ui.menu,name:fitzone.menu_fitzone_purchase_request
+msgid "Purchase Requests"
+msgstr "طلبات الشراء"
+

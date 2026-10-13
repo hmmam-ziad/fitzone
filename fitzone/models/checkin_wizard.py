@@ -12,14 +12,14 @@ class CheckinWizard(models.TransientModel):
         self.ensure_one()
         booking = self.env['fitzone.class.booking'].check_in_member(
             self.class_id.id, (self.barcode or '').strip())
-        self.barcode = False
         return {
             'type': 'ir.actions.client',
             'tag': 'display_notification',
             'params': {
                 'title': 'Check-in successful',
-                'message': '%s checked in.' % booking.member_id.name,
+                'message': '%s checked in.' % (booking.member_name if booking._name == 'fitzone.attendance' else booking.member_id.name),
                 'type': 'success',
                 'sticky': False,
+                'next': {'type': 'ir.actions.act_window_close'},
             },
         }

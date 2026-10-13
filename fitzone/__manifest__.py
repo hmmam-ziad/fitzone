@@ -63,6 +63,7 @@
         "views/menus.xml",
 
         "views/inventory_menus.xml",
+        "views/medical_security_views.xml",
     ],
     "assets": {
         "point_of_sale._assets_pos": [

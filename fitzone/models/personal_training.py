@@ -1,5 +1,5 @@
 from odoo import api, fields, models
-from odoo.exceptions import ValidationError
+from odoo.exceptions import AccessError, ValidationError
 
 
 class PTSession(models.Model):
@@ -23,9 +23,32 @@ class PTSession(models.Model):
         default='draft', required=True, copy=False,
     )
     session_type = fields.Char(default='personal_training', required=True)
-    session_price = fields.Float(required=True, default=0.0)
-    applied_commission_rate = fields.Float(readonly=True, copy=False)
-    calculated_commission = fields.Float(readonly=True, copy=False)
+    session_price = fields.Float(groups='fitzone.group_fitzone_manager,fitzone.group_fitzone_reception', required=True, default=0.0)
+    applied_commission_rate = fields.Float(groups='fitzone.group_fitzone_manager,fitzone.group_fitzone_reception', readonly=True, copy=False)
+    calculated_commission = fields.Float(groups='fitzone.group_fitzone_manager,fitzone.group_fitzone_reception', readonly=True, copy=False)
+
+    can_report_incident = fields.Boolean(compute='_compute_can_report_incident', compute_sudo=False)
+
+    @api.depends_context('uid')
+    @api.depends('trainer_id')
+    def _compute_can_report_incident(self):
+        for session in self:
+            session.can_report_incident = (
+                self.env.user.has_group('fitzone.group_fitzone_trainer')
+                and session.trainer_id.employee_id.user_id.id == self.env.uid)
+
+    def action_report_incident(self):
+        self.ensure_one()
+        self.check_access('read')
+        if not self.can_report_incident:
+            raise AccessError('Incidents can only be reported from your own PT sessions.')
+        # Use the member ID only; the injury create method enforces D4 independently.
+        report = self.env['fitzone.injury'].create({
+            'member_id': self.member_id.id,
+            'reported_by': self.trainer_id.employee_id.id,
+        })
+        return {'type': 'ir.actions.act_window', 'res_model': 'fitzone.injury',
+                'view_mode': 'form', 'res_id': report.id}
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -43,7 +66,12 @@ class PTSession(models.Model):
         return super().create(prepared)
 
     def write(self, vals):
+        self.check_access('write')
         vals = dict(vals)
+        if (not self.env.su and self.env.user.has_group('fitzone.group_fitzone_trainer')
+                and not any(self.env.user.has_group('fitzone.group_fitzone_' + role) for role in ('manager', 'reception'))
+                and {'trainer_id', 'member_id', 'trainee_id', 'membership_id', 'package_id'} & vals.keys()):
+            raise AccessError('Session assignments cannot be changed by a trainer.')
         if {'applied_commission_rate', 'calculated_commission'} & vals.keys():
             raise ValidationError("Commission snapshots are set by session completion.")
         locked = {
@@ -70,6 +98,7 @@ class PTSession(models.Model):
                 raise ValidationError("Session price cannot be negative.")
 
     def action_complete_session(self):
+        self.check_access('write')
         for session in self:
             if session.state == 'completed':
                 continue
@@ -98,28 +127,48 @@ class PTSession(models.Model):
             if not session.session_date:
                 raise ValidationError("Set the session date before completing the session.")
             session_day = fields.Date.to_date(session.session_date)
-            rule = self.env['fitzone.commission.rule'].search([
-                ('active', '=', True),
-                ('trainer_id', '=', session.trainer_id.id),
-                ('session_type', '=', session.session_type),
-                ('effective_from', '<=', session_day),
-                '|', ('effective_to', '=', False),
-                ('effective_to', '>=', session_day),
-            ], order='effective_from desc, id desc', limit=1)
-            rate = rule.rate if rule else 50.0
-            # Bypass only our public write guard; persist an ordinary snapshot.
-            super(PTSession, session).write({
-                'applied_commission_rate': rate,
-                'calculated_commission': session.session_price * (rate / 100.0),
-                'state': 'completed',
-                'status': 'completed',
-            })
+            rate = session._completion_rate_snapshot(session_day)
+            session._persist_validated_completion(rate)
+        return True
 
-            if (
-                session.package_id.package_type == 'private'
-                and session.package_id.total_sessions > 0
-            ):
-                membership.consumed_sessions += 1
+    def _completion_rate_snapshot(self, session_day):
+        """Private lookup returns only a rate for an accessible session."""
+        self.ensure_one()
+        self.check_access('write')
+        # Session completers cannot read commission configuration.
+        rules = self.env['fitzone.commission.rule']
+        if self.env.user.has_group('fitzone.group_fitzone_trainer'):
+            rules = rules.sudo()
+        rule = rules.search([
+            ('active', '=', True), ('trainer_id', '=', self.trainer_id.id),
+            ('session_type', '=', self.session_type), ('effective_from', '<=', session_day),
+            '|', ('effective_to', '=', False), ('effective_to', '>=', session_day),
+        ], order='effective_from desc, id desc', limit=1)
+        return rule.rate if rule else 50.0
+
+    def _persist_validated_completion(self, rate):
+        """Persist the financial snapshot and consume the validated entitlement only."""
+        self.ensure_one()
+        self.check_access('write')
+        # Trainers complete sessions without financial reads or membership write ACLs.
+        session = self.sudo()
+        self.env.cr.execute('SELECT id FROM fitzone_pt_session WHERE id = %s FOR UPDATE', (self.id,))
+        session.invalidate_recordset(['state'])
+        if session.state == 'completed':
+            return True
+        membership = session.membership_id
+        self.env.cr.execute('SELECT id FROM fitzone_membership WHERE id = %s FOR UPDATE', (membership.id,))
+        membership.invalidate_recordset(['consumed_sessions', 'remaining_sessions'])
+        private = session.package_id.package_type == 'private' and session.package_id.total_sessions > 0
+        if private and membership.remaining_sessions <= 0:
+            raise ValidationError('This membership has no remaining PT sessions.')
+        super(PTSession, session).write({
+            'applied_commission_rate': rate,
+            'calculated_commission': session.session_price * rate / 100,
+            'state': 'completed', 'status': 'completed',
+        })
+        if private:
+            membership.consumed_sessions += 1
         return True
 
     
