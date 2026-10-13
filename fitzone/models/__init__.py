@@ -1,3 +1,4 @@
+from . import medical_security
 from . import members
 from . import trainer
 from . import employee
@@ -6,6 +7,8 @@ from . import emergency_contact
 from . import health_profile
 from . import progress_tracking
 from . import freeze
+from . import freeze_request_wizard
+from . import membership_freeze
 from . import installment_plan
 from . import installment
 from . import Account_payments
@@ -17,11 +20,17 @@ from . import attendance
 from . import personal_training
 from . import commission_rule
 from . import trainer_commission
+from . import res_partner_pool
+from . import pool_access_wizard
 from . import pool
 from . import pool_booking
+from . import pool_access_wizard
+from . import res_partner_pool
 from . import injuries
 from . import injury_type
 from . import rehabilitation
+# Initialize the SQL report after all three source tables.
+from . import injury_aggregate
 from . import product_template
 from . import purchase_order
 from . import maintenance_equipment
@@ -34,3 +43,7 @@ from . import staff_availability_wizard
 from . import pos_order
 from . import trainer_commission_wizard
 from . import installment_payment_register
+from . import trainer_schedule
+from . import trainer_price_security
+from . import pool_maintenance_log
+from . import pool_maintenance_log

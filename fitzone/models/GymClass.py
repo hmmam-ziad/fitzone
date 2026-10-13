@@ -1,5 +1,5 @@
 from odoo import api, fields, models
-from odoo.exceptions import ValidationError
+from odoo.exceptions import AccessError, ValidationError
 
 
 class GymClass(models.Model):
@@ -64,11 +64,21 @@ class GymClass(models.Model):
             if (
                 rec.start_datetime
                 and rec.end_datetime
-                and rec.end_datetime < rec.start_datetime
+                and rec.end_datetime <= rec.start_datetime
             ):
                 raise ValidationError(
                     "End Datetime cannot be earlier than Start Datetime."
                 )
+
+    def _get_booked_count(self):
+        """Return only the occupied-seat count for an accessible timetable class."""
+        self.ensure_one()
+        self.check_access('read')
+        # Timetable readers need counts without access to booking/member records.
+        return self.env['fitzone.class.booking'].sudo().search_count([
+            ('class_id', '=', self.id),
+            ('status', 'in', ('booked', 'attended')),
+        ])
 
     @api.depends(
         'room_id.capacity',
@@ -76,11 +86,7 @@ class GymClass(models.Model):
     )
     def _compute_seats(self):
         for rec in self:
-            booked = len(
-                rec.booking_ids.filtered(
-                    lambda booking: booking.status in ('booked', 'attended')
-                )
-            )
+            booked = rec._get_booked_count()
 
             capacity = rec.capacity or 0
 
@@ -107,3 +113,26 @@ class GymClass(models.Model):
                 raise ValidationError(
                     "The trainer is not available during the selected working hours."
                 )
+
+    @api.constrains('trainer_id', 'start_datetime', 'end_datetime')
+    def _fz_check_trainer_schedule(self):
+        for rec in self:
+            if rec.trainer_id and rec.start_datetime and rec.end_datetime:
+                rec.trainer_id._check_available(
+                    rec.start_datetime, rec.end_datetime,
+                    exclude=(rec._name, rec.id))
+
+    def action_attendance(self):
+        """Open the minimal roster, initializing missing attendance rows on demand."""
+        self.ensure_one()
+        self.check_access('read')
+        if (not self.env.su and self.env.user.has_group('fitzone.group_fitzone_trainer')
+                and not any(self.env.user.has_group('fitzone.group_fitzone_' + role) for role in ('manager', 'reception'))
+                and self.trainer_id.employee_id.user_id != self.env.user):
+            raise AccessError('Attendance is limited to your own classes.')
+        ids = []
+        for booking in self.env['fitzone.class.booking'].search([('class_id', '=', self.id)]):
+            ids.append(self.env['fitzone.attendance']._ensure_booking_attendance(booking))
+        return {'type': 'ir.actions.act_window', 'name': 'Class attendance',
+                'res_model': 'fitzone.attendance', 'view_mode': 'list,form',
+                'domain': [('id', 'in', ids)]}

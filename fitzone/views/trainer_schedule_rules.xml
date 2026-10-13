@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Trainers see only their own schedule records. -->
+    <record id="rule_trainer_schedule_own" model="ir.rule">
+        <field name="name">Trainer Schedule: trainers see only their own</field>
+        <field name="model_id" ref="model_fitzone_trainer_schedule"/>
+        <field name="domain_force">[('trainer_id.employee_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('fitzone.group_fitzone_trainer'))]"/>
+    </record>
+
+</odoo>

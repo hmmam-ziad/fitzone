@@ -1,5 +1,5 @@
 from odoo import api, fields, models
-from odoo.exceptions import ValidationError
+from odoo.exceptions import AccessError, ValidationError
 
 
 class ClassBooking(models.Model):
@@ -7,14 +7,36 @@ class ClassBooking(models.Model):
     _description = 'Class Booking'
     _rec_name = 'member_id'
 
-    member_id = fields.Many2one('res.partner', required=True, domain="[('membership_ids', '!=', False)]")
-    membership_id = fields.Many2one('fitzone.membership', readonly=True)
+    member_id = fields.Many2one(
+        'res.partner',
+        required=True,
+        groups='fitzone.group_fitzone_manager,fitzone.group_fitzone_reception',
+        domain="[('membership_ids', '!=', False)]",
+    )
+    membership_id = fields.Many2one(
+        'fitzone.membership',
+        readonly=True,
+        groups='fitzone.group_fitzone_manager,fitzone.group_fitzone_reception',
+    )
+    member_name = fields.Char(compute='_compute_attendee_identity', compute_sudo=False)
+    membership_number = fields.Char(compute='_compute_attendee_identity', compute_sudo=False)
     class_id = fields.Many2one('fitzone.gym.class', required=True)
     booking_date = fields.Datetime(default=fields.Datetime.now)
     status = fields.Selection(
         [('booked', 'Booked'), ('cancelled', 'Cancelled'), ('attended', 'Attended')],
         default='booked', required=True)
 
+    def _attendee_identity(self):
+        self.ensure_one()
+        self.check_access('read')
+        # Own-class readers need only these two identity strings, never a partner record.
+        member = self.sudo().member_id
+        return member.name, member.membership_no
+
+    @api.depends('member_id')
+    def _compute_attendee_identity(self):
+        for booking in self:
+            booking.member_name, booking.membership_number = booking._attendee_identity()
 
     @api.model
     def _check_entitlement(self, member_id, class_start, membership=None):
@@ -61,13 +83,11 @@ class ClassBooking(models.Model):
 
         return membership
 
-
     @api.model_create_multi
     def create(self, vals_list):
         records = self.browse()
         for vals in vals_list:
             gym_class = self.env['fitzone.gym.class'].browse(vals['class_id'])
-
 
             self.env.cr.execute(
                 "SELECT id FROM fitzone_gym_class WHERE id = %s FOR UPDATE",
@@ -92,7 +112,9 @@ class ClassBooking(models.Model):
                 raise ValidationError("The class is full.")
 
             vals['membership_id'] = membership.id
-            records |= super().create([vals])
+            booking = super().create([vals])
+            self.env['fitzone.attendance']._ensure_booking_attendance(booking)
+            records |= booking
         return records
 
     def write(self, vals):
@@ -109,9 +131,11 @@ class ClassBooking(models.Model):
                 raise ValidationError("This booking cannot be cancelled.")
             rec.status = 'cancelled'
 
-
     @api.model
     def check_in_member(self, class_id, barcode):
+        if (not self.env.su and self.env.user.has_group('fitzone.group_fitzone_trainer')
+                and not any(self.env.user.has_group('fitzone.group_fitzone_' + role) for role in ('manager', 'reception'))):
+            return self.env['fitzone.attendance']._trainer_check_in(class_id, barcode)
         membership = self.env['fitzone.membership'].search(
             [('barcode', '=', barcode)], limit=1)
         booking = self.browse()
@@ -137,18 +161,7 @@ class ClassBooking(models.Model):
             raise ValidationError("Membership is frozen. Check-in denied.")
 
         booking.status = 'attended'
-
-        attendance = self.env['fitzone.attendance'].search(
-            [('booking_id', '=', booking.id)],
-            limit=1,
-        )
-        if not attendance:
-            self.env['fitzone.attendance'].create({
-                'booking_id': booking.id,
-                'attended': True,
-            })
-        elif not attendance.attended:
-            attendance.attended = True
+        self.env['fitzone.attendance']._ensure_booking_attendance(booking)
 
         self.env['fitzone.visit'].with_context(
             allow_barcode_checkin=True
@@ -161,3 +174,12 @@ class ClassBooking(models.Model):
         })
 
         return booking
+
+    @api.depends('member_id')
+    def _compute_display_name(self):
+        if (not self.env.su and self.env.user.has_group('fitzone.group_fitzone_trainer')
+                and not any(self.env.user.has_group('fitzone.group_fitzone_' + role) for role in ('manager', 'reception'))):
+            for booking in self:
+                booking.display_name = booking.member_name
+        else:
+            super()._compute_display_name()

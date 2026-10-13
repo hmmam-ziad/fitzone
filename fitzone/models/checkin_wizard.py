@@ -1,4 +1,3 @@
-
 from odoo import fields, models
 
 
@@ -20,17 +19,18 @@ class CheckinWizard(models.TransientModel):
         barcode = (self.barcode or '').strip()
 
         if self.class_id:
-            booking = self.env[
-                'fitzone.class.booking'
-            ].check_in_member(self.class_id.id, barcode)
+            booking = self.env['fitzone.class.booking'].check_in_member(
+                self.class_id.id, barcode)
 
-            message = '%s checked in for the class.' % (
-                booking.member_id.name
+            # check_in_member may return an attendance row, whose member_id is restricted.
+            member_name = (
+                booking.member_name
+                if booking._name == 'fitzone.attendance'
+                else booking.member_id.name
             )
+            message = '%s checked in for the class.' % member_name
         else:
-            visit = self.env[
-                'fitzone.visit'
-            ].check_in_by_barcode(barcode)
+            visit = self.env['fitzone.visit'].check_in_by_barcode(barcode)
 
             if visit.membership_id.package_type == 'private':
                 message = (
@@ -52,5 +52,6 @@ class CheckinWizard(models.TransientModel):
                 'message': message,
                 'type': 'success',
                 'sticky': False,
+                'next': {'type': 'ir.actions.act_window_close'},
             },
         }

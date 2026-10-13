@@ -1,13 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<templates id="template" xml:space="preserve">
-    <t t-inherit="point_of_sale.SelectPartnerButton" t-inherit-mode="extension">
-        <xpath expr="//div[@t-if='props.partner']" position="replace">
-            <div t-if="props.partner" class="text-truncate text-action">
-                <t t-esc="props.partner.name"/>
-                <span t-if="props.partner.membership_status">
-                    - <t t-esc="props.partner.membership_status"/>
-                </span>
+<templates xml:space="preserve">
+    <t t-inherit="point_of_sale.ProductScreen" t-inherit-mode="extension">
+        <xpath expr="//div[hasclass('pads')]" position="inside">
+            <div class="d-flex gap-2 align-items-center py-2">
+                <input class="form-control" placeholder="Membership number: enter or scan"
+                    t-att-value="currentOrder?.uiState.fitzoneNumber || ''"
+                    t-on-change="checkMembership"/>
+                <span t-if="currentOrder?.uiState.fitzoneStatus === 'active'">Active</span>
+                <span t-else="">Inactive</span>
             </div>
+        </xpath>
+    </t>
+    <t t-inherit="point_of_sale.ReceiptHeader" t-inherit-mode="extension">
+        <xpath expr="//div[hasclass('pos-receipt-customer')]" position="attributes">
+            <attribute name="t-if">order.partner_id and !order.partner_id.membership_no</attribute>
         </xpath>
     </t>
 </templates>

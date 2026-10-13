@@ -4,7 +4,7 @@ import io
 from PIL import Image, ImageDraw, ImageFont
 from reportlab.graphics.barcode.code128 import Code128
 from odoo import api, fields, models
-from odoo.exceptions import ValidationError
+from odoo.exceptions import AccessError, ValidationError
 from dateutil.relativedelta import relativedelta
 
 
@@ -16,12 +16,14 @@ class Membership(models.Model):
     member_id = fields.Many2one(
         'res.partner',
         required=True,
+        domain=[('is_fitzone_member', '=', True)]
     )
 
     package_id = fields.Many2one(
         'product.template',
         required=True,
     )
+
     package_type = fields.Selection(
         related='package_id.package_type',
         string='Package Type',
@@ -103,7 +105,6 @@ class Membership(models.Model):
                 output.getvalue()
             )
 
-    # Dates are assigned when the membership is activated.
     date_start = fields.Date(
         string='Activation Date',
         readonly=True,
@@ -129,7 +130,7 @@ class Membership(models.Model):
         copy=False,
     )
 
-    block_reason = fields.Char()
+    block_reason = fields.Char(groups='fitzone.group_fitzone_manager,fitzone.group_fitzone_reception,fitzone.group_fitzone_physiotherapist,fitzone.group_fitzone_nutritionist', )
 
     total_sessions = fields.Integer(
         string='Total PT Sessions',
@@ -165,12 +166,14 @@ class Membership(models.Model):
     )
 
     base_price = fields.Float(
+        groups='fitzone.group_fitzone_manager,fitzone.group_fitzone_reception,fitzone.group_fitzone_physiotherapist,fitzone.group_fitzone_nutritionist',
         string='Base Price',
         related='package_id.list_price',
         readonly=True,
     )
 
     final_price = fields.Float(
+        groups='fitzone.group_fitzone_manager,fitzone.group_fitzone_reception,fitzone.group_fitzone_physiotherapist,fitzone.group_fitzone_nutritionist',
         string='Final Price',
         compute='_compute_final_price',
         store=True,
@@ -185,37 +188,37 @@ class Membership(models.Model):
                 else membership.base_price
             )
 
-    physio_sessions_consumed = fields.Integer(
+    physio_sessions_consumed = fields.Integer(groups='fitzone.group_fitzone_manager,fitzone.group_fitzone_reception,fitzone.group_fitzone_physiotherapist,fitzone.group_fitzone_nutritionist',
         string='Physiotherapy Sessions Consumed',
         default=0,
         copy=False,
     )
 
-    physio_sessions_total = fields.Integer(
+    physio_sessions_total = fields.Integer(groups='fitzone.group_fitzone_manager,fitzone.group_fitzone_reception,fitzone.group_fitzone_physiotherapist,fitzone.group_fitzone_nutritionist',
         string='Total Physiotherapy Sessions',
         compute='_compute_medical_credits',
         store=True,
     )
 
-    physio_sessions_remaining = fields.Integer(
+    physio_sessions_remaining = fields.Integer(groups='fitzone.group_fitzone_manager,fitzone.group_fitzone_reception,fitzone.group_fitzone_physiotherapist,fitzone.group_fitzone_nutritionist',
         string='Remaining Physiotherapy Sessions',
         compute='_compute_medical_credits',
         store=True,
     )
 
-    nutrition_sessions_consumed = fields.Integer(
+    nutrition_sessions_consumed = fields.Integer(groups='fitzone.group_fitzone_manager,fitzone.group_fitzone_reception,fitzone.group_fitzone_physiotherapist,fitzone.group_fitzone_nutritionist',
         string='Nutrition Consultations Consumed',
         default=0,
         copy=False,
     )
 
-    nutrition_sessions_total = fields.Integer(
+    nutrition_sessions_total = fields.Integer(groups='fitzone.group_fitzone_manager,fitzone.group_fitzone_reception,fitzone.group_fitzone_physiotherapist,fitzone.group_fitzone_nutritionist',
         string='Total Nutrition Consultations',
         compute='_compute_medical_credits',
         store=True,
     )
 
-    nutrition_sessions_remaining = fields.Integer(
+    nutrition_sessions_remaining = fields.Integer(groups='fitzone.group_fitzone_manager,fitzone.group_fitzone_reception,fitzone.group_fitzone_physiotherapist,fitzone.group_fitzone_nutritionist',
         string='Remaining Nutrition Consultations',
         compute='_compute_medical_credits',
         store=True,
@@ -259,9 +262,39 @@ class Membership(models.Model):
                     'All-Inclusive can only be added to a General Membership.'
                 )
 
+    def _check_package_period_available(
+        self, member_id, package_id, start_date, end_date
+    ):
+        """Prevent overlapping memberships for the same member and package."""
+        if not all([member_id, package_id, start_date, end_date]):
+            return
+
+        domain = [
+            ('member_id', '=', member_id),
+            ('package_id', '=', package_id),
+            ('state', 'in', ['active', 'blocked']),
+            ('date_start', '<=', end_date),
+            ('date_end', '>=', start_date),
+        ]
+
+        if self.ids:
+            domain.append(('id', 'not in', self.ids))
+
+        existing_membership = self.search(domain, limit=1)
+
+        if existing_membership:
+            raise ValidationError(
+                'This member already has an active or blocked membership '
+                'for the same package during this period. '
+                'The package can be purchased again after the current '
+                'membership period ends.'
+            )
+
     @api.model_create_multi
     def create(self, vals_list):
         for vals in vals_list:
+            vals = dict(vals)
+
             if (
                 vals.get('state') == 'active'
                 and not self.env.context.get('allow_membership_activation')
@@ -272,32 +305,29 @@ class Membership(models.Model):
                 )
             # Generate a membership number when needed.
             member_id = vals.get('member_id')
+
             if member_id:
                 member = self.env['res.partner'].browse(member_id)
-                if member.exists() and not member.membership_no:
-                    member.membership_no = (
-                        self.env['ir.sequence'].next_by_code(
-                            'fitzone.member'
-                        )
-                    )
 
-            # A draft membership has no activation dates.
+                if member.exists() and not member.membership_no:
+                    member._assign_membership_number()
+
             if vals.get('state', 'draft') == 'draft':
                 vals['date_start'] = False
                 vals['date_end'] = False
 
-            # Explicitly created active memberships need valid dates.
             elif vals.get('state') == 'active':
                 package_id = vals.get('package_id')
+
                 if not package_id:
                     raise ValidationError(
                         'Please select a package before activation.'
                     )
 
                 package = self.env['product.template'].browse(package_id)
-                duration = package.duration_months
+                duration = package.duration_months if package.exists() else 0
 
-                if not package.exists() or duration <= 0:
+                if duration <= 0:
                     raise ValidationError(
                         'The package must have a valid duration.'
                     )
@@ -305,17 +335,26 @@ class Membership(models.Model):
                 activation_date = fields.Date.to_date(
                     vals.get('date_start') or fields.Date.today()
                 )
-                vals['date_start'] = activation_date
-                vals['date_end'] = (
+
+                end_date = (
                     activation_date
                     + relativedelta(months=duration)
                     - relativedelta(days=1)
                 )
 
+                vals['date_start'] = activation_date
+                vals['date_end'] = end_date
+
+                self._check_package_period_available(
+                    member_id=member_id,
+                    package_id=package_id,
+                    start_date=activation_date,
+                    end_date=end_date,
+                )
+
         return super().create(vals_list)
 
     def write(self, vals):
-        # Do not allow users or other code to edit dates directly.
         if (
             {'date_start', 'date_end'} & vals.keys()
             and not self.env.context.get('allow_membership_dates')
@@ -324,7 +363,6 @@ class Membership(models.Model):
                 'Membership dates are managed automatically by activation.'
             )
 
-        # A draft membership cannot be activated by changing its state directly
         if (
             vals.get('state') == 'active'
             and not self.env.context.get('allow_membership_activation')
@@ -347,7 +385,6 @@ class Membership(models.Model):
         today = fields.Date.context_today(self)
 
         for membership in self:
-            # Draft memberships must remain drafts until activated.
             if membership.state in ('draft', 'blocked', 'cancelled'):
                 continue
 
@@ -488,16 +525,25 @@ class Membership(models.Model):
                 )
 
             duration = membership.package_id.duration_months
+
             if duration <= 0:
                 raise ValidationError(
                     'The package must have a valid duration.'
                 )
 
             activation_date = fields.Date.context_today(membership)
+
             end_date = (
                 activation_date
                 + relativedelta(months=duration)
                 - relativedelta(days=1)
+            )
+
+            membership._check_package_period_available(
+                member_id=membership.member_id.id,
+                package_id=membership.package_id.id,
+                start_date=activation_date,
+                end_date=end_date,
             )
 
             values = {
@@ -528,26 +574,7 @@ class Membership(models.Model):
         })
 
     def action_unblock(self):
-        today = fields.Date.context_today(self)
-
-        for membership in self:
-            if not membership.date_start or not membership.date_end:
-                raise ValidationError(
-                    'This membership has no activation dates.'
-                )
-
-            if membership.date_end < today:
-                membership.write({
-                    'state': 'expired',
-                    'block_reason': False,
-                })
-            else:
-                membership.with_context(
-                    allow_membership_activation=True,
-                ).write({
-                    'state': 'active',
-                    'block_reason': False,
-                })
+        raise AccessError('Auto-Block cannot be overridden manually.')
 
     @api.model
     def action_expire_memberships(self):

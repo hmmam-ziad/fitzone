@@ -7,7 +7,7 @@
     <record id="view_fitzone_rehabilitation_search" model="ir.ui.view">
         <field name="name">fitzone.rehabilitation.search</field>
         <field name="model">fitzone.rehabilitation</field>
-        <field name="group_ids" eval="[(6, 0, [ref('fitzone.group_fitzone_clinic')])]" />
+        <field name="group_ids" eval="[(6, 0, [ref('fitzone.group_fitzone_physiotherapist')])]" />
         <field name="arch" type="xml">
             <search>
                 <field name="member_id" />
@@ -48,7 +48,7 @@
     <record id="view_fitzone_rehabilitation_list" model="ir.ui.view">
         <field name="name">fitzone.rehabilitation.list</field>
         <field name="model">fitzone.rehabilitation</field>
-        <field name="group_ids" eval="[(6, 0, [ref('fitzone.group_fitzone_clinic')])]" />
+        <field name="group_ids" eval="[(6, 0, [ref('fitzone.group_fitzone_physiotherapist')])]" />
         <field name="arch" type="xml">
             <list string="Rehabilitation Files"
                 decoration-success="state == 'completed'"
@@ -66,7 +66,7 @@
     <record id="view_fitzone_rehabilitation_form" model="ir.ui.view">
         <field name="name">fitzone.rehabilitation.form</field>
         <field name="model">fitzone.rehabilitation</field>
-        <field name="group_ids" eval="[(6, 0, [ref('fitzone.group_fitzone_clinic')])]" />
+        <field name="group_ids" eval="[(6, 0, [ref('fitzone.group_fitzone_physiotherapist')])]" />
         <field name="arch" type="xml">
             <form string="Rehabilitation File">
                 <header>
@@ -101,18 +101,21 @@
                                 <field name="sport_type" />
                             </group>
                         </page>
-                        <page string="Trainer Restrictions" name="trainer_restrictions">
+                        <page string="Clinical Movement Guidance" name="trainer_restrictions">
                             <div class="alert alert-warning" role="alert">
-                                These restrictions are visible to trainers on the member record.
+                                Text entered in this rehabilitation file is not shown to Trainers.
+                                Enter Trainer-visible forbidden movements and restrictions in the
+                                restrictions editor (Configuration → Injury Types). Keep diagnosis
+                                and clinic notes in the rehabilitation file.
                             </div>
-                            <group string="Trainer Movement Restrictions"
+                            <group string="Rehabilitation Movement Guidance"
                                 class="bg-warning-subtle p-3">
                                 <field name="prohibited_exercises" />
                                 <field name="movement_restrictions" />
                             </group>
                         </page>
                         <page string="Medical Confidentiality" name="medical_confidentiality"
-                            groups="fitzone.group_fitzone_clinic">
+                            groups="fitzone.group_fitzone_physiotherapist">
                             <group>
                                 <field name="medical_notes" />
                                 <field name="notes" string="Additional Confidential Notes" />

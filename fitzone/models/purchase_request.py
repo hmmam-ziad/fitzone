@@ -67,8 +67,9 @@ class PurchaseRequest(models.Model):
                 )
 
     def action_approve(self):
-        if not self.env.user.has_group('purchase.group_purchase_manager'):
-            raise UserError(_("Only Purchase Managers can approve purchase requests."))
+        if not (self.env.user.has_group('purchase.group_purchase_manager')
+                or self.env.user.has_group('fitzone.group_fitzone_manager')):
+            raise UserError(_("Only Owners or Purchase Managers can approve purchase requests."))
         for req in self.filtered(lambda r: r.state == 'to_approve'):
             req.write({
                 'state': 'approved',
@@ -78,8 +79,9 @@ class PurchaseRequest(models.Model):
             req.activity_feedback(['mail.mail_activity_data_todo'])
 
     def action_reject(self):
-        if not self.env.user.has_group('purchase.group_purchase_manager'):
-            raise UserError(_("Only Purchase Managers can reject purchase requests."))
+        if not (self.env.user.has_group('purchase.group_purchase_manager')
+                or self.env.user.has_group('fitzone.group_fitzone_manager')):
+            raise UserError(_("Only Owners or Purchase Managers can reject purchase requests."))
         for req in self.filtered(lambda r: r.state == 'to_approve'):
             req.write({
                 'state': 'rejected',
