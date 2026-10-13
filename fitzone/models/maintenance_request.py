@@ -108,7 +108,7 @@ class MaintenanceRequest(models.Model):
         """Remind managers and the technician 7 days and 1 day before a
         scheduled preventive ticket."""
         today = fields.Date.context_today(self)
-        managers = self.env.ref('fitzone.group_fitzone_manager').users
+        managers = self.env.ref('fitzone.group_fitzone_manager').user_ids
 
         tickets = self.search([
             ('maintenance_type', '=', 'preventive'),

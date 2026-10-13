@@ -94,6 +94,7 @@ class ResPartner(models.Model):
         'fitzone.freeze',
         'member_id',
         string='Freeze History',
+        groups='fitzone.group_fitzone_manager,fitzone.group_fitzone_reception',
     )
 
     # ------------------------------------------------------------------

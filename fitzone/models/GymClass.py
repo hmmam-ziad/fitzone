@@ -64,7 +64,7 @@ class GymClass(models.Model):
             if (
                 rec.start_datetime
                 and rec.end_datetime
-                and rec.end_datetime < rec.start_datetime
+                and rec.end_datetime <= rec.start_datetime
             ):
                 raise ValidationError(
                     "End Datetime cannot be earlier than Start Datetime."
@@ -113,6 +113,14 @@ class GymClass(models.Model):
                 raise ValidationError(
                     "The trainer is not available during the selected working hours."
                 )
+
+    @api.constrains('trainer_id', 'start_datetime', 'end_datetime')
+    def _fz_check_trainer_schedule(self):
+        for rec in self:
+            if rec.trainer_id and rec.start_datetime and rec.end_datetime:
+                rec.trainer_id._check_available(
+                    rec.start_datetime, rec.end_datetime,
+                    exclude=(rec._name, rec.id))
 
     def action_attendance(self):
         """Open the minimal roster, initializing missing attendance rows on demand."""

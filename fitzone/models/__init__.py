@@ -20,6 +20,8 @@ from . import attendance
 from . import personal_training
 from . import commission_rule
 from . import trainer_commission
+from . import res_partner_pool
+from . import pool_access_wizard
 from . import pool
 from . import pool_booking
 from . import pool_access_wizard
@@ -40,5 +42,7 @@ from . import checkin_wizard
 from . import staff_availability_wizard
 from . import pos_order
 from . import trainer_commission_wizard
+from . import trainer_schedule
 from . import trainer_price_security
+from . import pool_maintenance_log
 from . import pool_maintenance_log

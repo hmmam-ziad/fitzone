@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ========== Unified schedule (read-only) ========== -->
+    <record id="view_fitzone_trainer_schedule_calendar" model="ir.ui.view">
+        <field name="name">fitzone.trainer.schedule.calendar</field>
+        <field name="model">fitzone.trainer.schedule</field>
+        <field name="arch" type="xml">
+            <calendar string="Trainer Schedule"
+                      date_start="start_datetime"
+                      date_stop="end_datetime"
+                      color="trainer_id"
+                      mode="week"
+                      quick_create="0"
+                      create="0">
+                <field name="name"/>
+                <field name="trainer_id" filters="1"/>
+                <field name="activity_type" filters="1"/>
+            </calendar>
+        </field>
+    </record>
+
+    <!-- ========== List View ========== -->
+    <record id="view_fitzone_trainer_schedule_list" model="ir.ui.view">
+        <field name="name">fitzone.trainer.schedule.list</field>
+        <field name="model">fitzone.trainer.schedule</field>
+        <field name="arch" type="xml">
+            <list create="0" edit="0" delete="0">
+                <field name="trainer_id"/>
+                <field name="activity_type"/>
+                <field name="name"/>
+                <field name="member_id"/>
+                <field name="start_datetime"/>
+                <field name="end_datetime"/>
+                <field name="duration_hours" sum="Total Hours"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ========== Form View ========== -->
+    <record id="view_fitzone_trainer_schedule_form" model="ir.ui.view">
+        <field name="name">fitzone.trainer.schedule.form</field>
+        <field name="model">fitzone.trainer.schedule</field>
+        <field name="arch" type="xml">
+            <form create="0" edit="0" delete="0">
+                <sheet>
+                    <group>
+                        <field name="trainer_id"/>
+                        <field name="activity_type"/>
+                        <field name="name"/>
+
+                        <!-- Show registered member count for group classes -->
+                        <field name="member_id"
+                               invisible="activity_type == 'class'"/>
+
+                        <field name="member_count"
+                               string="Registered Members"
+                               invisible="activity_type != 'class'"/>
+
+                        <field name="start_datetime"/>
+                        <field name="end_datetime"/>
+                        <field name="duration_hours"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ========== Pivot View ========== -->
+    <record id="view_fitzone_trainer_schedule_pivot" model="ir.ui.view">
+        <field name="name">fitzone.trainer.schedule.pivot</field>
+        <field name="model">fitzone.trainer.schedule</field>
+        <field name="arch" type="xml">
+            <pivot string="Trainer Workload">
+                <field name="trainer_id" type="row"/>
+                <field name="activity_type" type="col"/>
+                <field name="duration_hours" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- ========== Graph View ========== -->
+    <record id="view_fitzone_trainer_schedule_graph" model="ir.ui.view">
+        <field name="name">fitzone.trainer.schedule.graph</field>
+        <field name="model">fitzone.trainer.schedule</field>
+        <field name="arch" type="xml">
+            <graph string="Trainer Workload" type="bar" stacked="1">
+                <field name="trainer_id"/>
+                <field name="activity_type"/>
+                <field name="duration_hours" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- ========== Search View ========== -->
+    <record id="view_fitzone_trainer_schedule_search" model="ir.ui.view">
+        <field name="name">fitzone.trainer.schedule.search</field>
+        <field name="model">fitzone.trainer.schedule</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="trainer_id"/>
+                <field name="member_id"/>
+                <field name="name"/>
+
+                <separator/>
+
+                <filter string="Group Classes"
+                        name="f_class"
+                        domain="[('activity_type', '=', 'class')]"/>
+
+                <filter string="Personal Training"
+                        name="f_pt"
+                        domain="[('activity_type', '=', 'pt')]"/>
+
+                <filter string="Pool"
+                        name="f_pool"
+                        domain="[('activity_type', '=', 'pool')]"/>
+
+                <separator/>
+
+                <filter string="Trainer"
+                        name="g_trainer"
+                        context="{'group_by': 'trainer_id'}"/>
+
+                <filter string="Activity"
+                        name="g_type"
+                        context="{'group_by': 'activity_type'}"/>
+
+                <filter string="Week"
+                        name="g_week"
+                        context="{'group_by': 'start_datetime:week'}"/>
+
+                <filter string="Day"
+                        name="g_day"
+                        context="{'group_by': 'start_datetime:day'}"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- ========== Shared Trainer Schedule Action ========== -->
+    <record id="action_fitzone_trainer_schedule"
+            model="ir.actions.act_window">
+        <field name="name">Shared Trainer Schedule</field>
+        <field name="res_model">fitzone.trainer.schedule</field>
+        <field name="view_mode">calendar,list,pivot,graph,form</field>
+        <field name="search_view_id"
+               ref="view_fitzone_trainer_schedule_search"/>
+    </record>
+
+    <!-- ========== Trainer Workload Action ========== -->
+    <record id="action_fitzone_trainer_workload"
+            model="ir.actions.act_window">
+        <field name="name">Trainer Workload</field>
+        <field name="res_model">fitzone.trainer.schedule</field>
+        <field name="view_mode">list,pivot,graph</field>
+        <field name="search_view_id"
+               ref="view_fitzone_trainer_schedule_search"/>
+    </record>
+
+</odoo>

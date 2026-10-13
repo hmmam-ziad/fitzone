@@ -44,7 +44,6 @@ class PoolAccessWizard(models.TransientModel):
             if membership:
                 self.member_id = membership.member_id
 
-
     def _evaluate(self):
         """Apply the pool rules and return the values to write on the wizard."""
         self.ensure_one()
@@ -104,13 +103,14 @@ class PoolAccessWizard(models.TransientModel):
                           "membership at no extra cost (0 JOD)."),
                 member_id=member.id, membership_id=membership.id, slot_id=slot.id)
 
-        # Group lesson / private session: needs a confirmed booking in the open slot
+        # Group lesson / private session: needs a confirmed booking TODAY in the open slot
         label = dict(self._fields['usage_type'].selection)[self.usage_type]
         booking = Booking.browse()
         if slot:
             booking = Booking.search([
                 ('member_id', '=', member.id),
                 ('pool_slot_id', '=', slot.id),
+                ('session_date', '=', today),
                 ('status', '=', 'confirmed'),
             ], limit=1)
         if not booking:
@@ -123,7 +123,6 @@ class PoolAccessWizard(models.TransientModel):
             member_id=member.id, membership_id=membership.id,
             slot_id=slot.id, booking_id=booking.id)
 
-    
     def _reopen(self):
         return {
             'type': 'ir.actions.act_window',
@@ -148,6 +147,7 @@ class PoolAccessWizard(models.TransientModel):
                 'member_id': self.member_id.id,
                 'membership_id': self.membership_id.id,
                 'pool_slot_id': self.slot_id.id,
+                'session_date': fields.Date.context_today(self),
                 'status': 'checked_in',
             })
         else:
