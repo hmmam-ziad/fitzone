@@ -171,7 +171,6 @@ class PTSession(models.Model):
             membership.consumed_sessions += 1
         return True
 
-    
     @api.constrains(
         'trainer_id', 'session_date', 'end_datetime', 'status'
     )

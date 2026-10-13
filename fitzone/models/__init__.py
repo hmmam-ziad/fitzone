@@ -42,6 +42,7 @@ from . import checkin_wizard
 from . import staff_availability_wizard
 from . import pos_order
 from . import trainer_commission_wizard
+from . import installment_payment_register
 from . import trainer_schedule
 from . import trainer_price_security
 from . import pool_maintenance_log

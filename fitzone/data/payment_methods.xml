@@ -1,37 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <data noupdate="1">
-
-        <record id="fitzone_cash_journal" model="account.journal">
-            <field name="name">FitZone Cash</field>
-            <field name="type">cash</field>
-            <field name="code">FZCSH</field>
-            <field name="company_id" ref="base.main_company"/>
-        </record>
-
-        <record id="fitzone_bank_journal" model="account.journal">
-            <field name="name">FitZone Bank</field>
-            <field name="type">bank</field>
-            <field name="code">FZBNK</field>
-            <field name="company_id" ref="base.main_company"/>
-        </record>
-
-    </data>
-
     <record id="payment_method_cash" model="pos.payment.method">
         <field name="name">Cash</field>
-        <field name="journal_id" ref="fitzone_cash_journal"/>
+        <field name="journal_id" ref="account.1_cash"/>
     </record>
 
     <record id="payment_method_card" model="pos.payment.method">
         <field name="name">Card</field>
-        <field name="journal_id" ref="fitzone_bank_journal"/>
+        <field name="journal_id" ref="account.1_bank"/>
     </record>
 
     <record id="payment_method_ewallet" model="pos.payment.method">
         <field name="name">E-Wallet</field>
-        <field name="journal_id" ref="fitzone_bank_journal"/>
+        <field name="journal_id" ref="account.1_bank"/>
     </record>
 
 </odoo>
