@@ -266,4 +266,34 @@
         <field name="model_id" ref="model_fitzone_management_expense"/>
         <field name="domain_force">[('company_id', 'in', company_ids)]</field>
     </record>
+    <record id="rule_purchase_request_ownership" model="ir.rule">
+        <field name="name">Purchase request: requester or Manager</field>
+        <field name="model_id" ref="model_fitzone_purchase_request"/>
+        <field name="domain_force">[(1, '=', 1)] if user.has_group('fitzone.group_fitzone_manager') or (user.has_group('purchase.group_purchase_user') and not user.has_group('fitzone.group_fitzone_sales')) else [('create_uid', '=', user.id)]</field>
+    </record>
+    <record id="rule_purchase_line_ownership" model="ir.rule">
+        <field name="name">Purchase line: requester or Manager</field>
+        <field name="model_id" ref="model_fitzone_purchase_request_line"/>
+        <field name="domain_force">[(1, '=', 1)] if user.has_group('fitzone.group_fitzone_manager') or (user.has_group('purchase.group_purchase_user') and not user.has_group('fitzone.group_fitzone_sales')) else [('request_id.create_uid', '=', user.id)]</field>
+    </record>
+    <record id="rule_purchase_order_sales_privacy" model="ir.rule">
+        <field name="name">Sales: purchasing documents are private</field>
+        <field name="model_id" ref="purchase.model_purchase_order"/>
+        <field name="domain_force">[(0, '=', 1)] if user.has_group('fitzone.group_fitzone_sales') and not (user.has_group('fitzone.group_fitzone_manager') or user.has_group('purchase.group_purchase_user')) else [(1, '=', 1)]</field>
+    </record>
+    <record id="rule_purchase_order_line_sales_privacy" model="ir.rule">
+        <field name="name">Sales: purchasing documents are private</field>
+        <field name="model_id" ref="purchase.model_purchase_order_line"/>
+        <field name="domain_force">[(0, '=', 1)] if user.has_group('fitzone.group_fitzone_sales') and not (user.has_group('fitzone.group_fitzone_manager') or user.has_group('purchase.group_purchase_user')) else [(1, '=', 1)]</field>
+    </record>
+    <record id="rule_purchase_bill_sales_privacy" model="ir.rule">
+        <field name="name">Sales: vendor bills are private</field>
+        <field name="model_id" ref="account.model_account_move"/>
+        <field name="domain_force">[('move_type', 'not in', ('in_invoice', 'in_refund'))] if user.has_group('fitzone.group_fitzone_sales') and not (user.has_group('fitzone.group_fitzone_manager') or user.has_group('purchase.group_purchase_user')) else [(1, '=', 1)]</field>
+    </record>
+    <record id="rule_purchase_bill_line_sales_privacy" model="ir.rule">
+        <field name="name">Sales: vendor bills are private</field>
+        <field name="model_id" ref="account.model_account_move_line"/>
+        <field name="domain_force">[('move_id.move_type', 'not in', ('in_invoice', 'in_refund'))] if user.has_group('fitzone.group_fitzone_sales') and not (user.has_group('fitzone.group_fitzone_manager') or user.has_group('purchase.group_purchase_user')) else [(1, '=', 1)]</field>
+    </record>
 </odoo>
