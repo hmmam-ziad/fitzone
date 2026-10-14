@@ -72,6 +72,7 @@
 
         "views/inventory_menus.xml",
         "views/medical_security_views.xml",
+        "report/nutrition_consultation.xml",
     ],
     "demo": ["demo/management_dashboard_demo.xml"],
     "assets": {
