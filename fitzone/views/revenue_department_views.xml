@@ -24,7 +24,7 @@
     </record>
     <record id="collected_department_list" model="ir.ui.view">
         <field name="name">fitzone.collected.department.list</field><field name="model">fitzone.collected.department</field>
-        <field name="arch" type="xml"><list create="0" edit="0" delete="0">
+        <field name="arch" type="xml"><list create="0" edit="0" delete="0" js_class="fitzone_readonly_detail_list">
             <field name="date"/><field name="company_id" groups="base.group_multi_company"/>
             <field name="currency_id" column_invisible="1"/><field name="department_name"/>
             <field name="collected_cash" sum="Collected cash (Cash basis)"/>

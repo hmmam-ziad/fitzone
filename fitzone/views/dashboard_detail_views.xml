@@ -1,0 +1,173 @@
+<odoo>
+<record id="financial_list" model="ir.ui.view"><field name="name">fitzone.financial.detail.financial.list</field><field name="model">fitzone.financial.detail</field><field name="arch" type="xml"><list create="0" edit="0" delete="0" js_class="fitzone_readonly_detail_list">
+<field name="currency_id" column_invisible="1"/><field name="company_id" optional="hide"/>
+<field name="date"/>
+<field name="type"/>
+<field name="source"/>
+<field name="reference"/>
+<field name="partner_id" options="{'no_open': True, 'no_create': True}"/>
+<field name="product_id" options="{'no_open': True, 'no_create': True}"/>
+<field name="quantity"/>
+<field name="account_id" options="{'no_open': True, 'no_create': True}"/>
+<field name="purchase_order_id" options="{'no_open': True, 'no_create': True}"/>
+<field name="department_id" options="{'no_open': True, 'no_create': True}"/>
+<field name="amount" sum="Amount"/>
+<field name="signed_amount" sum="Signed Amount"/>
+<field name="origin_model" optional="hide"/>
+<field name="origin_id" optional="hide" options="{'no_open': True, 'no_create': True}"/>
+</list></field></record>
+<record id="collected_list" model="ir.ui.view"><field name="name">fitzone.collected.detail.collected.list</field><field name="model">fitzone.collected.detail</field><field name="arch" type="xml"><list create="0" edit="0" delete="0" js_class="fitzone_readonly_detail_list">
+<field name="currency_id" column_invisible="1"/><field name="company_id" optional="hide"/>
+<field name="date"/>
+<field name="source"/>
+<field name="reference"/>
+<field name="partner_id" options="{'no_open': True, 'no_create': True}"/>
+<field name="invoice_id" options="{'no_open': True, 'no_create': True}"/>
+<field name="pos_order_id" options="{'no_open': True, 'no_create': True}"/>
+<field name="department_id" options="{'no_open': True, 'no_create': True}"/>
+<field name="amount" sum="Amount"/>
+<field name="allocation_line_id" optional="hide" options="{'no_open': True, 'no_create': True}"/>
+<field name="reconcile_id" optional="hide" options="{'no_open': True, 'no_create': True}"/>
+<field name="origin_model" optional="hide"/>
+<field name="origin_id" optional="hide" options="{'no_open': True, 'no_create': True}"/>
+</list></field></record>
+<record id="operational_membership_list" model="ir.ui.view"><field name="name">fitzone.operational.detail.operational_membership.list</field><field name="model">fitzone.operational.detail</field><field name="arch" type="xml"><list create="0" edit="0" delete="0" js_class="fitzone_readonly_detail_list">
+<field name="currency_id" column_invisible="1"/><field name="company_id" optional="hide"/>
+<field name="member_id" options="{'no_open': True, 'no_create': True}"/>
+<field name="product_id" options="{'no_open': True, 'no_create': True}"/>
+<field name="date"/>
+<field name="date_end"/>
+<field name="status"/>
+<field name="department_id" options="{'no_open': True, 'no_create': True}"/>
+<field name="reference"/>
+<field name="origin_id" optional="hide" options="{'no_open': True, 'no_create': True}"/>
+</list></field></record>
+<record id="operational_installment_list" model="ir.ui.view"><field name="name">fitzone.operational.detail.operational_installment.list</field><field name="model">fitzone.operational.detail</field><field name="arch" type="xml"><list create="0" edit="0" delete="0" js_class="fitzone_readonly_detail_list">
+<field name="currency_id" column_invisible="1"/><field name="company_id" optional="hide"/>
+<field name="member_id" options="{'no_open': True, 'no_create': True}"/>
+<field name="product_id" options="{'no_open': True, 'no_create': True}"/>
+<field name="plan_id" options="{'no_open': True, 'no_create': True}"/>
+<field name="date" string="Due date"/>
+<field name="status"/>
+<field name="department_id" options="{'no_open': True, 'no_create': True}"/>
+<field name="amount" sum="Amount"/>
+<field name="original_amount" optional="hide"/>
+<field name="original_currency_id" optional="hide" options="{'no_open': True, 'no_create': True}"/>
+<field name="reference"/>
+<field name="origin_id" optional="hide" options="{'no_open': True, 'no_create': True}"/>
+</list></field></record>
+<record id="operational_injury_list" model="ir.ui.view"><field name="name">fitzone.operational.detail.operational_injury.list</field><field name="model">fitzone.operational.detail</field><field name="arch" type="xml"><list create="0" edit="0" delete="0" js_class="fitzone_readonly_detail_list">
+<field name="currency_id" column_invisible="1"/><field name="company_id" optional="hide"/>
+<field name="date"/>
+<field name="member_id" options="{'no_open': True, 'no_create': True}"/>
+<field name="cause_id" options="{'no_open': True, 'no_create': True}"/>
+<field name="sport"/>
+<field name="status"/>
+<field name="department_id" options="{'no_open': True, 'no_create': True}"/>
+<field name="reference"/>
+<field name="origin_id" optional="hide" options="{'no_open': True, 'no_create': True}"/>
+</list></field></record>
+<record id="operational_class_list" model="ir.ui.view"><field name="name">fitzone.operational.detail.operational_class.list</field><field name="model">fitzone.operational.detail</field><field name="arch" type="xml"><list create="0" edit="0" delete="0" js_class="fitzone_readonly_detail_list">
+<field name="currency_id" column_invisible="1"/><field name="company_id" optional="hide"/>
+<field name="reference"/>
+<field name="start_datetime"/>
+<field name="end_datetime"/>
+<field name="room_id" options="{'no_open': True, 'no_create': True}"/>
+<field name="employee_id" options="{'no_open': True, 'no_create': True}"/>
+<field name="department_id" options="{'no_open': True, 'no_create': True}"/>
+<field name="booked_seats" sum="Booked Seats"/>
+<field name="offered_seats" sum="Offered Seats"/>
+<field name="origin_id" optional="hide" options="{'no_open': True, 'no_create': True}"/>
+</list></field></record>
+<record id="operational_session_list" model="ir.ui.view"><field name="name">fitzone.operational.detail.operational_session.list</field><field name="model">fitzone.operational.detail</field><field name="arch" type="xml"><list create="0" edit="0" delete="0" js_class="fitzone_readonly_detail_list">
+<field name="currency_id" column_invisible="1"/><field name="company_id" optional="hide"/>
+<field name="date"/>
+<field name="reference"/>
+<field name="source"/>
+<field name="member_id" options="{'no_open': True, 'no_create': True}"/>
+<field name="employee_id" options="{'no_open': True, 'no_create': True}"/>
+<field name="user_id" options="{'no_open': True, 'no_create': True}"/>
+<field name="department_id" options="{'no_open': True, 'no_create': True}"/>
+<field name="sessions" sum="Sessions"/>
+<field name="origin_id" optional="hide" options="{'no_open': True, 'no_create': True}"/>
+</list></field></record>
+<record id="operational_member_list" model="ir.ui.view"><field name="name">fitzone.operational.detail.operational_member.list</field><field name="model">fitzone.operational.detail</field><field name="arch" type="xml"><list create="0" edit="0" delete="0" js_class="fitzone_readonly_detail_list">
+<field name="currency_id" column_invisible="1"/><field name="company_id" optional="hide"/>
+<field name="member_id" options="{'no_open': True, 'no_create': True}"/>
+<field name="converted" sum="Converted"/>
+<field name="reference"/>
+<field name="origin_id" optional="hide" options="{'no_open': True, 'no_create': True}"/>
+</list></field></record>
+<record id="manual_list" model="ir.ui.view"><field name="name">fitzone.management.expense.manual.list</field><field name="model">fitzone.management.expense</field><field name="arch" type="xml"><list create="0" edit="0" delete="0" js_class="fitzone_readonly_detail_list">
+<field name="currency_id" column_invisible="1"/><field name="company_id" optional="hide"/>
+<field name="date"/>
+<field name="name"/>
+<field name="department" options="{'no_open': True, 'no_create': True}"/>
+<field name="amount" sum="Amount"/>
+<field name="notes"/>
+</list></field></record>
+<record id="financial_detail_search" model="ir.ui.view"><field name="name">fitzone.financial.detail.detail.search</field><field name="model">fitzone.financial.detail</field><field name="arch" type="xml"><search>
+<field name="reference"/>
+<field name="date"/>
+<field name="department_id"/>
+<field name="source"/>
+<field name="type"/>
+<filter name="period" string="Date" date="date"/><filter name="unassigned" string="Unassigned" domain="[('department_id','=',False)]"/>
+<filter name="group_department_id" string="Department" context="{'group_by':'department_id'}"/>
+<filter name="group_date" string="Date" context="{'group_by':'date'}"/>
+<filter name="group_source" string="Source" context="{'group_by':'source'}"/>
+<filter name="group_type" string="Type" context="{'group_by':'type'}"/>
+<filter name="group_product_id" string="Product" context="{'group_by':'product_id'}"/>
+<filter name="group_partner_id" string="Partner" context="{'group_by':'partner_id'}"/>
+<filter name="group_purchase_order_id" string="Purchase Order" context="{'group_by':'purchase_order_id'}"/>
+</search></field></record>
+<record id="financial_detail_pivot" model="ir.ui.view"><field name="name">fitzone.financial.detail.pivot</field><field name="model">fitzone.financial.detail</field><field name="arch" type="xml"><pivot disable_linking="1"><field name="department_id" type="row"/><field name="type" type="row"/><field name="signed_amount" type="measure"/></pivot></field></record>
+<record id="financial_detail_graph" model="ir.ui.view"><field name="name">fitzone.financial.detail.graph</field><field name="model">fitzone.financial.detail</field><field name="arch" type="xml"><graph><field name="department_id" type="row"/><field name="type" type="row"/><field name="signed_amount" type="measure"/></graph></field></record>
+<record id="financial_detail_company_rule" model="ir.rule"><field name="name">Management financial details: allowed companies</field><field name="model_id" ref="model_fitzone_financial_detail"/><field name="domain_force">[('company_id','in',company_ids)]</field></record>
+<record id="collected_detail_search" model="ir.ui.view"><field name="name">fitzone.collected.detail.detail.search</field><field name="model">fitzone.collected.detail</field><field name="arch" type="xml"><search>
+<field name="reference"/>
+<field name="date"/>
+<field name="department_id"/>
+<field name="source"/>
+<filter name="period" string="Date" date="date"/><filter name="unassigned" string="Unassigned" domain="[('department_id','=',False)]"/>
+<filter name="group_department_id" string="Department" context="{'group_by':'department_id'}"/>
+<filter name="group_date" string="Date" context="{'group_by':'date'}"/>
+<filter name="group_source" string="Source" context="{'group_by':'source'}"/>
+<filter name="group_partner_id" string="Partner" context="{'group_by':'partner_id'}"/>
+<filter name="group_invoice_id" string="Invoice" context="{'group_by':'invoice_id'}"/>
+<filter name="group_pos_order_id" string="Pos Order" context="{'group_by':'pos_order_id'}"/>
+</search></field></record>
+<record id="collected_detail_pivot" model="ir.ui.view"><field name="name">fitzone.collected.detail.pivot</field><field name="model">fitzone.collected.detail</field><field name="arch" type="xml"><pivot disable_linking="1"><field name="department_id" type="row"/><field name="source" type="row"/><field name="amount" type="measure"/></pivot></field></record>
+<record id="collected_detail_graph" model="ir.ui.view"><field name="name">fitzone.collected.detail.graph</field><field name="model">fitzone.collected.detail</field><field name="arch" type="xml"><graph><field name="department_id" type="row"/><field name="source" type="row"/><field name="amount" type="measure"/></graph></field></record>
+<record id="collected_detail_company_rule" model="ir.rule"><field name="name">Management collected details: allowed companies</field><field name="model_id" ref="model_fitzone_collected_detail"/><field name="domain_force">[('company_id','in',company_ids)]</field></record>
+<record id="operational_detail_search" model="ir.ui.view"><field name="name">fitzone.operational.detail.detail.search</field><field name="model">fitzone.operational.detail</field><field name="arch" type="xml"><search>
+<field name="reference"/>
+<field name="date"/>
+<field name="department_id"/>
+<field name="source"/>
+<field name="type"/>
+<filter name="period" string="Date" date="date"/><filter name="unassigned" string="Unassigned" domain="[('department_id','=',False)]"/>
+<filter name="group_department_id" string="Department" context="{'group_by':'department_id'}"/>
+<filter name="group_date" string="Date" context="{'group_by':'date'}"/>
+<filter name="group_source" string="Source" context="{'group_by':'source'}"/>
+<filter name="group_type" string="Type" context="{'group_by':'type'}"/>
+<filter name="group_member_id" string="Member" context="{'group_by':'member_id'}"/>
+<filter name="group_product_id" string="Product" context="{'group_by':'product_id'}"/>
+<filter name="group_status" string="Status" context="{'group_by':'status'}"/>
+<filter name="group_cause_id" string="Cause" context="{'group_by':'cause_id'}"/>
+<filter name="group_sport" string="Sport" context="{'group_by':'sport'}"/>
+<filter name="group_room_id" string="Room" context="{'group_by':'room_id'}"/>
+<filter name="group_employee_id" string="Employee" context="{'group_by':'employee_id'}"/>
+</search></field></record>
+<record id="operational_detail_pivot" model="ir.ui.view"><field name="name">fitzone.operational.detail.pivot</field><field name="model">fitzone.operational.detail</field><field name="arch" type="xml"><pivot disable_linking="1"><field name="department_id" type="row"/><field name="type" type="row"/><field name="sessions" type="measure"/></pivot></field></record>
+<record id="operational_detail_graph" model="ir.ui.view"><field name="name">fitzone.operational.detail.graph</field><field name="model">fitzone.operational.detail</field><field name="arch" type="xml"><graph><field name="department_id" type="row"/><field name="type" type="row"/><field name="sessions" type="measure"/></graph></field></record>
+<record id="operational_detail_company_rule" model="ir.rule"><field name="name">Management operational details: allowed companies</field><field name="model_id" ref="model_fitzone_operational_detail"/><field name="domain_force">[('company_id','in',company_ids)]</field></record>
+<record id="manual_detail_search" model="ir.ui.view"><field name="name">fitzone.management.expense.detail.search</field><field name="model">fitzone.management.expense</field><field name="arch" type="xml"><search>
+<field name="name"/>
+<field name="date"/>
+<field name="department"/>
+<filter name="period" string="Date" date="date"/><filter name="unassigned" string="Unassigned" domain="[('department','=',False)]"/>
+<filter name="group_department" string="Department" context="{'group_by':'department'}"/>
+<filter name="group_date" string="Date" context="{'group_by':'date'}"/>
+</search></field></record>
+</odoo>

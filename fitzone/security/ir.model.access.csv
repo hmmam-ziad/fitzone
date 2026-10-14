@@ -99,3 +99,6 @@ access_task34_fitzone_rehabilitation_manager,fitzone.rehabilitation manager,mode
 
 access_financial_analysis_manager,financial analysis manager,model_fitzone_financial_analysis,fitzone.group_fitzone_manager,1,0,0,0
 access_collected_department_manager,Collected cash manager,model_fitzone_collected_department,fitzone.group_fitzone_manager,1,0,0,0
+access_financial_detail_manager,financial transaction details,model_fitzone_financial_detail,fitzone.group_fitzone_manager,1,0,0,0
+access_collected_detail_manager,collected transaction details,model_fitzone_collected_detail,fitzone.group_fitzone_manager,1,0,0,0
+access_operational_detail_manager,operational transaction details,model_fitzone_operational_detail,fitzone.group_fitzone_manager,1,0,0,0
