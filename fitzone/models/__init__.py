@@ -58,3 +58,4 @@ from . import department_migration
 from . import revenue_department
 from . import financial_analysis
 from . import collected_department
+from . import dashboard_details

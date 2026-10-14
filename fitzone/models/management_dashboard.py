@@ -252,7 +252,7 @@ class ManagementDashboard(models.AbstractModel):
         ) '''
         conversion = self._query(event_cte+'''
             SELECT count(*) AS members, count(*) FILTER (WHERE cardinality(departments)>1) AS converted,
-                   array_agg(member_id) FILTER (WHERE cardinality(departments)>1) AS ids
+                   array_agg(member_id) FILTER (WHERE cardinality(departments)>1) AS ids, array_agg(member_id) AS all_ids
             FROM members WHERE (%(department)s IS NULL OR %(department)s=ANY(departments))
         ''', params)[0]
         matrix = self._query(event_cte+'''
@@ -331,44 +331,8 @@ class ManagementDashboard(models.AbstractModel):
             overdue_installments_count=overdue['count'], overdue_installments_amount=overdue['amount'],
             injuries_count=sum(row['count'] for row in causes),
             cross_conversion_percent=100*conversion['converted']/conversion['members'] if conversion['members'] else 0)
-        def action(name, model, domain):
-            return dict(type='ir.actions.act_window',name=name,res_model=model,views=[[False,'list'],[False,'form']],
-                        domain=domain,context={'create':False,'edit':False})
-        financial_domain = [('company_id','=',company.id), ('parent_state','=','posted'),
-            ('move_id.move_type','in',['out_invoice','out_refund']), ('display_type','=','product'),
-            ('move_id.invoice_date','>=',str(start)), ('move_id.invoice_date','<=',str(end))]
-        expense_domain = [('company_id','=',company.id),('date','>=',str(start)),('date','<=',str(end))]
-        if department is not None:
-            expense_domain.append(('department','=',department or False))
-        report_domain = [('company_id','=',company.id), ('date','>=',str(start)), ('date','<=',str(end))]
-        if department is not None:
-            report_domain.append(('department_id','=',department or False))
-        drills = dict(
-            total_revenue=action('Accrual revenue','fitzone.financial.analysis',report_domain+[('revenue','!=',0)]),
-            total_expenses=action('Financial Analysis','fitzone.financial.analysis',report_domain),
-            manual_expenses=action('Manual expenses','fitzone.management.expense',expense_domain),
-            purchase_expenses=action('Purchase expenses','fitzone.financial.analysis',report_domain+[('purchase_expenses','!=',0)]),
-            active_memberships=action('Active memberships','fitzone.membership',membership_domain+[('date_end','>=',str(end))]),
-            expired_memberships=action('Expired memberships','fitzone.membership',membership_domain+[('date_end','>=',str(start)),('date_end','<',str(end))]),
-            new_members=action('New members','res.partner',[('id','in',new_members['ids'] or [])]),
-            overall_occupancy_percent=action('Scheduled classes','fitzone.gym.class',[
-                ('company_id','=',company.id),('start_datetime','<',fields.Datetime.to_string(finish)),
-                ('end_datetime','>',fields.Datetime.to_string(begin))]+([('department_id','=',department or False)] if department is not None else [])),
-            upcoming_installments_amount=action('Upcoming installments','fitzone.installment',upcoming_domain),
-            overdue_installments_amount=action('Overdue installments','fitzone.installment',overdue_domain),
-            injuries_count=action('Injuries','fitzone.injury',[('company_id','=',company.id),('injury_date','>=',str(start)),('injury_date','<=',str(end))]+([('department_id','=',department or False)] if department is not None else [])))
-        # Revenue can have two sources; expose both, never hide POS from the drill-down.
-        pos_domain = [('company_id','=',company.id),('state','in',['paid','done','invoiced']),
-                      ('account_move','=',False),('date_order','>=',fields.Datetime.to_string(begin)),
-                      ('date_order','<',fields.Datetime.to_string(finish))]
-        drills['pos_revenue'] = (action('Accrual revenue by department', 'fitzone.financial.analysis', report_domain+[('revenue','!=',0)])
-                                 if department is not None else action('Uninvoiced POS sales','pos.order',pos_domain))
-        drills['collected_cash'] = action('Collected by Department (Cash basis)', 'fitzone.collected.department', report_domain)
-        drills['cross_conversion_percent'] = action('Members using multiple departments', 'res.partner', [('id','in',conversion['ids'] or [])])
-        drills['upcoming_installments_count'] = drills['upcoming_installments_amount']
-        drills['overdue_installments_count'] = drills['overdue_installments_amount']
-        drills['net_revenue'] = drills['total_revenue']
-        drills['net_margin_percent'] = drills['total_revenue']
+        drills = self._detail_actions(start, end, department, begin, finish,
+                                     new_members, conversion)
         return dict(kpis=kpis, tax_collected=tax_collected, total_incl_tax=revenue+tax_collected,
                     reporting_timezone=tz.zone, collected=collected, collected_cash=sum(r['collected_cash'] for r in collected),
                     department_options=choices, departments=departments, trend=trend, halls=halls, workload=workload,

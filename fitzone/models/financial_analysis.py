@@ -1,5 +1,5 @@
 """Live financial analysis shared with the management dashboard; no snapshots."""
-from odoo import _, fields, models, tools
+from odoo import _, api, fields, models, tools
 from odoo.exceptions import AccessError
 from .dashboard_queries import FINANCIAL_ROWS
 
@@ -32,6 +32,12 @@ class FinancialAnalysis(models.Model):
         if not self.env.user.has_group('fitzone.group_fitzone_manager'):
             raise AccessError(self.env._('Only FitZone Managers may access financial reports.'))
         return super()._search(domain, *args, **kwargs)
+
+    @api.model
+    def get_view(self, view_id=None, view_type='form', **options):
+        if view_type == 'form':
+            raise AccessError(_('Aggregate reports are available as lists, pivots and graphs.'))
+        return super().get_view(view_id, view_type, **options)
 
     def init(self):
         """Tax-exclusive expenses = manual entries + posted vendor product lines.

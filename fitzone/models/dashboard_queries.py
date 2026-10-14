@@ -9,7 +9,12 @@ counting it twice. Events include all POS usage, matching the original dashboard
 FINANCIAL_ROWS = """
     SELECT m.company_id, m.invoice_date AS day, COALESCE(l.fitzone_department_id,t.fitzone_department,0) AS department,
            -l.balance AS revenue, 0::numeric AS manual_expenses, 0::numeric AS purchase_expenses,
-           l.partner_id AS member_id
+           l.partner_id AS member_id,
+           'account.move.line'::varchar AS origin_model, l.id AS origin_id,
+           m.name AS reference, l.partner_id AS partner_id, l.product_id, l.quantity,
+           l.account_id, NULL::integer AS purchase_order_id,
+           'Revenue'::varchar AS type,
+           CASE WHEN m.move_type='out_refund' THEN 'Credit note' ELSE 'Invoice' END::varchar AS source
     FROM account_move_line l JOIN account_move m ON m.id=l.move_id
     LEFT JOIN product_product p ON p.id=l.product_id
     LEFT JOIN product_template t ON t.id=p.product_tmpl_id
@@ -18,18 +23,25 @@ FINANCIAL_ROWS = """
     SELECT o.company_id, (o.date_order AT TIME ZONE 'UTC' AT TIME ZONE (SELECT COALESCE(rp.tz,'UTC') FROM res_company rc JOIN res_partner rp ON rp.id=rc.partner_id WHERE rc.id=o.company_id))::date,
            COALESCE(t.fitzone_department,pc.fitzone_department_id,0),
            l.price_subtotal / COALESCE(NULLIF(o.currency_rate,0),1), 0, 0,
-           COALESCE(o.fitzone_member_id,o.partner_id)
+           COALESCE(o.fitzone_member_id,o.partner_id),
+           'pos.order.line', l.id, o.name, o.partner_id, l.product_id, l.qty,
+           NULL::integer, NULL::integer, 'Revenue', 'POS'
     FROM pos_order_line l JOIN pos_order o ON o.id=l.order_id
     JOIN product_product p ON p.id=l.product_id JOIN product_template t ON t.id=p.product_tmpl_id
     JOIN pos_config pc ON pc.id=o.config_id
     WHERE o.state IN ('paid','done','invoiced') AND o.account_move IS NULL
     UNION ALL
-    SELECT company_id, date, COALESCE(department,0), 0, amount, 0, NULL
+    SELECT company_id, date, COALESCE(department,0), 0, amount, 0, NULL,
+           'fitzone.management.expense', id, name, NULL, NULL, 0, NULL, NULL,
+           'Manual expense', 'Manual'
     FROM fitzone_management_expense
     UNION ALL
     SELECT m.company_id, m.date,
            COALESCE(CASE WHEN po.id IS NOT NULL THEN po.department_id ELSE m.fitzone_department_id END,0),
-           0, 0, l.balance, NULL
+           0, 0, l.balance, NULL,
+           'account.move.line', l.id, m.name, m.partner_id, l.product_id, l.quantity,
+           l.account_id, po.id, 'Purchase expense',
+           CASE WHEN m.move_type='in_refund' THEN 'Vendor credit note' ELSE 'Vendor bill' END
     FROM account_move_line l JOIN account_move m ON m.id=l.move_id
     LEFT JOIN purchase_order_line pl ON pl.id=l.purchase_line_id
     LEFT JOIN purchase_order po ON po.id=pl.order_id AND po.company_id=m.company_id
@@ -134,7 +146,7 @@ COLLECTED_ROWS = """
           AND NOT EXISTS (SELECT 1 FROM pos_payment pp WHERE pp.account_move_id=m.id)
     ), matches AS (
         SELECT pay.id AS payment_line_id, pay.company_id, pay.day,
-               -sign(pay.balance)*pr.amount AS amount, inv.id AS invoice_id
+               -sign(pay.balance)*pr.amount AS amount, inv.id AS invoice_id, pr.id AS reconcile_id
         FROM payment_lines pay
         JOIN account_partial_reconcile pr ON pr.credit_move_id=pay.id OR pr.debit_move_id=pay.id
         JOIN account_move_line il ON il.id=CASE WHEN pr.credit_move_id=pay.id THEN pr.debit_move_id ELSE pr.credit_move_id END
@@ -148,19 +160,26 @@ COLLECTED_ROWS = """
         LEFT JOIN product_template t ON t.id=p.product_tmpl_id
         WHERE l.display_type='product'
     )
-    SELECT mt.company_id, mt.day, w.department, mt.amount*w.balance/w.total AS collected_cash
+    SELECT mt.company_id, mt.day, w.department, mt.amount*w.balance/w.total AS collected_cash,
+           'account.move.line'::varchar AS origin_model, mt.payment_line_id AS origin_id,
+           mt.invoice_id, NULL::integer AS pos_order_id, w.id AS allocation_line_id,
+           mt.reconcile_id, 'Invoice payment'::varchar AS source
     FROM matches mt JOIN weights w ON w.move_id=mt.invoice_id AND w.total<>0
     UNION ALL
-    SELECT mt.company_id, mt.day, 0, mt.amount
+    SELECT mt.company_id, mt.day, 0, mt.amount,
+           'account.move.line', mt.payment_line_id, mt.invoice_id, NULL, NULL,
+           mt.reconcile_id, 'Invoice payment'
     FROM matches mt
     WHERE NOT EXISTS (SELECT 1 FROM weights w WHERE w.move_id=mt.invoice_id AND w.total<>0)
     UNION ALL
-    SELECT pay.company_id, pay.day, 0, -pay.balance-COALESCE(sum(mt.amount),0)
+    SELECT pay.company_id, pay.day, 0, -pay.balance-COALESCE(sum(mt.amount),0),
+           'account.move.line', pay.id, NULL, NULL, NULL, NULL, 'Unallocated payment'
     FROM payment_lines pay LEFT JOIN matches mt ON mt.payment_line_id=pay.id
     GROUP BY pay.id,pay.company_id,pay.day,pay.balance
     HAVING abs(-pay.balance-COALESCE(sum(mt.amount),0))>0.0000001
     UNION ALL
-    SELECT ap.company_id, ap.date, 0, ap.amount_company_currency_signed
+    SELECT ap.company_id, ap.date, 0, ap.amount_company_currency_signed,
+           'account.payment', ap.id, NULL, NULL, NULL, NULL, 'Unallocated payment'
     FROM account_payment ap
     WHERE ap.move_id IS NULL AND ap.state IN ('in_process','paid') AND ap.partner_type='customer'
       AND ap.pos_payment_method_id IS NULL AND ap.pos_session_id IS NULL
@@ -170,7 +189,8 @@ COLLECTED_ROWS = """
              (SELECT COALESCE(rp.tz,'UTC') FROM res_company rc JOIN res_partner rp ON rp.id=rc.partner_id WHERE rc.id=o.company_id))::date,
            CASE WHEN totals.net<>0 THEN COALESCE(t.fitzone_department,pc.fitzone_department_id,0) ELSE 0 END,
            pp.amount / COALESCE(NULLIF(o.currency_rate,0),1)
-             * CASE WHEN totals.net<>0 THEN l.price_subtotal/totals.net ELSE 1 END
+             * CASE WHEN totals.net<>0 THEN l.price_subtotal/totals.net ELSE 1 END,
+           'pos.payment', pp.id, NULL, o.id, l.id, NULL, 'POS payment'
     FROM pos_payment pp JOIN pos_order o ON o.id=pp.pos_order_id
     JOIN pos_payment_method pm ON pm.id=pp.payment_method_id
     JOIN account_journal pj ON pj.id=pm.journal_id AND pj.type IN ('cash','bank')
@@ -197,6 +217,8 @@ def normalize(source, columns, company_expression='s.company_id'):
     return "SELECT " + columns + " FROM (" + company_departments(source, company_expression) + ") guarded"
 
 
+FINANCIAL_DETAIL_ROWS = normalize(FINANCIAL_ROWS, 'company_id, day, safe_department AS department, revenue, manual_expenses, purchase_expenses, member_id, origin_model, origin_id, reference, partner_id, product_id, quantity, account_id, purchase_order_id, type, source')
+COLLECTED_DETAIL_ROWS = normalize(COLLECTED_ROWS, 'company_id, day, safe_department AS department, collected_cash, origin_model, origin_id, invoice_id, pos_order_id, allocation_line_id, reconcile_id, source')
 FINANCIAL_ROWS = normalize(FINANCIAL_ROWS, 'company_id, day, safe_department AS department, revenue, manual_expenses, purchase_expenses, member_id')
 FINANCIAL = "SELECT *, manual_expenses+purchase_expenses AS expenses FROM (" + FINANCIAL_ROWS + ") sources WHERE company_id=%(company)s AND day BETWEEN %(start)s AND %(end)s"
 TAX_ROWS = normalize(TAX_ROWS, 'company_id, day, safe_department AS department, tax')

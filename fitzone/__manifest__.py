@@ -65,6 +65,7 @@
         "data/department_migration.xml",
         "views/department_financial_views.xml",
         "views/revenue_department_views.xml",
+        "views/dashboard_detail_views.xml",
         "views/menus.xml",
 
         "views/inventory_menus.xml",
@@ -77,6 +78,7 @@
             "fitzone/static/src/xml/select_partner_button.xml",
         ],
         "web.assets_backend": [
+            "fitzone/static/src/js/readonly_detail_list.js",
             "fitzone/static/src/components/management_dashboard/management_dashboard.js",
             "fitzone/static/src/components/management_dashboard/management_dashboard.xml",
             "fitzone/static/src/components/management_dashboard/management_dashboard.scss",
