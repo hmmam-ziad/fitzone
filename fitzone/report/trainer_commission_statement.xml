@@ -3,6 +3,7 @@
     <record id="action_report_trainer_commission_statement" model="ir.actions.report">
         <field name="name">Trainer Commission Statement</field>
         <field name="model">fitzone.trainer.commission.wizard</field>
+        <field name="group_ids" eval="[(6, 0, [ref('fitzone.group_fitzone_manager')])]"/>
         <field name="report_type">qweb-pdf</field>
         <field name="report_name">fitzone.report_trainer_commission_statement</field>
         <field name="report_file">fitzone.report_trainer_commission_statement</field>

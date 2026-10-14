@@ -58,13 +58,8 @@ class MaintenanceRequest(models.Model):
                 raise AccessError('Maintenance cannot reset tickets to new.')
         return super().write(vals)
 
-    _sql_constraints = [
-        (
-            'fault_unique',
-            'unique(fault_id)',
-            'A fault report can only have one maintenance ticket.',
-        ),
-    ]
+    _fault_unique = models.Constraint(
+        'UNIQUE(fault_id)', 'A fault report can only have one maintenance ticket.')
 
     @api.model
     def _cron_create_preventive_requests(self):

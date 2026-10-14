@@ -13,7 +13,7 @@
         groups="fitzone.group_fitzone_manager,fitzone.group_fitzone_reception" />
     <menuitem id="menu_fitzone_health_profile" name="Health Profiles" parent="menu_fitzone_members"
         action="action_fitzone_health_profile" sequence="20"
-        groups="fitzone.group_fitzone_physiotherapist,fitzone.group_fitzone_nutritionist" />
+        groups="fitzone.group_fitzone_physiotherapist,fitzone.group_fitzone_nutritionist,fitzone.group_fitzone_manager" />
     <menuitem id="menu_fitzone_progress_tracking" name="Progress Tracking"
         parent="menu_fitzone_members" action="action_fitzone_progress_tracking" sequence="30"
         groups="fitzone.group_fitzone_manager,fitzone.group_fitzone_trainer" />
@@ -110,13 +110,14 @@
         parent="menu_fitzone_injuries" action="action_fitzone_rehabilitation" sequence="20"
         groups="fitzone.group_fitzone_physiotherapist" />
     <menuitem id="menu_fitzone_clinic_configuration" name="Configuration"
-        parent="menu_fitzone_injuries" sequence="90" groups="fitzone.group_fitzone_physiotherapist" />
+        parent="menu_fitzone_injuries" sequence="90"
+        groups="fitzone.group_fitzone_physiotherapist" />
     <menuitem id="menu_fitzone_injury_cause" name="Injury Causes"
         parent="menu_fitzone_clinic_configuration" action="action_fitzone_injury_cause"
         sequence="10" groups="fitzone.group_fitzone_physiotherapist" />
     <menuitem id="menu_fitzone_injury_type" name="Injury Types"
-        parent="menu_fitzone_clinic_configuration" action="action_fitzone_injury_type" sequence="20"
-        groups="fitzone.group_fitzone_physiotherapist" />
+        parent="menu_fitzone_clinic_configuration" action="action_fitzone_injury_type"
+        sequence="20" groups="fitzone.group_fitzone_physiotherapist" />
     <menuitem id="menu_fitzone_trainer_root" name="Trainer" parent="menu_fitzone_root" sequence="65"
         groups="fitzone.group_fitzone_trainer" />
     <menuitem id="menu_fitzone_report_injury" name="Report Injury Incident"
@@ -182,4 +183,25 @@
     <menuitem id="menu_periodic_maintenance" name="Periodic Schedule"
         parent="menu_fitzone_maintenance" action="action_periodic_maintenance"
         groups="fitzone.group_fitzone_manager,fitzone.group_fitzone_technician" />
+    <menuitem id="menu_management_dashboard" name="Management Dashboard"
+        parent="menu_fitzone_root" action="action_management_dashboard_client" sequence="5"
+        groups="fitzone.group_fitzone_manager" />
+    <record id="menu_management_dashboard" model="ir.ui.menu">
+        <field name="group_ids" eval="[(6, 0, [ref('group_fitzone_manager')])]" />
+    </record>
+    <menuitem id="menu_management_dashboard_home" name="Dashboard"
+        parent="menu_management_dashboard" action="action_management_dashboard_client" sequence="1"
+        groups="fitzone.group_fitzone_manager" />
+    <menuitem id="menu_management_expense" name="Manual Expenses"
+        parent="menu_management_dashboard" action="action_management_expense" sequence="20"
+        groups="fitzone.group_fitzone_manager" />
+    <record id="menu_management_expense" model="ir.ui.menu">
+        <field name="group_ids" eval="[(6, 0, [ref('group_fitzone_manager')])]" />
+    </record>
+    <menuitem id="menu_financial_analysis" name="Financial Analysis"
+        parent="menu_management_dashboard"
+        action="action_financial_analysis" sequence="10" groups="fitzone.group_fitzone_manager" />
+    <menuitem id="menu_collected_department" name="Collected by Department (Cash basis)"
+        parent="menu_management_dashboard" action="action_collected_department" sequence="15"
+        groups="fitzone.group_fitzone_manager" />
 </odoo>

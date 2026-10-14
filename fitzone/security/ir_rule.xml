@@ -90,7 +90,7 @@
         <field name="name">Rehabilitation: Clinic Only</field>
         <field name="model_id" ref="model_fitzone_rehabilitation" />
         <field name="groups" eval="[(5, 0, 0)]" />
-        <field name="domain_force">[(user.has_group('fitzone.group_fitzone_physiotherapist') and 1 or 0, '=',
+        <field name="domain_force">[((user.has_group('fitzone.group_fitzone_physiotherapist') or user.has_group('fitzone.group_fitzone_manager')) and 1 or 0, '=',
             1)]</field>
     </record>
     <record id="rule_health_assessment_author" model="ir.rule">
@@ -230,5 +230,40 @@
         <field name="name">Trainer: no pricing records</field>
         <field name="model_id" ref="product.model_product_pricelist_item"/>
         <field name="domain_force">[(0, '=', 1)] if user.has_group('fitzone.group_fitzone_trainer') and not any(user.has_group('fitzone.group_fitzone_' + role) for role in ('manager', 'reception', 'sales', 'physiotherapist', 'nutritionist')) else [(1, '=', 1)]</field>
+    </record>
+    <record id="rule_task34_injury_manager" model="ir.rule">
+        <field name="name">Manager: all injury</field>
+        <field name="model_id" ref="model_fitzone_injury"/>
+        <field name="groups" eval="[(6, 0, [ref('group_fitzone_manager')])]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+    <record id="rule_task34_injury_type_manager" model="ir.rule">
+        <field name="name">Manager: all injury.type</field>
+        <field name="model_id" ref="model_fitzone_injury_type"/>
+        <field name="groups" eval="[(6, 0, [ref('group_fitzone_manager')])]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+    <record id="rule_task34_rehabilitation_manager" model="ir.rule">
+        <field name="name">Manager: all rehabilitation</field>
+        <field name="model_id" ref="model_fitzone_rehabilitation"/>
+        <field name="groups" eval="[(6, 0, [ref('group_fitzone_manager')])]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+    <record id="rule_task34_health_profile_manager" model="ir.rule">
+        <field name="name">Manager: all health.profile</field>
+        <field name="model_id" ref="model_fitzone_health_profile"/>
+        <field name="groups" eval="[(6, 0, [ref('group_fitzone_manager')])]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+    <record id="rule_task34_nutrition_consultation_manager" model="ir.rule">
+        <field name="name">Manager: all nutrition.consultation</field>
+        <field name="model_id" ref="model_fitzone_nutrition_consultation"/>
+        <field name="groups" eval="[(6, 0, [ref('group_fitzone_manager')])]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+    <record id="rule_task34_expense_company" model="ir.rule">
+        <field name="name">Management expenses: allowed companies</field>
+        <field name="model_id" ref="model_fitzone_management_expense"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
     </record>
 </odoo>

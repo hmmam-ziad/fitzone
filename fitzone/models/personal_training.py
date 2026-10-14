@@ -13,7 +13,16 @@ class PTSession(models.Model):
     )
     trainer_id = fields.Many2one('fitzone.trainer', required=True)
     membership_id = fields.Many2one('fitzone.membership', required=True, domain="[('member_id', '=', member_id)]")
-    package_id = fields.Many2one('product.template', required=True)
+    package_id = fields.Many2one(
+        'product.template',
+        compute='_compute_package_id',
+        store=True,
+        precompute=True,
+        readonly=True,
+        required=True,
+    )
+
+    
     session_date = fields.Datetime()
     end_datetime = fields.Datetime()
     # Keep the legacy status field for existing views and availability searches.
@@ -162,9 +171,17 @@ class PTSession(models.Model):
         private = session.package_id.package_type == 'private' and session.package_id.total_sessions > 0
         if private and membership.remaining_sessions <= 0:
             raise ValidationError('This membership has no remaining PT sessions.')
+        # Session prices, like product prices, include tax. Commission is on
+        # earned revenue excluding tax, not on the government's tax share.
+        taxes = session.package_id.taxes_id.filtered(
+            lambda tax: tax.company_id == session.company_id)
+        net_price = taxes.compute_all(
+            session.session_price, currency=session.company_id.currency_id,
+            product=session.package_id.product_variant_id,
+            partner=session.member_id)['total_excluded']
         super(PTSession, session).write({
             'applied_commission_rate': rate,
-            'calculated_commission': session.session_price * rate / 100,
+            'calculated_commission': net_price * rate / 100,
             'state': 'completed', 'status': 'completed',
         })
         if private:
@@ -208,3 +225,8 @@ class PTSession(models.Model):
                     rec.end_datetime,
                     exclude=(rec._name, rec.id),
                 )
+
+    @api.depends('membership_id')
+    def _compute_package_id(self):
+        for rec in self:
+            rec.package_id = rec.membership_id.package_id

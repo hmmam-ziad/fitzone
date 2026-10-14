@@ -18,7 +18,7 @@ Trainers can be double-booked, and class capacity is not enforced (the CrossFit 
 Equipment faults and periodic maintenance dates are missed.
 Injuries are recorded on paper with no path from the trainer to the clinic.
 Supplement stock and expiry dates are not controlled.
-The owner has no consolidated view of revenue, utilisation or injuries.
+The manager has no consolidated view of revenue, utilisation or injuries.
 What this project delivers
 
 One unified Odoo system with one record per member, visible to every department according to role. Release 1 covers 13 modules:

@@ -37,7 +37,7 @@ class ResPartner(models.Model):
         'fitzone.health.profile',
         'member_id',
         string='Health Profile',
-        groups='fitzone.group_fitzone_physiotherapist,fitzone.group_fitzone_nutritionist',
+        groups='fitzone.group_fitzone_physiotherapist,fitzone.group_fitzone_nutritionist,fitzone.group_fitzone_manager',
     )
 
     pt_session_ids = fields.One2many(
@@ -55,31 +55,31 @@ class ResPartner(models.Model):
         'fitzone.rehabilitation',
         'member_id',
         string='Rehabilitation Files',
-        groups='fitzone.group_fitzone_physiotherapist',
+        groups='fitzone.group_fitzone_physiotherapist,fitzone.group_fitzone_manager',
     )
     active_rehab_id = fields.Many2one(
         'fitzone.rehabilitation',
         compute='_compute_active_rehab',
         string='Active Rehabilitation',
-        groups='fitzone.group_fitzone_physiotherapist',
+        groups='fitzone.group_fitzone_physiotherapist,fitzone.group_fitzone_manager',
         compute_sudo=False,
     )
     trainer_restriction_ids = fields.One2many(
         'fitzone.injury.type',
         'member_id',
         readonly=True,
-        groups='fitzone.group_fitzone_physiotherapist,fitzone.group_fitzone_trainer',
+        groups='fitzone.group_fitzone_physiotherapist,fitzone.group_fitzone_trainer,fitzone.group_fitzone_manager',
     )
     prohibited_exercises = fields.Text(
         compute='_compute_medical_restrictions',
         readonly=True,
-        groups='fitzone.group_fitzone_physiotherapist,fitzone.group_fitzone_trainer',
+        groups='fitzone.group_fitzone_physiotherapist,fitzone.group_fitzone_trainer,fitzone.group_fitzone_manager',
         compute_sudo=False,
     )
     movement_restrictions = fields.Text(
         compute='_compute_medical_restrictions',
         readonly=True,
-        groups='fitzone.group_fitzone_physiotherapist,fitzone.group_fitzone_trainer',
+        groups='fitzone.group_fitzone_physiotherapist,fitzone.group_fitzone_trainer,fitzone.group_fitzone_manager',
         compute_sudo=False,
     )
     progress_ids = fields.One2many(
@@ -113,7 +113,7 @@ class ResPartner(models.Model):
         'class_booking_ids.class_id.trainer_id.employee_id.user_id',
     )
     def _compute_medical_restrictions(self):
-        allowed = self.env.user.has_group('fitzone.group_fitzone_physiotherapist')
+        allowed = any(self.env.user.has_group('fitzone.group_fitzone_' + role) for role in ('physiotherapist', 'manager'))
         for partner in self:
             rehab = partner.active_rehab_id if allowed else False
             if allowed:
@@ -300,7 +300,7 @@ class ResPartner(models.Model):
 
     def message_subscribe(self, partner_ids=None, subtype_ids=None):
         if not self._fitzone_partner_chatter_allowed():
-            raise AccessError('Partner chatter is available only to Owner/Manager and Reception.')
+            raise AccessError('Partner chatter is available only to Manager and Reception.')
         return super().message_subscribe(partner_ids, subtype_ids)
 
     def _thread_to_store(self, store, fields, *, request_list=None):

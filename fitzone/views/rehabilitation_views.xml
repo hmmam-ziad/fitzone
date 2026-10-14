@@ -7,7 +7,7 @@
     <record id="view_fitzone_rehabilitation_search" model="ir.ui.view">
         <field name="name">fitzone.rehabilitation.search</field>
         <field name="model">fitzone.rehabilitation</field>
-        <field name="group_ids" eval="[(6, 0, [ref('fitzone.group_fitzone_physiotherapist')])]" />
+        <field name="group_ids" eval="[(6, 0, [ref('fitzone.group_fitzone_physiotherapist'), ref('fitzone.group_fitzone_manager')])]" />
         <field name="arch" type="xml">
             <search>
                 <field name="member_id" />
@@ -48,7 +48,7 @@
     <record id="view_fitzone_rehabilitation_list" model="ir.ui.view">
         <field name="name">fitzone.rehabilitation.list</field>
         <field name="model">fitzone.rehabilitation</field>
-        <field name="group_ids" eval="[(6, 0, [ref('fitzone.group_fitzone_physiotherapist')])]" />
+        <field name="group_ids" eval="[(6, 0, [ref('fitzone.group_fitzone_physiotherapist'), ref('fitzone.group_fitzone_manager')])]" />
         <field name="arch" type="xml">
             <list string="Rehabilitation Files"
                 decoration-success="state == 'completed'"
@@ -66,7 +66,7 @@
     <record id="view_fitzone_rehabilitation_form" model="ir.ui.view">
         <field name="name">fitzone.rehabilitation.form</field>
         <field name="model">fitzone.rehabilitation</field>
-        <field name="group_ids" eval="[(6, 0, [ref('fitzone.group_fitzone_physiotherapist')])]" />
+        <field name="group_ids" eval="[(6, 0, [ref('fitzone.group_fitzone_physiotherapist'), ref('fitzone.group_fitzone_manager')])]" />
         <field name="arch" type="xml">
             <form string="Rehabilitation File">
                 <header>
@@ -83,7 +83,7 @@
                         statusbar_visible="draft,in_progress,completed" />
                 </header>
                 <sheet>
-                    <group>
+                    <group><field name="company_id" invisible="1"/><field name="department_id" options="{'no_create': True}"/>
                         <group>
                             <field name="member_id" />
                             <field name="injury_id" domain="[('member_id', '=', member_id)]" />
@@ -115,7 +115,7 @@
                             </group>
                         </page>
                         <page string="Medical Confidentiality" name="medical_confidentiality"
-                            groups="fitzone.group_fitzone_physiotherapist">
+                            groups="fitzone.group_fitzone_physiotherapist,fitzone.group_fitzone_manager">
                             <group>
                                 <field name="medical_notes" />
                                 <field name="notes" string="Additional Confidential Notes" />

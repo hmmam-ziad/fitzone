@@ -42,6 +42,10 @@ class InstallmentPlan(models.Model):
         'membership_id.final_price',
         'membership_id.package_id.taxes_id',
         'membership_id.member_id',
+        'membership_id.company_id',
+        'membership_id.package_id.taxes_id.price_include_override',
+        'membership_id.package_id.taxes_id.amount',
+        'membership_id.company_id.account_price_include',
     )
     def _compute_total_amount(self):
         for plan in self:
@@ -50,7 +54,7 @@ class InstallmentPlan(models.Model):
                 plan.total_amount = 0.0
                 continue
 
-            company = self.env.company
+            company = membership.company_id
             taxes = membership.package_id.taxes_id.filtered(
                 lambda tax: tax.company_id == company
             )
@@ -144,7 +148,7 @@ class InstallmentPlan(models.Model):
                     'less than the plan total.'
                 )
 
-            company = self.env.company
+            company = membership.company_id
             currency = company.currency_id
 
             expected_total = package.taxes_id.filtered(
@@ -202,7 +206,7 @@ class InstallmentPlan(models.Model):
                     lambda tax: tax.company_id == company
                 )
 
-                invoice = self.env['account.move'].create({
+                invoice = self.env['account.move'].with_company(company).create({
                     'move_type': 'out_invoice',
                     'partner_id': membership.member_id.id,
                     'company_id': company.id,
@@ -232,7 +236,7 @@ class InstallmentPlan(models.Model):
             allocated = plan.down_payment
 
             for month in range(1, duration - 1):
-                amount = monthly
+                amount = currency.round(monthly)
                 allocated += amount
                 values.append({
                     'plan_id': plan.id,

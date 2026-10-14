@@ -8,6 +8,7 @@ class StaffAvailabilityWizard(models.TransientModel):
     department_id = fields.Many2one(
         'hr.department',
         string='Department',
+        domain="['|', ('company_id', '=', False), ('company_id', 'in', allowed_company_ids)]",
     )
 
     job_id = fields.Many2one(

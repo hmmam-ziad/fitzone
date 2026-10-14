@@ -55,7 +55,7 @@ class GymClass(models.Model):
             ('near_full', 'Almost Full'),
             ('full', 'Full'),
         ],
-        compute='_compute_seats', store=True
+        compute='_compute_alert_level', store=True
     )
 
     @api.constrains('start_datetime', 'end_datetime')
@@ -93,6 +93,11 @@ class GymClass(models.Model):
             rec.booked_count = booked
             rec.available_seats = max(capacity - booked, 0)
 
+    @api.depends('room_id.capacity', 'booking_ids.status')
+    def _compute_alert_level(self):
+        for rec in self:
+            booked = rec._get_booked_count()
+            capacity = rec.capacity or 0
             if capacity and booked >= capacity:
                 rec.alert_level = 'full'
             elif capacity and booked >= 0.8 * capacity:

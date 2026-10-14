@@ -60,22 +60,32 @@
         "views/trainer_schedule_views.xml",
         "views/trainer_schedule_rules.xml",
         "views/pool_access_views.xml",
+        "data/dashboard_cleanup.xml",
+        "views/management_dashboard_views.xml",
+        "data/department_migration.xml",
+        "views/department_financial_views.xml",
+        "views/revenue_department_views.xml",
         "views/menus.xml",
 
         "views/inventory_menus.xml",
         "views/medical_security_views.xml",
     ],
+    "demo": ["demo/management_dashboard_demo.xml"],
     "assets": {
         "point_of_sale._assets_pos": [
             "fitzone/static/src/js/member_discount.js",
             "fitzone/static/src/xml/select_partner_button.xml",
         ],
         "web.assets_backend": [
+            "fitzone/static/src/components/management_dashboard/management_dashboard.js",
+            "fitzone/static/src/components/management_dashboard/management_dashboard.xml",
+            "fitzone/static/src/components/management_dashboard/management_dashboard.scss",
             "fitzone/static/src/js/menu_badge.js",
             "fitzone/static/src/xml/menu_badge.xml",
         ],
     },
     "pre_init_hook": "pre_init_hook",
+    "post_init_hook": "post_init_hook",
     "installable": True,
     "application": True,
 }

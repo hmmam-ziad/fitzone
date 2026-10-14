@@ -26,7 +26,7 @@ class Injury(models.Model):
     )
 
     physiotherapist_id = fields.Many2one(
-        'hr.employee', groups='fitzone.group_fitzone_physiotherapist',
+        'hr.employee', groups='fitzone.group_fitzone_physiotherapist,fitzone.group_fitzone_manager',
     )
 
     member_name = fields.Char(compute='_compute_report_identity', compute_sudo=False)
@@ -41,11 +41,11 @@ class Injury(models.Model):
     type_ids = fields.One2many(
         'fitzone.injury.type',
         'injury_id',
-        string='Types', groups='fitzone.group_fitzone_physiotherapist',
+        string='Types', groups='fitzone.group_fitzone_physiotherapist,fitzone.group_fitzone_manager',
     )
 
     injury_cause_id = fields.Many2one(
-        'fitzone.injury.cause', string='Cause of Injury', groups='fitzone.group_fitzone_physiotherapist',
+        'fitzone.injury.cause', string='Cause of Injury', groups='fitzone.group_fitzone_physiotherapist,fitzone.group_fitzone_manager',
     )
     state = fields.Selection(
         [('draft', 'Draft'), ('submitted', 'Submitted to Clinic'),
@@ -55,9 +55,9 @@ class Injury(models.Model):
 
     @api.model_create_multi
     def create(self, vals_list):
-        if not self.env.su and any(vals.get('state', 'draft') not in ('draft', 'submitted') for vals in vals_list):
+        if not self.env.su and not self.env.user.has_group('fitzone.group_fitzone_manager') and any(vals.get('state', 'draft') not in ('draft', 'submitted') for vals in vals_list):
             raise AccessError(_('New incident reports cannot be processed at creation.'))
-        if not self.env.su:
+        if not self.env.su and not self.env.user.has_group('fitzone.group_fitzone_manager'):
             for vals in vals_list:
                 member_id = vals.get('member_id')
                 own_pt = self.env['fitzone.pt.session'].search_count([('member_id', '=', member_id), ('trainer_id.employee_id.user_id', '=', self.env.uid)])
@@ -67,7 +67,7 @@ class Injury(models.Model):
         return super().create(vals_list)
 
     def write(self, vals):
-        if not self.env.su:
+        if not self.env.su and not self.env.user.has_group('fitzone.group_fitzone_manager'):
             physio = self.env.user.has_group('fitzone.group_fitzone_physiotherapist')
             trainer = self.env.user.has_group('fitzone.group_fitzone_trainer')
             if 'member_id' in vals:

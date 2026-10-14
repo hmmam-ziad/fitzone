@@ -441,13 +441,13 @@ class Membership(models.Model):
                 'Select a member and package before creating an invoice.'
             )
 
-        company = self.env.company
+        company = self.company_id
         product = self.package_id.product_variant_id
         taxes = self.package_id.taxes_id.filtered(
             lambda tax: tax.company_id == company
         )
 
-        invoice = self.env['account.move'].create({
+        invoice = self.env['account.move'].with_company(company).create({
             'move_type': 'out_invoice',
             'partner_id': self.member_id.id,
             'company_id': company.id,
