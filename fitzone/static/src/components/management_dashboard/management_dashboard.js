@@ -1,21 +1,14 @@
 /** @odoo-module **/
 import { Component, onWillStart, onWillUnmount, useEffect, useRef, useState } from "@odoo/owl";
-import { Dialog } from "@web/core/dialog/dialog";
 import { registry } from "@web/core/registry";
 import { loadBundle } from "@web/core/assets";
 import { useService } from "@web/core/utils/hooks";
 import { standardActionServiceProps } from "@web/webclient/actions/action_service";
+import { useSetupAction } from "@web/search/action_hook";
 import { localization } from "@web/core/l10n/localization";
 
 const { DateTime } = luxon;
 const PALETTE = ["#7954b3", "#32a89a", "#e5a044", "#5692d2", "#c97b9f"];
-
-class FinancialSources extends Component {
-    static template = "fitzone.ManagementFinancialSources";
-    static components = { Dialog };
-    static props = { close: Function, onSelect: Function };
-    select(key) { this.props.close(); this.props.onSelect(key); }
-}
 
 class DashboardChart extends Component {
     static template = "fitzone.ManagementChart";
@@ -38,7 +31,7 @@ class DashboardChart extends Component {
                             x: { ticks: { color }, grid: { color: "rgba(125,118,139,.12)" } },
                             y: { beginAtZero: true, ticks: { color }, grid: { color: "rgba(125,118,139,.12)" } },
                         } } : {}),
-                        plugins: { legend: { position: "bottom", labels: { color, usePointStyle: true, padding: 18 } } },
+                        plugins: { ...config.options?.plugins, legend: { position: "bottom", labels: { color, usePointStyle: true, padding: 18 }, ...config.options?.plugins?.legend } },
                     },
                 });
             }
@@ -58,10 +51,10 @@ export class ManagementDashboard extends Component {
     setup() {
         this.orm = useService("orm");
         this.action = useService("action");
-        this.dialog = useService("dialog");
         const today = DateTime.local();
         this.state = useState({ loading: true, error: null, data: null, preset: "month",
-            dateFrom: today.startOf("month").toISODate(), dateTo: today.toISODate(), department: "", sources: false });
+            dateFrom: today.startOf("month").toISODate(), dateTo: today.toISODate(), department: "", sources: false, ...this.props.state?.filters });
+        useSetupAction({ getLocalState: () => ({ filters: { preset: this.state.preset, dateFrom: this.state.dateFrom, dateTo: this.state.dateTo, department: this.state.department } }) });
         this.request = 0;
         this.alive = true;
         onWillStart(async () => {
@@ -133,18 +126,17 @@ export class ManagementDashboard extends Component {
             };
         });
     }
-    drill(key) {
-        if (["total_revenue", "total_expenses", "net_revenue", "net_margin_percent"].includes(key)) {
-            this.dialog.add(FinancialSources, { onSelect: (source) => this.openSource(source) });
-        } else { this.openSource(key); }
+    drill(key, filters = {}) { return this.openSource(key, filters); }
+    async openSource(key, filters = {}) {
+        const action = await this.orm.call("fitzone.management.dashboard", "get_dashboard_action", [], {
+            metric: key, date_from: this.state.dateFrom, date_to: this.state.dateTo,
+            department: this.state.department || null, ...filters,
+        });
+        return this.action.doAction(action);
     }
-    openSource(key) {
-        this.state.sources = false;
-        const action = this.state.data.drilldowns[key];
-        if (action) { return this.action.doAction(action); }
-    }
-    openInstallment(id) {
-        return this.action.doAction({ type: "ir.actions.act_window", res_model: "fitzone.installment", res_id: id, views: [[false, "form"]] });
+    openInstallment(id) { return this.drill("overdue_installments_amount", { installment: id }); }
+    rowKey(event, key, filters) {
+        if (["Enter", " "].includes(event.key)) { event.preventDefault(); this.drill(key, filters); }
     }
     width(value) { return `width: ${Math.max(0, Math.min(100, value || 0))}%`; }
     occupancyClass(value) { return value < 40 ? "fz-low" : value < 80 ? "fz-ok" : "fz-high"; }
@@ -156,7 +148,7 @@ export class ManagementDashboard extends Component {
         const d = this.state.data;
         const bars = (label, data, color) => ({ label, data, backgroundColor: color, borderColor: color, borderRadius: 5 });
         const doughnut = (rows, key) => this.chart("doughnut", rows.map(r => r.name), [{ data: rows.map(r => r[key]), backgroundColor: rows.map((_, i) => PALETTE[i % PALETTE.length]), borderWidth: 0 }], { cutout: "72%" });
-        return {
+        const charts = {
             finances: this.chart("bar", d.departments.map(r => r.name), [bars("Revenue", d.departments.map(r => r.revenue), PALETTE[0]), bars("Manual expenses", d.departments.map(r => r.manual_expenses), PALETTE[2]), bars("Purchase expenses", d.departments.map(r => r.purchase_expenses), PALETTE[3])]),
             share: doughnut(d.departments.map(r => ({ ...r, revenue: Math.max(0,r.revenue) })), "revenue"),
             trend: this.chart("line", d.trend.map(r => r.day), [
@@ -168,6 +160,29 @@ export class ManagementDashboard extends Component {
             sports: doughnut(d.injuries_by_sport, "count"),
             memberships: doughnut([{ name: "Active", count: d.memberships.active }, { name: "Expired", count: d.memberships.expired }], "count"),
         };
+        const wire = (name, select, legend = select) => {
+            charts[name].options.onClick = (_event, elements) => {
+                if (elements.length) { select(elements[0].index, elements[0].datasetIndex); }
+            };
+            charts[name].options.plugins = { legend: { onClick: (_event, item) => legend(item.index, item.datasetIndex) } };
+        };
+        const financeKeys = ["total_revenue", "manual_expenses", "purchase_expenses"];
+        wire("finances", (i, series) => this.drill(financeKeys[series], { department: d.departments[i].key }),
+            (_i, series) => this.drill(financeKeys[series]));
+        wire("share", i => this.drill("total_revenue", { department: d.departments[i].key }));
+        wire("trend", (i, series) => {
+            const start = DateTime.fromISO(d.trend[i].day);
+            const end = d.trend.length > 1 && DateTime.fromISO(d.trend[1].day).diff(DateTime.fromISO(d.trend[0].day), "days").days === 7 ? start.plus({ days: 6 }) : start;
+            this.drill(series === 0 ? "total_revenue" : "total_expenses", {
+                date_from: start.toISODate() < d.date_from ? d.date_from : start.toISODate(),
+                date_to: end.toISODate() > d.date_to ? d.date_to : end.toISODate(),
+            });
+        }, (_i, series) => this.drill(series === 0 ? "total_revenue" : "total_expenses"));
+        wire("workload", i => this.drill("workload", { trainer: d.workload[i].id }), () => this.drill("workload"));
+        wire("causes", i => this.drill("injuries_count", { cause: d.injuries_by_cause[i].id || 0 }), () => this.drill("injuries_count"));
+        wire("sports", i => this.drill("injuries_sport", { sport: d.injuries_by_sport[i].name }));
+        wire("memberships", i => this.drill(i === 0 ? "active_memberships" : "expired_memberships"));
+        return charts;
     }
     get hasFinance() { return this.state.data.departments.some(r => r.revenue || r.expenses); }
     get hasRevenue() { return this.state.data.departments.some(r => r.revenue > 0); }
