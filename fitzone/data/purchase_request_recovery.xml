@@ -1,0 +1,4 @@
+<odoo>
+    <function model="fitzone.purchase.request" name="_migrate_purchase_progress"/>
+    <function model="fitzone.purchase.request" name="_recover_approved_rfqs"/>
+</odoo>

@@ -79,7 +79,7 @@ class MedicalAttachment(models.Model):
         self.ensure_one()
         # Elevate attachment routing metadata only; return a boolean, never file contents.
         routing = self.sudo().read(['res_model', 'res_id'])[0]
-        if not self.env.su and routing['res_model'] == 'fitzone.injury.type' and not self.env.user.has_group('fitzone.group_fitzone_physiotherapist'):
+        if not self.env.su and routing['res_model'] == 'fitzone.injury.type' and not any(self.env.user.has_group('fitzone.group_fitzone_' + role) for role in ('physiotherapist', 'manager')):
             return False
         if routing['res_model'] not in MEDICAL_MODELS:
             return True

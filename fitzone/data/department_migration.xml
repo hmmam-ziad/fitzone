@@ -1,0 +1,3 @@
+<odoo>
+    <function model="hr.department" name="_migrate_fitzone_departments"/>
+</odoo>

@@ -263,4 +263,8 @@ class ProductTemplate(models.Model):
                     'qty': t.fz_reorder_qty or t.fz_min_stock_level or 1.0,
                 }) for t in tmpls],
             })
-            request.action_submit()
+            if request.department_id:
+                request.action_submit()
+            else:
+                request.message_post(body=_(
+                    "Select a department and submit this automatic purchase request for approval."))

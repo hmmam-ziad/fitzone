@@ -1,0 +1,81 @@
+<odoo>
+    <record id="purchase_order_department_form" model="ir.ui.view">
+        <field name="name">purchase.order.department.form</field><field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml"><xpath expr="//field[@name='partner_id']" position="after">
+            <field name="department_id" options="{'no_create': True}"/>
+        </xpath></field>
+    </record>
+    <record id="purchase_order_department_list" model="ir.ui.view">
+        <field name="name">purchase.order.department.list</field><field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_tree"/>
+        <field name="arch" type="xml"><field name="partner_id" position="after"><field name="department_id" optional="show"/></field></field>
+    </record>
+    <record id="purchase_order_department_search" model="ir.ui.view">
+        <field name="name">purchase.order.department.search</field><field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.view_purchase_order_filter"/>
+        <field name="arch" type="xml"><field name="partner_id" position="after">
+            <field name="department_id"/>
+            <filter name="department_unassigned" string="Unassigned department" domain="[('department_id','=',False)]"/>
+            <filter name="department_group" string="Department" context="{'group_by':'department_id'}"/>
+        </field></field>
+    </record>
+    <record id="purchase_confirmed_department_search" model="ir.ui.view">
+        <field name="name">purchase.confirmed.department.search</field><field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_view_search"/>
+        <field name="arch" type="xml"><field name="partner_id" position="after">
+            <field name="department_id"/>
+            <filter name="department_unassigned" string="Unassigned department" domain="[('department_id','=',False)]"/>
+            <filter name="department_group" string="Department" context="{'group_by':'department_id'}"/>
+        </field></field>
+    </record>
+    <record id="bill_department_form" model="ir.ui.view">
+        <field name="name">account.move.department.form</field><field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml"><xpath expr="//field[@name='invoice_date']" position="after">
+            <field name="fitzone_department_id" invisible="move_type not in ('in_invoice','in_refund')" options="{'no_create': True}"/>
+        </xpath></field>
+    </record>
+    <record id="financial_analysis_list" model="ir.ui.view">
+        <field name="name">fitzone.financial.analysis.list</field><field name="model">fitzone.financial.analysis</field>
+        <field name="arch" type="xml"><list create="0" edit="0" delete="0" js_class="fitzone_readonly_detail_list">
+            <field name="date"/><field name="company_id" groups="base.group_multi_company"/>
+            <field name="currency_id" column_invisible="1"/><field name="department_name"/>
+            <field name="revenue" sum="Revenue"/><field name="manual_expenses" sum="Manual expenses"/>
+            <field name="purchase_expenses" sum="Purchase expenses"/><field name="total_expenses" sum="Total expenses"/>
+            <field name="net_revenue" sum="Net revenue"/>
+        </list></field>
+    </record>
+    <record id="financial_analysis_pivot" model="ir.ui.view">
+        <field name="name">fitzone.financial.analysis.pivot</field><field name="model">fitzone.financial.analysis</field>
+        <field name="arch" type="xml"><pivot disable_linking="1">
+            <field name="department_name" type="row"/><field name="date" type="col" interval="month"/>
+            <field name="revenue" type="measure"/><field name="manual_expenses" type="measure"/>
+            <field name="purchase_expenses" type="measure"/><field name="total_expenses" type="measure"/>
+            <field name="net_revenue" type="measure"/>
+        </pivot></field>
+    </record>
+    <record id="financial_analysis_graph" model="ir.ui.view">
+        <field name="name">fitzone.financial.analysis.graph</field><field name="model">fitzone.financial.analysis</field>
+        <field name="arch" type="xml"><graph type="bar"><field name="department_name"/>
+            <field name="revenue" type="measure"/><field name="total_expenses" type="measure"/>
+        </graph></field>
+    </record>
+    <record id="financial_analysis_search" model="ir.ui.view">
+        <field name="name">fitzone.financial.analysis.search</field><field name="model">fitzone.financial.analysis</field>
+        <field name="arch" type="xml"><search><field name="department_id"/><field name="date"/>
+            <filter name="unassigned" string="Unassigned" domain="[('department_id','=',False)]"/>
+            <filter name="department" string="Department" context="{'group_by':'department_name'}"/>
+            <filter name="period" string="Date" date="date"/>
+        </search></field>
+    </record>
+    <record id="action_financial_analysis" model="ir.actions.act_window">
+        <field name="name">Financial Analysis</field><field name="res_model">fitzone.financial.analysis</field>
+        <field name="view_mode">pivot,list,graph</field>
+        <field name="group_ids" eval="[(6,0,[ref('group_fitzone_manager')])]"/>
+    </record>
+    <record id="financial_analysis_company_rule" model="ir.rule">
+        <field name="name">Financial analysis: allowed companies</field><field name="model_id" ref="model_fitzone_financial_analysis"/>
+        <field name="domain_force">[('company_id','in',company_ids)]</field>
+    </record>
+</odoo>

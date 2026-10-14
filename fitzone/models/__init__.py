@@ -1,4 +1,6 @@
+from . import department_company
 from . import medical_security
+from . import res_groups
 from . import members
 from . import trainer
 from . import employee
@@ -47,3 +49,13 @@ from . import trainer_schedule
 from . import trainer_price_security
 from . import pool_maintenance_log
 from . import pool_maintenance_log
+
+from . import management_dashboard
+
+from . import dashboard_company
+from . import dashboard_demo
+from . import department_migration
+from . import revenue_department
+from . import financial_analysis
+from . import collected_department
+from . import dashboard_details

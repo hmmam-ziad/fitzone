@@ -1,0 +1,95 @@
+.fz-dashboard {
+    // FitZone palette: one source for surfaces, semantics and spacing.
+    --fz-brand: #7954b3;
+    --fz-success: #258c75;
+    --fz-warning: #bd7b20;
+    --fz-danger: #cc4c66;
+    --fz-surface: var(--o-view-background-color, var(--body-bg, #fff));
+    --fz-text: var(--body-color, #34313d);
+    --fz-muted: var(--text-muted, #777280);
+    --fz-border: var(--border-color, rgba(125, 118, 139, .18));
+    --fz-space: 16px;
+    --fz-gap: 24px;
+    --fz-radius: 12px;
+    height: 100%;
+    overflow: auto;
+    color: var(--fz-text);
+    background: color-mix(in srgb, var(--fz-surface) 94%, var(--fz-brand));
+    font-variant-numeric: tabular-nums;
+    button, select, input { &:focus-visible { outline: 3px solid var(--fz-brand); outline-offset: 3px; } }
+    button { transition: box-shadow .15s, transform .15s; }
+    .fz-header {
+        position: sticky; inset-block-start: 0; z-index: 5;
+        display: flex; align-items: center; justify-content: space-between; gap: var(--fz-gap);
+        padding: var(--fz-gap) 32px; background: var(--fz-surface);
+        border-block-end: 1px solid var(--fz-border);
+        box-shadow: 0 3px 16px rgba(40, 25, 65, .04);
+    }
+    .fz-eyebrow { color: var(--fz-brand); font-size: 10px; letter-spacing: .13em; font-weight: 700; }
+    h1 { margin: 6px 0; font-size: clamp(22px, 2vw, 30px); font-weight: 750; letter-spacing: -.025em; }
+    h2 { font-size: 16px; font-weight: 700; margin: 0 0 8px; }
+    p { color: var(--fz-muted); font-size: 12px; margin: 0 0 var(--fz-space); }
+    .fz-title p { margin: 0; }
+    .fz-filters { display: flex; flex-wrap: wrap; gap: 12px; align-items: end;
+        label { display: grid; gap: 6px; font-size: 11px; font-weight: 600; color: var(--fz-muted); }
+        .form-select, .form-control { min-height: 38px; border-radius: 8px; font-size: 12px; color: var(--fz-text); background-color: var(--fz-surface); }
+    }
+    .fz-refresh { background: var(--fz-brand); color: #fff; min-height: 38px; border-radius: 8px; padding-inline: 16px; i { margin-inline-end: 6px; } }
+    .fz-content { padding: var(--fz-gap) 32px 40px; max-width: 1920px; margin-inline: auto; }
+    .fz-kpis { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: var(--fz-space); }
+    .fz-kpi, .fz-panel { background: var(--fz-surface); border: 1px solid var(--fz-border); border-radius: var(--fz-radius); box-shadow: 0 4px 20px rgba(36, 20, 62, .045); }
+    .fz-kpi { text-align: start; padding: 20px; color: inherit; min-width: 0;
+        &:hover { transform: translateY(-2px); box-shadow: 0 7px 22px rgba(65, 36, 100, .12); }
+        > strong { display: block; font-size: clamp(20px, 1.7vw, 29px); font-weight: 750; margin: 14px 0 10px; overflow-wrap: anywhere; }
+        small { color: var(--fz-muted); font-size: 10px; }
+    }
+    .fz-kpi-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 12px; font-weight: 600; color: var(--fz-muted);
+        i { color: var(--fz-brand); background: color-mix(in srgb, var(--fz-brand) 10%, transparent); padding: 10px; border-radius: 10px; }
+    }
+    .fz-trend { font-size: 11px; font-weight: 700; }
+    .fz-positive { color: var(--fz-success); }
+    .fz-negative { color: var(--fz-danger); }
+    .fz-period-note { margin-block: var(--fz-space); font-size: 11px; color: var(--fz-muted); span { margin-inline-start: 12px; } }
+    .fz-grid { display: grid; grid-template-columns: repeat(12, minmax(0,1fr)); gap: var(--fz-gap); }
+    @for $n from 4 through 8 { .fz-span-#{$n} { grid-column: span $n; } }
+    .fz-panel { padding: var(--fz-gap); min-width: 0; }
+    .fz-panel-heading { display: flex; justify-content: space-between; gap: 12px; align-items: start; }
+    .fz-chart { position: relative; height: 280px; color: var(--fz-muted); }
+    .fz-empty { min-height: 200px; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; color: var(--fz-muted); font-size: 13px; i { opacity: .4; font-size: 32px; } }
+    .fz-link { background: none; border: 0; padding: 0; color: var(--fz-brand); font-size: 12px; text-align: start; }
+    .fz-table-wrap { overflow-x: auto; }
+    .fz-table { width: 100%; border-collapse: collapse; font-size: 12px;
+        th { font-weight: 600; color: var(--fz-muted); font-size: 11px; }
+        th, td { padding: 13px 8px; text-align: end; border-block-end: 1px solid var(--fz-border); &:first-child { text-align: start; padding-inline-start: 0; } }
+        td { white-space: nowrap; }
+    }
+    .fz-progress { height: 7px; margin-block: 10px; border-radius: 10px; overflow: hidden; background: color-mix(in srgb, var(--fz-muted) 12%, transparent);
+        span { display: block; height: 100%; background: var(--fz-brand); border-radius: inherit; }
+        &.fz-low span { background: var(--fz-warning); } &.fz-ok span { background: var(--fz-success); } &.fz-high span { background: var(--fz-brand); }
+    }
+    .fz-room { padding-block: 14px; small { color: var(--fz-muted); font-size: 11px; } }
+    .fz-room-heading { display: flex; align-items: center; gap: 10px; b { margin-inline-start: auto; } }
+    .fz-badge { border-radius: 20px; padding: 4px 8px; background: color-mix(in srgb, var(--fz-brand) 10%, transparent); color: var(--fz-brand); font-size: 9px; }
+    .fz-workload { display: flex; flex-wrap: wrap; gap: 6px 16px; max-height: 70px; overflow: auto; font-size: 10px; color: var(--fz-muted); margin-block-start: 12px; }
+    .fz-conversion { display: grid; gap: 8px; border: 0; background: none; text-align: start; padding: 12px 0; color: var(--fz-brand); strong { font-size: 38px; } span { font-size: 11px; color: var(--fz-muted); } }
+    .fz-matrix { font-size: 10px; th { font-size: 9px; white-space: normal; } th, td { padding: 9px 5px; } .fz-diagonal { background: color-mix(in srgb, var(--fz-brand) 10%, transparent); color: var(--fz-brand); } }
+    .fz-installments { display: grid; gap: 16px; }
+    .fz-installment { text-align: start; padding: 16px; display: grid; gap: 12px; border-radius: 10px; border: 1px solid var(--fz-border); background: transparent; color: var(--fz-text);
+        span { display: flex; align-items: center; gap: 8px; b { margin-inline-start: auto; } }
+        strong { font-size: 24px; } small { color: var(--fz-muted); font-size: 10px; }
+        &.fz-upcoming { border-inline-start: 4px solid var(--fz-success); }
+        &.fz-overdue { border-inline-start: 4px solid var(--fz-danger); }
+    }
+    .fz-overdue-list button { width: 100%; display: flex; align-items: center; gap: 12px; text-align: start; border: 0; border-block-end: 1px solid var(--fz-border); color: inherit; background: transparent; padding: 16px 0;
+        span { display: grid; gap: 5px; } small { color: var(--fz-danger); font-size: 10px; } b { margin-inline-start: auto; font-size: 12px; } }
+    .fz-basis { margin-block-start: 24px; font-size: 11px; color: var(--fz-muted); p { margin-block-start: 12px; line-height: 1.8; } }
+    .fz-skeleton-card { height: 160px; border-radius: var(--fz-radius); }
+    .fz-skeleton .fz-grid { margin-block-start: 24px; .fz-panel { height: 340px; } }
+    .fz-shimmer { background: linear-gradient(100deg, var(--fz-surface) 25%, color-mix(in srgb, var(--fz-brand) 10%, var(--fz-surface)) 40%, var(--fz-surface) 60%); background-size: 200% 100%; animation: fz-shimmer 1.5s infinite; }
+    .fz-error { text-align: center; padding: 80px 24px; i { color: var(--fz-danger); font-size: 40px; margin-block-end: 20px; } }
+    @media (min-width: 1650px) { .fz-kpis { grid-template-columns: repeat(8, minmax(0,1fr)); } .fz-kpi { padding: 16px; > strong { font-size: 23px; } } }
+    @media (max-width: 1200px) { .fz-header { align-items: start; flex-direction: column; gap: 16px; } .fz-grid > .fz-panel { grid-column: span 6; } }
+    @media (max-width: 800px) { .fz-content, .fz-header { padding: 16px; } .fz-kpis { grid-template-columns: repeat(2,minmax(0,1fr)); } .fz-grid { gap: 16px; } .fz-grid > .fz-panel { grid-column: span 12; } .fz-panel { padding: 16px; } .fz-filters { gap: 8px; } }
+    @media (prefers-reduced-motion: reduce) { .fz-shimmer { animation: none; } button { transition: none; } }
+}
+@keyframes fz-shimmer { to { background-position: -200% 0; } }

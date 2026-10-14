@@ -60,10 +60,10 @@
                 <page name="fitzone_visits" string="Visit history" groups="fitzone.group_fitzone_manager,fitzone.group_fitzone_reception,fitzone.group_fitzone_trainer">
                     <field name="visit_ids" readonly="1"><list create="0" edit="0" delete="0"><field name="visit_date"/><field name="status"/></list></field>
                 </page>
-                <page name="fitzone_restrictions" string="Injury restrictions &amp; forbidden movements" groups="fitzone.group_fitzone_physiotherapist,fitzone.group_fitzone_trainer">
+                <page name="fitzone_restrictions" string="Injury restrictions &amp; forbidden movements" groups="fitzone.group_fitzone_physiotherapist,fitzone.group_fitzone_trainer,fitzone.group_fitzone_manager">
                     <field name="prohibited_exercises"/><field name="movement_restrictions"/>
                 </page>
-                <page name="fitzone_health_nutrition" string="Health &amp; Nutrition" groups="fitzone.group_fitzone_physiotherapist,fitzone.group_fitzone_nutritionist">
+                <page name="fitzone_health_nutrition" string="Health &amp; Nutrition" groups="fitzone.group_fitzone_physiotherapist,fitzone.group_fitzone_nutritionist,fitzone.group_fitzone_manager">
 
                     <field name="health_profile_ids">
                         <list>
@@ -84,7 +84,7 @@
         <field name="arch" type="xml">
             <xpath expr="//sheet/notebook" position="before">
                 <div class="alert alert-warning" role="alert"
-                    groups="fitzone.group_fitzone_physiotherapist,fitzone.group_fitzone_trainer">
+                    groups="fitzone.group_fitzone_physiotherapist,fitzone.group_fitzone_trainer,fitzone.group_fitzone_manager">
                     <group string="Trainer Movement Restrictions">
                         <field name="prohibited_exercises" readonly="1" />
                         <field name="movement_restrictions" readonly="1" />

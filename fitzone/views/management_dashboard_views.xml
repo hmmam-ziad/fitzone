@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_management_dashboard_client" model="ir.actions.client">
+        <field name="name">Management Dashboard</field>
+        <field name="tag">fitzone_management_dashboard</field>
+        <field name="target">current</field>
+    </record>
+    <record id="view_management_expense_list" model="ir.ui.view">
+        <field name="name">fitzone.management.expense.list</field><field name="model">fitzone.management.expense</field>
+        <field name="arch" type="xml"><list><field name="date"/><field name="name"/><field name="department"/>
+            <field name="company_id"/><field name="currency_id" column_invisible="1"/><field name="amount" sum="Total"/></list></field>
+    </record>
+    <record id="view_management_expense_form" model="ir.ui.view">
+        <field name="name">fitzone.management.expense.form</field><field name="model">fitzone.management.expense</field>
+        <field name="arch" type="xml"><form><sheet><group><field name="name"/><field name="date"/>
+            <field name="department"/><field name="company_id"/><field name="currency_id" invisible="1"/>
+            <field name="amount"/><field name="notes"/></group></sheet></form></field>
+    </record>
+    <record id="action_management_expense" model="ir.actions.act_window">
+        <field name="name">Manual Expenses</field><field name="res_model">fitzone.management.expense</field>
+        <field name="view_mode">list,form</field>
+        <field name="group_ids" eval="[(6, 0, [ref('group_fitzone_manager')])]"/>
+    </record>
+    <record id="view_product_reporting_department" model="ir.ui.view">
+        <field name="name">product.template.fitzone.reporting</field><field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_only_form_view"/>
+        <field name="arch" type="xml"><xpath expr="//field[@name='categ_id']" position="after">
+            <field name="fitzone_department" groups="fitzone.group_fitzone_manager"/>
+        </xpath></field>
+    </record>
+    <record id="view_employee_reporting_quota" model="ir.ui.view">
+        <field name="name">hr.employee.fitzone.quota</field><field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="arch" type="xml"><xpath expr="//field[@name='job_id']" position="after">
+            <field name="fitzone_monthly_session_quota" groups="fitzone.group_fitzone_manager"/>
+        </xpath></field>
+    </record>
+</odoo>

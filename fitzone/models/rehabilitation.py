@@ -28,7 +28,7 @@ class Rehabilitation(models.Model):
     movement_restrictions = fields.Text(string='Movement Restrictions')
     medical_notes = fields.Text(
         string='Confidential Medical Notes',
-        groups='fitzone.group_fitzone_physiotherapist',
+        groups='fitzone.group_fitzone_physiotherapist,fitzone.group_fitzone_manager',
     )
     state = fields.Selection(
         [('draft', 'Draft'), ('in_progress', 'In Progress'),

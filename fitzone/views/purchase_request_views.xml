@@ -11,6 +11,7 @@
                 <field name="source"/>
                 <field name="requested_by"/>
                 <field name="vendor_id"/>
+                <field name="department_id"/>
                 <field name="state"/>
             </list>
         </field>
@@ -27,37 +28,51 @@
                     <button name="action_approve" string="Approve" type="object"
                             class="btn-primary" invisible="state != 'to_approve'"
                             groups="purchase.group_purchase_manager,fitzone.group_fitzone_manager"/>
-                    <button name="action_reject" string="Reject" type="object"
+                    <button name="action_reject" string="Refuse" type="object"
                             invisible="state != 'to_approve'"
                             groups="purchase.group_purchase_manager,fitzone.group_fitzone_manager"/>
                     <button name="action_create_rfq" string="Create RFQ" type="object"
-                            class="btn-primary" invisible="state != 'approved'"
-                            groups="purchase.group_purchase_user"/>
+                            class="btn-primary" invisible="state != 'approved' or purchase_order_id"
+                            groups="purchase.group_purchase_user,fitzone.group_fitzone_manager"/>
                     <button name="action_reset_draft" string="Reset to Draft" type="object"
                             invisible="state != 'rejected'"/>
-                    <field name="state" widget="statusbar"
-                           statusbar_visible="draft,to_approve,approved,ordered"/>
+                    <field name="state" widget="statusbar" readonly="1"
+                           statusbar_visible="draft,to_approve,approved,ordered,received,billed"/>
                 </header>
                 <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_open_rfq" type="object" class="oe_stat_button"
+                                icon="fa-shopping-cart" string="RFQ / Purchase Order"
+                                invisible="not purchase_order_id"
+                                groups="purchase.group_purchase_user,fitzone.group_fitzone_manager"/>
+                    </div>
                     <div class="oe_title">
                         <h1><field name="name"/></h1>
                     </div>
                     <group>
                         <group>
                             <field name="source"/>
+                            <field name="department_id" readonly="state not in ('draft', 'to_approve', 'approved')" options="{'no_create': True}"/>
                             <field name="requested_by" readonly="state != 'draft'"/>
-                            <field name="vendor_id" readonly="state in ('ordered', 'rejected')"/>
+                            <field name="vendor_id" readonly="state not in ('draft', 'to_approve', 'approved')"/>
                         </group>
                         <group>
                             <field name="request_date" readonly="state != 'draft'"/>
                             <field name="approver_id"/>
                             <field name="approval_date"/>
-                            <field name="purchase_order_id"/>
+                            <field name="purchase_order_id" groups="purchase.group_purchase_user,fitzone.group_fitzone_manager"/>
                             <field name="company_id" groups="base.group_multi_company"/>
                         </group>
                     </group>
-                    <group invisible="state != 'rejected'">
-                        <field name="reject_reason"/>
+                    <group invisible="state not in ('to_approve', 'rejected')" groups="purchase.group_purchase_manager,fitzone.group_fitzone_manager">
+                        <field name="reject_reason" string="Refusal Reason (optional)" readonly="state == 'rejected'"/>
+                    </group>
+                    <group string="Purchase progress" invisible="state in ('draft', 'to_approve', 'rejected', 'cancelled')">
+                        <field name="purchase_progress"/>
+                        <field name="expected_arrival"/>
+                        <label for="partially_received" string="Partially received" invisible="not partially_received"/>
+                        <field name="partially_received" nolabel="1" invisible="not partially_received"/>
+                        <field name="bill_payment_status" invisible="not bill_payment_status"/>
                     </group>
                     <notebook>
                         <page string="Products" name="products">

@@ -1,0 +1,8 @@
+<odoo noupdate="1">
+    <record id="dashboard_demo_department_gym" model="hr.department"><field name="name">Gym</field><field name="company_id" ref="base.main_company"/></record>
+    <record id="dashboard_demo_department_pool" model="hr.department"><field name="name">Swimming Pool</field><field name="company_id" ref="base.main_company"/></record>
+    <record id="dashboard_demo_department_physio" model="hr.department"><field name="name">Physical Therapy</field><field name="company_id" ref="base.main_company"/></record>
+    <record id="dashboard_demo_department_nutrition" model="hr.department"><field name="name">Nutrition</field><field name="company_id" ref="base.main_company"/></record>
+    <record id="dashboard_demo_department_retail" model="hr.department"><field name="name">Retail Sales</field><field name="company_id" ref="base.main_company"/></record>
+    <function model="fitzone.management.dashboard" name="_load_dashboard_demo"/>
+</odoo>

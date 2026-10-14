@@ -1,0 +1,3 @@
+<odoo>
+    <function model="res.groups" name="_cleanup_fitzone_legacy_dashboard"/>
+</odoo>

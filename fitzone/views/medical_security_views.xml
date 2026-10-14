@@ -7,12 +7,12 @@
     <record id="view_nutrition_consultation_form" model="ir.ui.view">
         <field name="name">fitzone.nutrition.consultation.form</field>
         <field name="model">fitzone.nutrition.consultation</field>
-        <field name="arch" type="xml"><form><sheet><group><field name="member_id"/><field name="consult_date"/><field name="nutritionist_id"/><field name="goal"/><field name="notes"/></group></sheet></form></field>
+        <field name="arch" type="xml"><form><sheet><group><field name="department_id" options="{'no_create': True}"/><field name="member_id"/><field name="consult_date"/><field name="nutritionist_id"/><field name="goal"/><field name="notes"/></group></sheet></form></field>
     </record>
     <record id="action_nutrition_consultation" model="ir.actions.act_window">
         <field name="name">Nutrition Consultations</field><field name="res_model">fitzone.nutrition.consultation</field><field name="view_mode">list,form</field>
     </record>
-    <menuitem id="menu_nutrition_consultation" name="Nutrition Consultations" parent="menu_fitzone_members" action="action_nutrition_consultation" groups="fitzone.group_fitzone_physiotherapist,fitzone.group_fitzone_nutritionist"/>
+    <menuitem id="menu_nutrition_consultation" name="Nutrition Consultations" parent="menu_fitzone_members" action="action_nutrition_consultation" groups="fitzone.group_fitzone_physiotherapist,fitzone.group_fitzone_nutritionist,fitzone.group_fitzone_manager"/>
     <record id="view_injury_aggregate_list" model="ir.ui.view">
         <field name="name">fitzone.injury.aggregate.list</field><field name="model">fitzone.injury.aggregate</field>
         <field name="arch" type="xml"><list create="0" edit="0" delete="0"><field name="injury_cause"/><field name="sport_type"/><field name="count"/></list></field>

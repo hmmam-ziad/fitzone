@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_report_nutrition_consultation" model="ir.actions.report">
+        <field name="name">Nutrition Consultation</field>
+        <field name="model">fitzone.nutrition.consultation</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">fitzone.report_nutrition_consultation</field>
+        <field name="report_file">fitzone.report_nutrition_consultation</field>
+        <field name="binding_model_id" ref="model_fitzone_nutrition_consultation"/>
+        <field name="binding_type">report</field>
+        <field name="group_ids" eval="[(6, 0, [ref('fitzone.group_fitzone_physiotherapist'), ref('fitzone.group_fitzone_nutritionist'), ref('fitzone.group_fitzone_manager')])]"/>
+        <field name="print_report_name">'Nutrition Consultation - %s' % object.member_id.display_name</field>
+    </record>
+
+    <template id="report_nutrition_consultation">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <h2>Nutrition Consultation</h2>
+                        <p><strong>Member: </strong><span t-field="o.member_id"/></p>
+                        <p><strong>Consult Date: </strong><span t-field="o.consult_date"/></p>
+                        <p><strong>Nutritionist: </strong><span t-field="o.nutritionist_id"/></p>
+                        <p><strong>Goal: </strong><span t-field="o.goal"/></p>
+                        <p><strong>Notes: </strong><span t-field="o.notes"/></p>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

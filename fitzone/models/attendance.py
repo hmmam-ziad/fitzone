@@ -44,7 +44,7 @@ class Attendance(models.Model):
             record.safe_restrictions = record._own_class_safe_restrictions()
 
 
-    _unique_booking = models.Constraint('UNIQUE(booking_id)', _('A booking can have only one attendance record.'))
+    _unique_booking = models.Constraint('UNIQUE(booking_id)', 'A booking can have only one attendance record.')
 
     def _identity(self):
         self.ensure_one()

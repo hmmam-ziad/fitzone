@@ -17,7 +17,7 @@ class PosOrder(models.Model):
     def _check_member_discount_role(self):
         if not (self.env.user.has_group('fitzone.group_fitzone_sales') or
                 self.env.user.has_group('fitzone.group_fitzone_manager')):
-            raise AccessError('Member status is restricted to Sales and Owner/Manager.')
+            raise AccessError('Member status is restricted to Sales and Manager.')
 
     def _active_member_id(self, number=None, member_id=None):
         """Private verification: return only the active member ID for server storage."""

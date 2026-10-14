@@ -54,7 +54,7 @@
         <field name="model">fitzone.injury</field>
         <field name="arch" type="xml">
             <search>
-                <field name="member_id" groups="fitzone.group_fitzone_physiotherapist"/>
+                <field name="member_id" groups="fitzone.group_fitzone_physiotherapist,fitzone.group_fitzone_manager"/>
                 <field name="member_name"/><field name="membership_number"/>
                 <field name="reported_by" />
                 <field name="physiotherapist_id" />
@@ -74,13 +74,13 @@
                 <filter string="Last 30 Days" name="filter_last_30_days"
                     domain="[('injury_date', '&gt;=', (context_today() - datetime.timedelta(days=30)).strftime('%Y-%m-%d'))]" />
                 <separator />
-                <filter groups="fitzone.group_fitzone_physiotherapist" string="Member" name="group_by_member"
+                <filter groups="fitzone.group_fitzone_physiotherapist,fitzone.group_fitzone_manager" string="Member" name="group_by_member"
                     context="{'group_by': 'member_id'}" />
                 <filter string="Reported By" name="group_by_reported_by"
                     context="{'group_by': 'reported_by'}" />
-                <filter groups="fitzone.group_fitzone_physiotherapist" string="Physiotherapist" name="group_by_physiotherapist"
+                <filter groups="fitzone.group_fitzone_physiotherapist,fitzone.group_fitzone_manager" string="Physiotherapist" name="group_by_physiotherapist"
                     context="{'group_by': 'physiotherapist_id'}" />
-                <filter groups="fitzone.group_fitzone_physiotherapist" string="Cause" name="group_by_cause"
+                <filter groups="fitzone.group_fitzone_physiotherapist,fitzone.group_fitzone_manager" string="Cause" name="group_by_cause"
                     context="{'group_by': 'injury_cause_id'}" />
                 <filter string="Status" name="group_by_state"
                     context="{'group_by': 'state'}" />
@@ -95,7 +95,7 @@
         <field name="model">fitzone.injury</field>
         <field name="arch" type="xml">
             <list create="0" string="Injury Incident Reports">
-                <field name="member_id" groups="fitzone.group_fitzone_physiotherapist"/>
+                <field name="member_id" groups="fitzone.group_fitzone_physiotherapist,fitzone.group_fitzone_manager"/>
                 <field name="member_name"/><field name="membership_number"/>
                 <field name="reported_by" />
                 <field name="injury_date" />
@@ -116,13 +116,13 @@
                         groups="fitzone.group_fitzone_trainer" />
                     <button name="action_create_rehab_file" type="object"
                         string="Create Rehabilitation File" class="oe_highlight"
-                        invisible="state != 'submitted'" groups="fitzone.group_fitzone_physiotherapist" />
+                        invisible="state != 'submitted'" groups="fitzone.group_fitzone_physiotherapist,fitzone.group_fitzone_manager" />
                     <field name="state" widget="statusbar"
                         statusbar_visible="draft,submitted,processed" />
                 </header>
                 <sheet>
-                    <group>
-                        <field name="member_id" readonly="1" groups="fitzone.group_fitzone_physiotherapist"/>
+                    <group><field name="company_id" invisible="1"/><field name="department_id" options="{'no_create': True}"/>
+                        <field name="member_id" readonly="1" groups="fitzone.group_fitzone_physiotherapist,fitzone.group_fitzone_manager"/>
                         <field name="member_name"/><field name="membership_number"/>
                         <field name="reported_by" readonly="state != 'draft'" />
                         <field name="injury_date" readonly="state != 'draft'" />
@@ -130,7 +130,7 @@
                     <group string="Incident Details">
                         <field name="description" readonly="state != 'draft'" />
                     </group>
-                    <group string="Clinic Assessment" groups="fitzone.group_fitzone_physiotherapist">
+                    <group string="Clinic Assessment" groups="fitzone.group_fitzone_physiotherapist,fitzone.group_fitzone_manager">
                         <field name="physiotherapist_id" />
                         <field name="injury_cause_id" />
                     </group>
@@ -158,21 +158,21 @@
         <field name="priority">30</field>
         <field name="arch" type="xml">
             <search>
-                <field name="member_id" groups="fitzone.group_fitzone_physiotherapist"/>
+                <field name="member_id" groups="fitzone.group_fitzone_physiotherapist,fitzone.group_fitzone_manager"/>
                 <field name="member_name"/><field name="membership_number"/>
                 <field name="reported_by" />
                 <field name="physiotherapist_id" />
                 <field name="injury_cause_id" />
                 <field name="description" />
                 <separator />
-                <filter groups="fitzone.group_fitzone_physiotherapist" string="Unassigned" name="filter_unassigned"
+                <filter groups="fitzone.group_fitzone_physiotherapist,fitzone.group_fitzone_manager" string="Unassigned" name="filter_unassigned"
                     domain="[('physiotherapist_id', '=', False)]" />
-                <filter groups="fitzone.group_fitzone_physiotherapist" string="Assigned" name="filter_assigned"
+                <filter groups="fitzone.group_fitzone_physiotherapist,fitzone.group_fitzone_manager" string="Assigned" name="filter_assigned"
                     domain="[('physiotherapist_id', '!=', False)]" />
                 <separator />
                 <filter string="Reported By" name="group_by_reported_by"
                     context="{'group_by': 'reported_by'}" />
-                <filter groups="fitzone.group_fitzone_physiotherapist" string="Physiotherapist" name="group_by_physiotherapist"
+                <filter groups="fitzone.group_fitzone_physiotherapist,fitzone.group_fitzone_manager" string="Physiotherapist" name="group_by_physiotherapist"
                     context="{'group_by': 'physiotherapist_id'}" />
                 <filter string="Injury Date" name="group_by_injury_date"
                     context="{'group_by': 'injury_date:month'}" />
@@ -189,9 +189,9 @@
                 <header>
                     <button name="action_create_rehab_file" type="object"
                         string="Create Rehabilitation File" class="oe_highlight"
-                        groups="fitzone.group_fitzone_physiotherapist" />
+                        groups="fitzone.group_fitzone_physiotherapist,fitzone.group_fitzone_manager" />
                 </header>
-                <field name="member_id" readonly="1" groups="fitzone.group_fitzone_physiotherapist"/>
+                <field name="member_id" readonly="1" groups="fitzone.group_fitzone_physiotherapist,fitzone.group_fitzone_manager"/>
                 <field name="member_name"/><field name="membership_number"/>
                 <field name="reported_by" readonly="1" />
                 <field name="injury_date" readonly="1" />
@@ -227,7 +227,7 @@
                 <separator />
                 <filter string="Member" name="group_by_member"
                     context="{'group_by': 'member_id'}" />
-                <filter groups="fitzone.group_fitzone_physiotherapist" string="Injury" name="group_by_injury"
+                <filter groups="fitzone.group_fitzone_physiotherapist,fitzone.group_fitzone_manager" string="Injury" name="group_by_injury"
                     context="{'group_by': 'injury_id'}" />
             </search>
         </field>
@@ -250,7 +250,7 @@
         <field name="arch" type="xml">
             <form>
                 <sheet>
-                    <div class="alert alert-info" role="alert" groups="fitzone.group_fitzone_physiotherapist">
+                    <div class="alert alert-info" role="alert" groups="fitzone.group_fitzone_physiotherapist,fitzone.group_fitzone_manager">
                         Trainers assigned to this member's PT sessions or noncancelled class bookings can read the forbidden
                         movements and restrictions entered here. Enter Trainer-visible text here,
                         not only in the rehabilitation file. Do not include diagnosis or clinic notes.

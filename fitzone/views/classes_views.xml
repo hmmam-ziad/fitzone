@@ -129,7 +129,7 @@
                         invisible="alert_level != 'full'">
                         This class is full. No more bookings are allowed.
                     </div>
-                    <group>
+                    <group><field name="company_id" invisible="1"/><field name="department_id" options="{'no_create': True}"/>
                         <group>
                             <field name="name" />
                             <field name="trainer_id" />

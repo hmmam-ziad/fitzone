@@ -7,7 +7,7 @@ class InjuryType(models.Model):
     _rec_name = 'id'
     _description = 'Injury Type'
 
-    injury_id = fields.Many2one('fitzone.injury', required=True, groups='fitzone.group_fitzone_physiotherapist')
+    injury_id = fields.Many2one('fitzone.injury', required=True, groups='fitzone.group_fitzone_physiotherapist,fitzone.group_fitzone_manager')
     member_id = fields.Many2one('res.partner', required=True)
     restriction = fields.Text()
     prohibited_exercises = fields.Text(string='Forbidden movements')

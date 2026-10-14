@@ -86,7 +86,6 @@ class Freeze(models.Model):
         required=True,
         readonly=True,
         copy=False,
-        tracking=True,
     )
 
     cancelled_by = fields.Many2one(
