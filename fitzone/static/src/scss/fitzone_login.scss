@@ -1,0 +1,133 @@
+// FitZone theme: login / auth pages (loaded in web.assets_frontend)
+// Selectors follow Odoo 19's web.login_layout and web.login templates.
+$fz-primary: #630002;
+$fz-primary-dark: darken($fz-primary, 8%);
+$fz-secondary: #3E4444;
+$fz-muted: #7a8282;
+$fz-line: rgba($fz-secondary, .14);
+
+// Page background: soft burgundy / charcoal glows on a warm light base.
+// :has() scopes this to auth pages only, so website pages are untouched.
+body:has(.o_database_list) {
+    background:
+        radial-gradient(900px 520px at 12% 8%, rgba($fz-primary, .13), transparent 62%),
+        radial-gradient(800px 520px at 92% 92%, rgba($fz-secondary, .15), transparent 62%),
+        #f5f3f3 !important;
+
+    // vertically center the card
+    .container {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+    }
+}
+
+// The card
+.card.o_database_list {
+    width: 100%;
+    max-width: 400px !important;
+    background: #fff !important;
+    border-radius: 16px;
+    border-top: 5px solid $fz-primary !important;
+    overflow: hidden;
+    box-shadow: 0 22px 50px rgba($fz-secondary, .18), 0 2px 6px rgba($fz-secondary, .08);
+    animation: fz-login-rise .5s cubic-bezier(.2, .7, .2, 1) backwards;
+
+    .card-body { padding: 34px 36px 26px; }
+
+    // logo area
+    .card-body > .border-bottom {
+        border-color: $fz-line !important;
+        img { max-height: 88px !important; }
+    }
+
+    // footer (Manage Databases / Powered by)
+    .card-body > .border-top {
+        border-color: $fz-line !important;
+        a { color: $fz-muted; text-decoration: none; &:hover { color: $fz-primary; } }
+    }
+}
+
+// The form
+.oe_login_form {
+    .form-label {
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: .02em;
+        color: $fz-secondary;
+    }
+
+    .form-control {
+        min-height: 44px;
+        border-radius: 10px;
+        border-color: rgba($fz-secondary, .22);
+        background-color: #fff;
+        color: $fz-secondary;
+        &::placeholder { color: lighten($fz-muted, 18%); }
+        &:focus {
+            border-color: $fz-primary;
+            box-shadow: 0 0 0 .2rem rgba($fz-primary, .18);
+        }
+    }
+
+    // keep the show-password button joined to its input, with matching corners
+    .input-group {
+        > .form-control {
+            border-start-end-radius: 0;
+            border-end-end-radius: 0;
+        }
+        > .btn {
+            border-color: rgba($fz-secondary, .22);
+            border-start-end-radius: 10px;
+            border-end-end-radius: 10px;
+            color: $fz-muted;
+            &:hover { color: $fz-primary; background: rgba($fz-primary, .06); }
+        }
+    }
+
+    .alert { border-radius: 10px; font-size: 13px; }
+
+    // Log in button
+    .btn-primary {
+        --bs-btn-bg: #{$fz-primary};
+        --bs-btn-border-color: #{$fz-primary};
+        --bs-btn-hover-bg: #{$fz-primary-dark};
+        --bs-btn-hover-border-color: #{$fz-primary-dark};
+        --bs-btn-active-bg: #{$fz-primary-dark};
+        --bs-btn-active-border-color: #{$fz-primary-dark};
+        --bs-btn-disabled-bg: #{$fz-primary};
+        --bs-btn-disabled-border-color: #{$fz-primary};
+        --bs-btn-focus-shadow-rgb: #{red($fz-primary)}, #{green($fz-primary)}, #{blue($fz-primary)};
+        background-color: $fz-primary;
+        border-color: $fz-primary;
+        color: #fff;
+        min-height: 46px;
+        font-size: 15px;
+        font-weight: 600;
+        letter-spacing: .02em;
+        border-radius: 10px;
+        box-shadow: 0 8px 18px rgba($fz-primary, .28);
+        transition: transform .15s, box-shadow .15s, background-color .15s;
+        &:hover, &:focus {
+            background-color: $fz-primary-dark;
+            border-color: $fz-primary-dark;
+            color: #fff;
+            transform: translateY(-1px);
+            box-shadow: 0 12px 24px rgba($fz-primary, .34);
+        }
+        &:active { transform: none; box-shadow: 0 4px 10px rgba($fz-primary, .28); }
+    }
+
+    // Links (reset password, sign up, superuser...)
+    a, .btn-link {
+        color: $fz-primary;
+        &:hover { color: $fz-primary-dark; }
+    }
+}
+
+@keyframes fz-login-rise { from { opacity: 0; transform: translateY(16px); } }
+
+@media (prefers-reduced-motion: reduce) {
+    .card.o_database_list { animation: none; }
+    .oe_login_form .btn-primary { transition: none; }
+}

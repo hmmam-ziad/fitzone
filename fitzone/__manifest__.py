@@ -87,6 +87,12 @@
             "fitzone/static/src/js/member_discount.js",
             "fitzone/static/src/xml/select_partner_button.xml",
         ],
+      
+        "web.assets_frontend": [
+    "fitzone/static/src/scss/fitzone_login.scss",
+        ],
+
+
         "web.assets_backend": [
             "fitzone/static/src/js/readonly_detail_list.js",
             "fitzone/static/src/components/management_dashboard/management_dashboard.js",
