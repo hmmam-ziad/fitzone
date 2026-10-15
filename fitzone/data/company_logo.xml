@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <function model="ir.model.data" name="write">
+        <value model="ir.model.data" search="[('module', '=', 'base'), ('name', '=', 'main_company')]"/>
+        <value eval="{'noupdate': False}"/>
+    </function>
+
+    <record id="base.main_company" model="res.company">
+        <field name="logo" type="base64" file="fitzone/static/description/icon.jpeg"/>
+    </record>
+
+</odoo>

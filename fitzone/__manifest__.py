@@ -73,8 +73,10 @@
         "views/inventory_menus.xml",
         "views/medical_security_views.xml",
         "report/nutrition_consultation.xml",
+        'data/company_logo.xml',
     ],
     "demo": ["demo/management_dashboard_demo.xml"],
+
     "assets": {
         
         "web._assets_primary_variables": [
