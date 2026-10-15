@@ -1,6 +1,6 @@
 from dateutil.relativedelta import relativedelta
 
-from odoo import api, fields, models
+from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
 
 
@@ -74,21 +74,13 @@ class InstallmentPlan(models.Model):
             if not membership:
                 continue
             if membership.package_type != 'general':
-                raise ValidationError(
-                    'Installments are only available for General Memberships.'
-                )
+                raise ValidationError(_('Installments are only available for General Memberships.'))
             if membership.package_id.duration_months < 3:
-                raise ValidationError(
-                    'Installments require a membership of at least 3 months.'
-                )
+                raise ValidationError(_('Installments require a membership of at least 3 months.'))
             if plan.down_payment < 50:
-                raise ValidationError(
-                    'The down payment must be at least JD 50.'
-                )
+                raise ValidationError(_('The down payment must be at least JD 50.'))
             if plan.down_payment > plan.total_amount:
-                raise ValidationError(
-                    'The down payment cannot exceed the total membership price.'
-                )
+                raise ValidationError(_('The down payment cannot exceed the total membership price.'))
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -97,56 +89,40 @@ class InstallmentPlan(models.Model):
             if membership_id and self.search(
                 [('membership_id', '=', membership_id)], limit=1
             ):
-                raise ValidationError(
-                    'This membership already has an installment plan.'
-                )
+                raise ValidationError(_('This membership already has an installment plan.'))
         return super().create(vals_list)
 
     def action_generate_schedule(self):
         for plan in self:
             if plan.status != 'draft':
-                raise ValidationError(
-                    'A schedule can only be generated for a draft plan.'
-                )
+                raise ValidationError(_('A schedule can only be generated for a draft plan.'))
             if plan.installment_ids or plan.invoice_id:
-                raise ValidationError(
-                    'An installment schedule or invoice already exists.'
-                )
+                raise ValidationError(_('An installment schedule or invoice already exists.'))
 
             membership = plan.membership_id
             package = membership.package_id
             duration = package.duration_months
 
             if membership.state != 'draft':
-                raise ValidationError(
-                    'Create the installment plan before activating the membership.'
-                )
+                raise ValidationError(_('Create the installment plan before activating the membership.'))
             if not membership.member_id:
-                raise ValidationError('Select a customer for the membership.')
+                raise ValidationError(_('Select a customer for the membership.'))
             if (
                 package.package_type != 'general'
                 or duration < 3
             ):
-                raise ValidationError(
-                    'Installment plans are available only for General '
-                    'Membership packages of three months or more.'
-                )
+                raise ValidationError(_('Installment plans are available only for General '
+                    'Membership packages of three months or more.'))
             if duration <= 1:
-                raise ValidationError(
-                    'The package duration must allow multiple installments.'
-                )
+                raise ValidationError(_('The package duration must allow multiple installments.'))
             if plan.total_amount <= 0:
-                raise ValidationError(
-                    'The installment plan total must be greater than zero.'
-                )
+                raise ValidationError(_('The installment plan total must be greater than zero.'))
             if (
                 plan.down_payment <= 0
                 or plan.down_payment >= plan.total_amount
             ):
-                raise ValidationError(
-                    'The down payment must be greater than zero and '
-                    'less than the plan total.'
-                )
+                raise ValidationError(_('The down payment must be greater than zero and '
+                    'less than the plan total.'))
 
             company = membership.company_id
             currency = company.currency_id
@@ -164,42 +140,28 @@ class InstallmentPlan(models.Model):
             if currency.compare_amounts(
                 plan.total_amount, expected_total
             ) != 0:
-                raise ValidationError(
-                    'The installment plan total must match the membership price including tax.'
-                )
+                raise ValidationError(_('The installment plan total must match the membership price including tax.'))
 
             invoice = membership.invoice_id
 
             if invoice:
                 if invoice.state != 'posted':
-                    raise ValidationError(
-                        'The linked membership invoice must be posted.'
-                    )
+                    raise ValidationError(_('The linked membership invoice must be posted.'))
                 if invoice.move_type != 'out_invoice':
-                    raise ValidationError(
-                        'The linked document must be a customer invoice.'
-                    )
+                    raise ValidationError(_('The linked document must be a customer invoice.'))
                 if invoice.partner_id != membership.member_id:
-                    raise ValidationError(
-                        'The invoice customer must match the membership customer.'
-                    )
+                    raise ValidationError(_('The invoice customer must match the membership customer.'))
                 if invoice.currency_id != currency:
-                    raise ValidationError(
-                        'The invoice currency must match the plan currency.'
-                    )
+                    raise ValidationError(_('The invoice currency must match the plan currency.'))
                 if currency.compare_amounts(
                     invoice.amount_total, plan.total_amount
                 ) != 0:
-                    raise ValidationError(
-                        'The invoice total must match the installment plan total.'
-                    )
+                    raise ValidationError(_('The invoice total must match the installment plan total.'))
                 if currency.compare_amounts(
                     invoice.amount_residual, plan.total_amount
                 ) != 0:
-                    raise ValidationError(
-                        'The linked invoice already has a payment or adjustment. '
-                        'Review it before creating this installment schedule.'
-                    )
+                    raise ValidationError(_('The linked invoice already has a payment or adjustment. '
+                        'Review it before creating this installment schedule.'))
             else:
                 product = package.product_variant_id
                 taxes = package.taxes_id.filtered(

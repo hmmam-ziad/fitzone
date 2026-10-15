@@ -13,4 +13,4 @@ class Room(models.Model):
     def _check_capacity(self):
         for rec in self:
             if rec.capacity <= 0:
-                raise ValidationError("Room capacity must be greater than zero.")
+                raise ValidationError(_("Room capacity must be greater than zero."))
