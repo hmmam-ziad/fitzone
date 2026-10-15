@@ -76,6 +76,11 @@
     ],
     "demo": ["demo/management_dashboard_demo.xml"],
     "assets": {
+        
+        "web._assets_primary_variables": [
+        ("prepend", "fitzone/static/src/scss/primary_variables.scss"),
+    ],
+
         "point_of_sale._assets_pos": [
             "fitzone/static/src/js/member_discount.js",
             "fitzone/static/src/xml/select_partner_button.xml",
@@ -87,6 +92,7 @@
             "fitzone/static/src/components/management_dashboard/management_dashboard.scss",
             "fitzone/static/src/js/menu_badge.js",
             "fitzone/static/src/xml/menu_badge.xml",
+            "fitzone/static/src/scss/fitzone_theme.scss",
         ],
     },
     "pre_init_hook": "pre_init_hook",
