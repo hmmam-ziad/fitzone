@@ -4056,6 +4056,7 @@ msgid "Return to Service"
 msgstr "إعادة إلى الخدمة"
 
 #. module: fitzone
+#. odoo-javascript
 #. odoo-python
 #: code:addons/fitzone/models/dashboard_details.py:0
 #: model_terms:ir.ui.view,arch_db:fitzone.financial_analysis_list
@@ -5851,3 +5852,29 @@ msgstr "تعذّر إنشاء باركود للاشتراك."
 #: code:addons/fitzone/models/memberships.py:0
 msgid "Use the Activate action to activate a membership."
 msgstr "استخدم إجراء التفعيل لتفعيل الاشتراك."
+
+#. module: fitzone
+msgid "Daily performance"
+msgstr "الأداء اليومي"
+
+#. module: fitzone
+#. odoo-javascript
+msgid "Performance over the selected period"
+msgstr "الأداء خلال الفترة المحددة"
+
+#. module: fitzone
+msgid "Today's performance"
+msgstr "أداء اليوم"
+
+#. module: fitzone
+msgid "Quota"
+msgstr "الحصة"
+
+#. module: fitzone
+msgid "Revenue and expenses over time"
+msgstr "الإيرادات والمصروفات بمرور الوقت"
+
+#. module: fitzone
+#. odoo-javascript
+msgid "Expenses"
+msgstr "المصروفات"

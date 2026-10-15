@@ -3,7 +3,7 @@ import io
 
 from PIL import Image, ImageDraw, ImageFont
 from reportlab.graphics.barcode.code128 import Code128
-from odoo import api, fields, models
+from odoo import _, api, fields, models
 from odoo.exceptions import AccessError, ValidationError
 from dateutil.relativedelta import relativedelta
 
@@ -259,7 +259,7 @@ class Membership(models.Model):
                 and membership.package_id.package_type != 'general'
             ):
                 raise ValidationError(
-                    'All-Inclusive can only be added to a General Membership.'
+                    _('All-Inclusive can only be added to a General Membership.')
                 )
 
     def _check_package_period_available(
@@ -284,10 +284,10 @@ class Membership(models.Model):
 
         if existing_membership:
             raise ValidationError(
-                'This member already has an active or blocked membership '
+                _('This member already has an active or blocked membership '
                 'for the same package during this period. '
                 'The package can be purchased again after the current '
-                'membership period ends.'
+                'membership period ends.')
             )
 
     @api.model_create_multi
@@ -300,8 +300,8 @@ class Membership(models.Model):
                 and not self.env.context.get('allow_membership_activation')
             ):
                 raise ValidationError(
-                    'Create memberships as Draft and use the Activate action '
-                    'after the required payment.'
+                    _('Create memberships as Draft and use the Activate action '
+                    'after the required payment.')
                 )
             # Generate a membership number when needed.
             member_id = vals.get('member_id')
@@ -321,7 +321,7 @@ class Membership(models.Model):
 
                 if not package_id:
                     raise ValidationError(
-                        'Please select a package before activation.'
+                        _('Please select a package before activation.')
                     )
 
                 package = self.env['product.template'].browse(package_id)
@@ -329,7 +329,7 @@ class Membership(models.Model):
 
                 if duration <= 0:
                     raise ValidationError(
-                        'The package must have a valid duration.'
+                        _('The package must have a valid duration.')
                     )
 
                 activation_date = fields.Date.to_date(
@@ -360,7 +360,7 @@ class Membership(models.Model):
             and not self.env.context.get('allow_membership_dates')
         ):
             raise ValidationError(
-                'Membership dates are managed automatically by activation.'
+                _('Membership dates are managed automatically by activation.')
             )
 
         if (
@@ -368,7 +368,7 @@ class Membership(models.Model):
             and not self.env.context.get('allow_membership_activation')
         ):
             raise ValidationError(
-                'Use the Activate action to activate a membership.'
+                _('Use the Activate action to activate a membership.')
             )
 
         result = super().write(vals)
@@ -410,20 +410,20 @@ class Membership(models.Model):
 
         if self.state != 'draft':
             raise ValidationError(
-                'An invoice can only be created for a draft membership.'
+                _('An invoice can only be created for a draft membership.')
             )
         if (
             self.package_id.package_type == 'general'
             and self.package_id.duration_months >= 3
         ):
             raise ValidationError(
-                'This package requires an installment plan. '
-                'Create the installment plan instead of a regular invoice.'
+                _('This package requires an installment plan. '
+                'Create the installment plan instead of a regular invoice.')
             )
 
         if self.invoice_id:
             raise ValidationError(
-                'An invoice is already linked to this membership.'
+                _('An invoice is already linked to this membership.')
             )
 
         plan = self.env['fitzone.installment.plan'].search(
@@ -432,13 +432,13 @@ class Membership(models.Model):
         )
         if plan:
             raise ValidationError(
-                'This membership has an installment plan. '
-                'Use the plan to manage its invoice and payments.'
+                _('This membership has an installment plan. '
+                'Use the plan to manage its invoice and payments.')
             )
 
         if not self.member_id or not self.package_id:
             raise ValidationError(
-                'Select a member and package before creating an invoice.'
+                _('Select a member and package before creating an invoice.')
             )
 
         company = self.company_id
@@ -487,7 +487,7 @@ class Membership(models.Model):
                 )[:1]
                 if not first_installment:
                     raise ValidationError(
-                        'The first installment must be paid before activation.'
+                        _('The first installment must be paid before activation.')
                     )
 
                 first_installment = first_installment[0]
@@ -499,36 +499,36 @@ class Membership(models.Model):
                     or payment.move_id.state != 'posted'
                 ):
                     raise ValidationError(
-                        'The first installment must have a successful payment '
-                        'before activating this membership.'
+                        _('The first installment must have a successful payment '
+                        'before activating this membership.')
                     )
 
             if not plans:
                 invoice = membership.invoice_id
                 if not invoice or invoice.state != 'posted':
                     raise ValidationError(
-                        'Create and post the membership invoice, then '
-                        'register the full payment before activation.'
+                        _('Create and post the membership invoice, then '
+                        'register the full payment before activation.')
                     )
                 if not invoice.currency_id.is_zero(invoice.amount_residual):
                     raise ValidationError(
-                        'The membership invoice must be fully paid '
-                        'before activation.'
+                        _('The membership invoice must be fully paid '
+                        'before activation.')
                     )
 
             if not membership.package_id:
-                raise ValidationError('Please select a package.')
+                raise ValidationError(_('Please select a package.'))
 
             if membership.package_id.package_type == 'all_inclusive':
                 raise ValidationError(
-                    'All-Inclusive must be added to a General Membership.'
+                    _('All-Inclusive must be added to a General Membership.')
                 )
 
             duration = membership.package_id.duration_months
 
             if duration <= 0:
                 raise ValidationError(
-                    'The package must have a valid duration.'
+                    _('The package must have a valid duration.')
                 )
 
             activation_date = fields.Date.context_today(membership)
@@ -558,7 +558,7 @@ class Membership(models.Model):
                 )
                 if not barcode:
                     raise ValidationError(
-                        'Unable to generate a membership barcode.'
+                        _('Unable to generate a membership barcode.')
                     )
                 values['barcode'] = barcode
 
@@ -592,5 +592,5 @@ class Membership(models.Model):
                 and membership.date_end < membership.date_start
             ):
                 raise ValidationError(
-                    'Membership end date cannot be earlier than start date.'
+                    _('Membership end date cannot be earlier than start date.')
                 )
