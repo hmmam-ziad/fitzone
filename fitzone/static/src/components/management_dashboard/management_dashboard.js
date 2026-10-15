@@ -8,7 +8,8 @@ import { useSetupAction } from "@web/search/action_hook";
 import { localization } from "@web/core/l10n/localization";
 
 const { DateTime } = luxon;
-const PALETTE = ["#7954b3", "#32a89a", "#e5a044", "#5692d2", "#c97b9f"];
+// Logo tones only: burgundy #630002 and charcoal #3E4444 with lighter shades of each.
+const PALETTE = ["#630002", "#3E4444", "#B5575B", "#8E9898", "#E0B4B6"];
 
 class DashboardChart extends Component {
     static template = "fitzone.ManagementChart";
@@ -28,8 +29,8 @@ class DashboardChart extends Component {
                         ...config.options,
                         animation: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? false : undefined,
                         ...(config.type !== "doughnut" ? { scales: {
-                            x: { ticks: { color }, grid: { color: "rgba(125,118,139,.12)" } },
-                            y: { beginAtZero: true, ticks: { color }, grid: { color: "rgba(125,118,139,.12)" } },
+                            x: { ticks: { color }, grid: { color: "rgba(62,68,68,.12)" } },
+                            y: { beginAtZero: true, ticks: { color }, grid: { color: "rgba(62,68,68,.12)" } },
                         } } : {}),
                         plugins: { ...config.options?.plugins, legend: { position: "bottom", labels: { color, usePointStyle: true, padding: 18 }, ...config.options?.plugins?.legend } },
                     },

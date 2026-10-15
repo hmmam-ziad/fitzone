@@ -204,4 +204,6 @@
     <menuitem id="menu_collected_department" name="Collected by Department (Cash basis)"
         parent="menu_management_dashboard" action="action_collected_department" sequence="15"
         groups="fitzone.group_fitzone_manager" />
+
+   
 </odoo>

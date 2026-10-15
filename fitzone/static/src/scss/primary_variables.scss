@@ -1,0 +1,17 @@
+// FitZone theme: primary variables
+// Loaded BEFORE Odoo's own variables, so Bootstrap and Odoo pick these up automatically.
+
+$fz-primary: #630002;
+$fz-secondary: #3E4444;
+
+// Odoo brand colors
+$o-brand-odoo: $fz-primary;
+$o-brand-primary: $fz-primary;
+$o-community-color: $fz-primary;
+
+// Main action color (buttons, links, active elements)
+$o-action: $fz-primary;
+
+// Navbar / dark surfaces
+$o-navbar-inverse-bg: $fz-secondary;
+$o-navbar-inverse-link-hover-bg: darken($fz-secondary, 6%);
