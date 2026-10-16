@@ -28,7 +28,7 @@
         <field name="name">FitZone Manager</field>
         <field name="privilege_id" ref="privilege_fitzone_manager" />
         <field name="implied_ids"
-            eval="[(6, 0, [ref('base.group_user'), ref('hr.group_hr_manager'), ref('maintenance.group_equipment_manager'), ref('point_of_sale.group_pos_user'), ref('stock.group_stock_user'), ref('purchase.group_purchase_user'), ref('account.group_account_invoice'), ref('sales_team.group_sale_salesman_all_leads')])]" />
+            eval="[(6, 0, [ref('base.group_user'), ref('hr.group_hr_manager'), ref('maintenance.group_equipment_manager'), ref('point_of_sale.group_pos_manager'), ref('stock.group_stock_manager'), ref('purchase.group_purchase_manager'), ref('account.group_account_manager'), ref('sales_team.group_sale_manager'), ref('hr_holidays.group_hr_holidays_manager')])]" />
     </record>
 
     <record id="privilege_fitzone_sales" model="res.groups.privilege">
@@ -67,6 +67,21 @@
         <field name="name">Physiotherapy Clinic Staff (Legacy)</field>
         <field name="implied_ids" eval="[(6, 0, [ref('base.group_user')])]" />
     </record>
+    <!-- UI exemption only. Snapshot existing administrators once, before Manager
+         starts implying System, so future upgrades do not exempt Managers. -->
+    <data noupdate="1">
+        <record id="group_fitzone_full_admin_ui" model="res.groups">
+            <field name="name">FitZone: unrestricted administrator interface</field>
+        </record>
+    </data>
+    <function model="res.groups" name="_initialize_fitzone_admin_interface"/>
+    <record id="base.group_system" model="res.groups">
+        <field name="implied_ids" eval="[(3, ref('group_fitzone_manager'))]"/>
+    </record>
+    <record id="group_fitzone_manager" model="res.groups">
+        <field name="implied_ids" eval="[(4, ref('base.group_system'))]"/>
+    </record>
+    <function model="res.groups" name="_configure_fitzone_admin_interface"/>
     <!-- Runs on every upgrade, before obsolete XML records are cleaned up. -->
     <function model="res.groups" name="_merge_fitzone_owner_group"/>
 </odoo>

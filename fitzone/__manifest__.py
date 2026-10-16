@@ -39,6 +39,7 @@
         "security/maintenance_security.xml",
         "security/ir_rule.xml",
         "security/ir.model.access.csv",
+        "security/role_management.xml",
         "views/employee_views.xml",
         "views/members_views.xml",
         "views/trainer_views.xml",
@@ -94,6 +95,8 @@
 
 
         "web.assets_backend": [
+            "fitzone/static/src/js/manager_interface.js",
+            "fitzone/static/src/xml/manager_interface.xml",
             "fitzone/static/src/js/readonly_detail_list.js",
             "fitzone/static/src/components/management_dashboard/management_dashboard.js",
             "fitzone/static/src/components/management_dashboard/management_dashboard.xml",
