@@ -7,11 +7,91 @@ from odoo import _, api, fields, models
 from odoo.exceptions import AccessError, ValidationError
 from dateutil.relativedelta import relativedelta
 
+from .smart_button_helpers import (
+    FINANCE_READERS, check_navigation, grouped_counts, has_roles, related_action,
+)
+
 
 class Membership(models.Model):
     _name = 'fitzone.membership'
     _description = 'Membership'
     _rec_name = 'member_id'
+
+    installment_plan_count = fields.Integer(
+        compute='_compute_installment_plan_count', compute_sudo=False,
+        groups='fitzone.group_fitzone_manager,fitzone.group_fitzone_reception',
+    )
+    due_installment_count = fields.Integer(
+        compute='_compute_due_installment_count', compute_sudo=False,
+        groups='fitzone.group_fitzone_manager,fitzone.group_fitzone_reception',
+    )
+
+    @api.depends_context('uid', 'allowed_company_ids')
+    def _compute_installment_plan_count(self):
+        counts = grouped_counts(self, 'fitzone.installment.plan', 'membership_id', FINANCE_READERS)
+        for membership in self:
+            membership.installment_plan_count = counts.get(membership.id, 0)
+
+    def _due_installment_domain(self):
+        return [
+            ('plan_id.membership_id', 'in', self.ids),
+            ('status', '=', 'pending'),
+            ('due_date', '<=', fields.Date.context_today(self)),
+        ]
+
+    @api.depends_context('uid', 'allowed_company_ids', 'tz')
+    def _compute_due_installment_count(self):
+        counts = {}
+        persisted = self.filtered(lambda record: record.id and isinstance(record.id, int))
+        if persisted and has_roles(self.env, FINANCE_READERS):
+            persisted.check_access('read')
+            plans = self.env['fitzone.installment.plan'].search([
+                ('membership_id', 'in', persisted.ids),
+            ])
+            memberships = {plan.id: plan.membership_id.id for plan in plans}
+            for plan, count in self.env['fitzone.installment']._read_group(
+                persisted._due_installment_domain() + [('plan_id', 'in', plans.ids)],
+                ['plan_id'], ['__count'],
+            ):
+                membership_id = memberships[plan.id]
+                counts[membership_id] = counts.get(membership_id, 0) + count
+        for membership in self:
+            membership.due_installment_count = counts.get(membership.id, 0)
+
+    def action_view_installment_plans(self):
+        check_navigation(self, FINANCE_READERS, 'fitzone.installment.plan')
+        return related_action(self, 'fitzone.action_fitzone_installment_plan',
+                              [('membership_id', '=', self.id)],
+                              {'default_membership_id': self.id})
+
+    def action_view_due_installments(self):
+        check_navigation(self, FINANCE_READERS, 'fitzone.installment')
+        plans = self.env['fitzone.installment.plan'].search([('membership_id', '=', self.id)])
+        return related_action(self, 'fitzone.action_fitzone_installment',
+                              self._due_installment_domain() + [('plan_id', 'in', plans.ids)])
+
+    def action_view_membership_invoice(self):
+        check_navigation(self, FINANCE_READERS, 'account.move')
+        invoice = self.invoice_id
+        if not invoice:
+            return False
+        invoice.check_access('read')
+        # Reception's existing ACL covers linked moves, not move lines/journals.
+        native = self.env.su or has_roles(self.env, ('manager',)) or any(
+            self.env.user.has_group(group) for group in (
+                'account.group_account_invoice', 'account.group_account_readonly',
+            )
+        )
+        view = self.env.ref(
+            'account.view_move_form' if native else 'fitzone.view_membership_invoice_readonly'
+        )
+        return {
+            'type': 'ir.actions.act_window', 'name': _('Invoice'),
+            'res_model': 'account.move', 'res_id': invoice.id,
+            'view_mode': 'form', 'views': [(view.id, 'form')],
+            'target': 'current',
+            'context': {'create': False, 'edit': False} if not native else {},
+        }
 
     member_id = fields.Many2one(
         'res.partner',

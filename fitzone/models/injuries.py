@@ -1,6 +1,8 @@
 from odoo import _, api, fields, models
 from odoo.exceptions import AccessError, UserError
 
+from .smart_button_helpers import MEDICAL_READERS, check_navigation, grouped_counts, related_action
+
 
 class FitzoneInjuryCause(models.Model):
     _name = 'fitzone.injury.cause'
@@ -14,6 +16,26 @@ class Injury(models.Model):
     _inherit = 'fitzone.medical.audit.mixin'
     _rec_name = 'id'
     _description = 'Injury'
+
+    rehabilitation_count = fields.Integer(
+        compute='_compute_rehabilitation_count', compute_sudo=False,
+        groups='fitzone.group_fitzone_manager,fitzone.group_fitzone_physiotherapist',
+    )
+
+    @api.depends_context('uid', 'allowed_company_ids')
+    def _compute_rehabilitation_count(self):
+        counts = grouped_counts(self, 'fitzone.rehabilitation', 'injury_id', MEDICAL_READERS)
+        for injury in self:
+            injury.rehabilitation_count = counts.get(injury.id, 0)
+
+    def action_view_rehabilitation(self):
+        check_navigation(self, MEDICAL_READERS, 'fitzone.rehabilitation')
+        return related_action(self, 'fitzone.action_fitzone_rehabilitation',
+                              [('injury_id', '=', self.id)], {
+                                  'default_injury_id': self.id,
+                                  'default_member_id': self.member_id.id,
+                                  'default_physiotherapist_id': self.physiotherapist_id.id,
+                              })
 
     member_id = fields.Many2one(
         'res.partner',

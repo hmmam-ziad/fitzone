@@ -1,10 +1,43 @@
 from odoo import api, fields, models, _
 from odoo.exceptions import AccessError, ValidationError
 
+from .smart_button_helpers import (
+    OPERATIONS, FINANCE_READERS, check_navigation, check_trainer_owner,
+    grouped_counts, has_roles, related_action,
+)
+
 
 class GymClass(models.Model):
     _name = 'fitzone.gym.class'
     _description = 'Group Class'
+
+    booking_count = fields.Integer(
+        compute='_compute_booking_count', compute_sudo=False,
+        groups='fitzone.group_fitzone_manager,fitzone.group_fitzone_reception,fitzone.group_fitzone_trainer',
+    )
+    can_view_bookings = fields.Boolean(compute='_compute_can_view_bookings', compute_sudo=False)
+
+    @api.depends('booking_ids', 'trainer_id')
+    @api.depends_context('uid', 'allowed_company_ids')
+    def _compute_booking_count(self):
+        counts = grouped_counts(self, 'fitzone.class.booking', 'class_id', OPERATIONS)
+        for gym_class in self:
+            gym_class.booking_count = counts.get(gym_class.id, 0)
+
+    @api.depends('trainer_id', 'trainer_id.employee_id.user_id')
+    @api.depends_context('uid')
+    def _compute_can_view_bookings(self):
+        for gym_class in self:
+            gym_class.can_view_bookings = has_roles(self.env, FINANCE_READERS) or (
+                has_roles(self.env, ('trainer',))
+                and gym_class.trainer_id.employee_id.user_id == self.env.user
+            )
+
+    def action_view_bookings(self):
+        check_navigation(self, OPERATIONS, 'fitzone.class.booking')
+        check_trainer_owner(self, self.trainer_id)
+        return related_action(self, 'fitzone.action_fitzone_class_booking',
+                              [('class_id', '=', self.id)], {'default_class_id': self.id})
 
     name = fields.Char(
         required=True,
