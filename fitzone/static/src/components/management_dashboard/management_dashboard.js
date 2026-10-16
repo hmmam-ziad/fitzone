@@ -134,7 +134,7 @@ export class ManagementDashboard extends Component {
         return definitions.map(([key, label, type, icon, inverse]) => {
             const trend = this.state.data.trends[key];
             return { key, label, icon, value: this.number(this.state.data.kpis[key], type), trend,
-                trendLabel: trend === null ? "New activity" : `${trend > 0 ? "+" : ""}${this.number(trend, "percent")}`,
+                trendLabel: trend === null ? _t("New activity") : `${trend > 0 ? "+" : ""}${this.number(trend, "percent")}`,
                 good: trend === null || (inverse ? trend <= 0 : trend >= 0),
             };
         });

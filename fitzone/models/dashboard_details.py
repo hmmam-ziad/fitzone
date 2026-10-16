@@ -65,6 +65,8 @@ class FinancialDetail(models.Model):
     department_id = fields.Many2one('hr.department', readonly=True)
     type = fields.Char(readonly=True)
     source = fields.Char(readonly=True)
+    type_label = fields.Char(compute='_compute_display_labels')
+    source_label = fields.Char(compute='_compute_display_labels')
     origin_model = fields.Char(readonly=True)
     origin_id = fields.Integer(readonly=True)
     reference = fields.Char(readonly=True, string='Document / Expense')
@@ -75,6 +77,25 @@ class FinancialDetail(models.Model):
     purchase_order_id = fields.Many2one('purchase.order', readonly=True)
     amount = fields.Monetary(readonly=True, string='Untaxed amount')
     signed_amount = fields.Monetary(readonly=True, string='Signed amount / Net')
+
+    @api.depends('type', 'source')
+    def _compute_display_labels(self):
+        type_labels = {
+            'Revenue': _('Revenue'),
+            'Manual expense': _('Manual expense'),
+            'Purchase expense': _('Purchase expense'),
+        }
+        source_labels = {
+            'POS': _('POS'),
+            'Manual': _('Manual'),
+            'Invoice': _('Invoice'),
+            'Credit note': _('Credit note'),
+            'Vendor bill': _('Vendor bill'),
+            'Vendor credit note': _('Vendor credit note'),
+        }
+        for record in self:
+            record.type_label = type_labels.get(record.type, record.type or '')
+            record.source_label = source_labels.get(record.source, record.source or '')
 
     def init(self):
         tools.drop_view_if_exists(self.env.cr, self._table)
@@ -102,6 +123,7 @@ class CollectedDetail(models.Model):
     currency_id = fields.Many2one(related='company_id.currency_id')
     department_id = fields.Many2one('hr.department', readonly=True)
     source = fields.Char(readonly=True)
+    source_label = fields.Char(compute='_compute_display_labels')
     origin_model = fields.Char(readonly=True)
     origin_id = fields.Integer(readonly=True)
     reference = fields.Char(readonly=True, string='Payment / Receipt')
@@ -111,6 +133,16 @@ class CollectedDetail(models.Model):
     allocation_line_id = fields.Integer(readonly=True, string='Settled product line ID')
     reconcile_id = fields.Integer(readonly=True, string='Reconciliation ID')
     amount = fields.Monetary(readonly=True, string='Allocated cash (includes tax)')
+
+    @api.depends('source')
+    def _compute_display_labels(self):
+        source_labels = {
+            'Invoice payment': _('Invoice payment'),
+            'POS': _('POS'),
+            'Manual': _('Manual'),
+        }
+        for record in self:
+            record.source_label = source_labels.get(record.source, record.source or '')
 
     def init(self):
         tools.drop_view_if_exists(self.env.cr, self._table)
@@ -143,6 +175,8 @@ class OperationalDetail(models.Model):
     department_id = fields.Many2one('hr.department', readonly=True)
     type = fields.Char(readonly=True)
     source = fields.Char(readonly=True)
+    type_label = fields.Char(compute='_compute_display_labels')
+    source_label = fields.Char(compute='_compute_display_labels')
     origin_id = fields.Integer(readonly=True)
     reference = fields.Char(readonly=True)
     date = fields.Date(readonly=True)
@@ -165,6 +199,33 @@ class OperationalDetail(models.Model):
     offered_seats = fields.Integer(readonly=True)
     sessions = fields.Integer(readonly=True)
     converted = fields.Integer(readonly=True)
+
+    @api.depends('type', 'source')
+    def _compute_display_labels(self):
+        type_labels = {
+            'Membership': _('Membership'),
+            'Installment': _('Installment'),
+            'Injury': _('Injury'),
+            'Injury sport': _('Injury sport'),
+            'Class': _('Class'),
+            'Session': _('Session'),
+            'Member': _('Member'),
+        }
+        source_labels = {
+            'fitzone.membership': _('Membership'),
+            'fitzone.installment': _('Installment'),
+            'fitzone.injury': _('Injury'),
+            'fitzone.injury.sport': _('Injury sport'),
+            'fitzone.gym.class': _('Class'),
+            'fitzone.pt.session': _('PT Session'),
+            'fitzone.pool.booking': _('Pool Booking'),
+            'fitzone.rehabilitation': _('Rehabilitation'),
+            'fitzone.nutrition.consultation': _('Nutrition Consultation'),
+            'res.partner': _('Member'),
+        }
+        for record in self:
+            record.type_label = type_labels.get(record.type, record.type or '')
+            record.source_label = source_labels.get(record.source, record.source or '')
 
     @property
     def _table_query(self):
