@@ -126,6 +126,11 @@
                         invisible="state != 'draft' or invoice_id"
                     />
 
+                    <button name="action_membership_payment" type="object"
+                        string="Register Payment"
+                        groups="fitzone.group_fitzone_reception,fitzone.group_fitzone_manager"
+                        invisible="state != 'draft' or not invoice_id"/>
+
                     <!-- Activate draft membership -->
                     <button
                         name="action_activate"
@@ -174,7 +179,7 @@
                             <field name="all_inclusive" />
                             <field name="final_price" readonly="1" />
                             <field name="package_type" invisible="1" />
-                            <field name="invoice_id" readonly="1" />
+                            <field name="invoice_id" readonly="1" options="{'no_open': True}" />
 
                             <field name="total_sessions"
                                 readonly="1"
