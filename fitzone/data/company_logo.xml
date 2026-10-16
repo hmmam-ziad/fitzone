@@ -2,12 +2,23 @@
 <odoo>
 
     <function model="ir.model.data" name="write">
-        <value model="ir.model.data" search="[('module', '=', 'base'), ('name', '=', 'main_company')]"/>
-        <value eval="{'noupdate': False}"/>
+        <value model="ir.model.data"
+            search="[('module', '=', 'base'), ('name', '=', 'main_company')]" />
+        <value eval="{'noupdate': False}" />
     </function>
 
     <record id="base.main_company" model="res.company">
-        <field name="logo" type="base64" file="fitzone/static/description/icon.jpeg"/>
+        <field name="logo" type="base64" file="fitzone/static/description/icon.jpeg" />
     </record>
+
+    <!-- Disable self-signup: users are added by invitation only -->
+    <function model="ir.config_parameter" name="set_param"
+        eval="('auth_signup.invitation_scope', 'b2b')" />
+
+    <!-- Hide "Manage Databases" link on the login page -->
+    <template id="login_hide_db_manager" inherit_id="web.login_layout"
+        name="FitZone: hide Manage Databases">
+        <xpath expr="//a[@href='/web/database/manager']" position="replace" />
+    </template>
 
 </odoo>
