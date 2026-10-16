@@ -23,6 +23,7 @@ class PoolBooking(models.Model):
         'fitzone.membership',
         required=True,
         groups='fitzone.group_fitzone_manager,fitzone.group_fitzone_reception',
+        domain="[('member_id', '=', member_id), ('state', '==', 'active')]"
     )
     pool_slot_id = fields.Many2one('fitzone.pool.slot', required=True)
     trainer_id = fields.Many2one(
@@ -49,6 +50,27 @@ class PoolBooking(models.Model):
     is_free_swim = fields.Boolean(compute='_compute_is_free_swim')
     member_name = fields.Char(compute='_compute_booking_identity', compute_sudo=False)
     membership_number = fields.Char(compute='_compute_booking_identity', compute_sudo=False)
+
+    @api.constrains('pool_slot_id', 'session_date', 'status')
+    def _check_pool_slot_capacity(self):
+        for booking in self:
+            if booking.status != 'cancelled' and booking.pool_slot_id and booking.pool_slot_id.capacity > 0:
+                existing_bookings_count = self.search_count([
+                    ('id', '!=', booking.id),
+                    ('pool_slot_id', '=', booking.pool_slot_id.id),
+                    ('session_date', '=', booking.session_date),
+                    ('status', '!=', 'cancelled'),
+                ])
+
+                if existing_bookings_count >= booking.pool_slot_id.capacity:
+                    raise ValidationError(
+                        _(
+                            "Cannot confirm booking! The selected pool slot has reached its maximum capacity of %(capacity)d members for %(date)s."
+                        ) % {
+                            'capacity': booking.pool_slot_id.capacity,
+                            'date': booking.session_date,
+                        }
+                    )
 
     def _booking_identity(self):
         self.ensure_one()
@@ -186,3 +208,35 @@ class PoolBooking(models.Model):
                 exclude = (rec._name, rec.id)
 
             rec.trainer_id._check_available(start, end, exclude=exclude)
+
+    @api.constrains('membership_id', 'session_date')
+    def _check_membership_not_frozen(self):
+        for record in self:
+            if record.membership_id:
+                current_date = record.session_date or fields.Date.today()
+                frozen_records = self.env['fitzone.freeze'].search([
+                    ('membership_id', '=', record.membership_id.id),
+                    ('state', '=', 'active'),  # التأكد أن حالة التجميد active
+                    ('start_date', '<=', current_date),
+                    ('end_date', '>=', current_date),
+                ])
+                if frozen_records:
+                    raise ValidationError(
+                        _("Cannot create a booking! The selected membership is currently frozen.")
+                    )
+
+    @api.constrains('member_id', 'pool_slot_id', 'session_date', 'status')
+    def _check_no_pt_overlap(self):
+        for rec in self.sudo():
+            if rec.status == 'cancelled' or not (rec.member_id and rec.pool_slot_id and rec.session_date):
+                continue
+            start, end = rec._slot_datetimes_utc()
+            clash = self.env['fitzone.pt.session'].sudo().search_count([
+                ('member_id', '=', rec.member_id.id),
+                ('state', '!=', 'cancelled'),
+                ('session_date', '<', end),
+                ('end_datetime', '>', start),
+            ])
+            if clash:
+                raise ValidationError(
+                    _("This member already has a PT session that overlaps with this pool booking."))
