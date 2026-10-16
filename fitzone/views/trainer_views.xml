@@ -19,6 +19,15 @@
         <field name="arch" type="xml">
             <form>
                 <sheet>
+                    <field name="can_view_assignments" invisible="1"/>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_schedule" type="object" class="oe_stat_button fz-smart-button fz-smart-indigo" icon="fa-calendar" groups="fitzone.group_fitzone_manager,fitzone.group_fitzone_reception,fitzone.group_fitzone_trainer" invisible="not can_view_assignments">
+                            <span class="o_stat_text">Schedule</span>
+                        </button>
+                        <button name="action_view_trainees" type="object" class="oe_stat_button fz-smart-button fz-smart-teal" icon="fa-users" groups="fitzone.group_fitzone_manager,fitzone.group_fitzone_reception,fitzone.group_fitzone_trainer" invisible="not can_view_assignments">
+                            <field name="trainee_count" widget="statinfo" string="Trainees"/>
+                        </button>
+                    </div>
                 <group>
                     <field name="employee_id"/>
                     <field name="specialty"/>

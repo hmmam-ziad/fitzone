@@ -122,6 +122,12 @@
                         groups="fitzone.group_fitzone_manager,fitzone.group_fitzone_reception,fitzone.group_fitzone_trainer" />
                 </header>
                 <sheet>
+                    <field name="can_view_bookings" invisible="1"/>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_bookings" type="object" class="oe_stat_button fz-smart-button fz-smart-blue" icon="fa-ticket" groups="fitzone.group_fitzone_manager,fitzone.group_fitzone_reception,fitzone.group_fitzone_trainer" invisible="not can_view_bookings">
+                            <field name="booking_count" widget="statinfo" string="Bookings"/>
+                        </button>
+                    </div>
                     <div class="alert alert-warning" role="alert"
                         invisible="alert_level != 'near_full'"> Almost full: only <field
                             name="available_seats" class="oe_inline" /> seat(s) left. </div>

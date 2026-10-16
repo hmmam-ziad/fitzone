@@ -129,6 +129,11 @@
                         statusbar_visible="draft,submitted,processed" />
                 </header>
                 <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_rehabilitation" type="object" class="oe_stat_button fz-smart-button fz-smart-purple" icon="fa-medkit" groups="fitzone.group_fitzone_manager,fitzone.group_fitzone_physiotherapist">
+                            <field name="rehabilitation_count" widget="statinfo" string="Rehabilitation"/>
+                        </button>
+                    </div>
                     <group>
                         <field name="company_id" invisible="1" />
                         <field name="department_id" options="{'no_create': True}" invisible="1" />

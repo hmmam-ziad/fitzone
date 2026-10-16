@@ -149,3 +149,16 @@ a:hover { color: $fz-primary-dark; }
 
 // Graph view axis / legend accent
 .o_graph_renderer .o_graph_canvas_container { color: $fz-secondary; }
+
+// Navigation-only accents. Keep Odoo's stat-button layout and interaction styles.
+// Teal and warning reuse the FitZone dashboard's semantic palette.
+.o_form_view .oe_stat_button.fz-smart-button {
+    &.fz-smart-blue { --fz-smart-icon-color: #{$blue}; }
+    &.fz-smart-purple { --fz-smart-icon-color: #{$purple}; }
+    &.fz-smart-warning { --fz-smart-icon-color: #bd7b20; }
+    &.fz-smart-teal { --fz-smart-icon-color: #258c75; }
+    &.fz-smart-indigo { --fz-smart-icon-color: #{$indigo}; }
+    &.fz-smart-cyan { --fz-smart-icon-color: #{$cyan}; }
+
+    > .o_button_icon { color: var(--fz-smart-icon-color); }
+}
