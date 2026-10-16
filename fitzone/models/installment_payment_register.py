@@ -1,4 +1,4 @@
-from odoo import api, models
+from odoo import api, models, _
 from odoo.exceptions import ValidationError
 
 
@@ -37,9 +37,7 @@ class AccountPaymentRegister(models.TransientModel):
             installment_id
         ).exists()
         if not installment or installment.status != 'pending':
-            raise ValidationError(
-                'The installment is no longer pending.'
-            )
+            raise ValidationError(_('The installment is no longer pending.'))
 
         currency = installment.plan_id.invoice_id.currency_id
         posted_payments = payments.filtered(
@@ -50,15 +48,11 @@ class AccountPaymentRegister(models.TransientModel):
         paid_amount = sum(posted_payments.mapped('amount'))
 
         if currency.compare_amounts(paid_amount, installment.amount) != 0:
-            raise ValidationError(
-                'The registered payment amount does not match '
-                'the installment amount. The installment was not marked paid.'
-            )
+            raise ValidationError(_('The registered payment amount does not match '
+                'the installment amount. The installment was not marked paid.'))
 
         if not posted_payments:
-            raise ValidationError(
-                'No successfully posted payment was found.'
-            )
+            raise ValidationError(_('No successfully posted payment was found.'))
 
         installment.write({
             'status': 'paid',

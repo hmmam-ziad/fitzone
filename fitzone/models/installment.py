@@ -1,4 +1,4 @@
-from odoo import api, fields, models
+from odoo import api, fields, models, _
 from odoo.exceptions import UserError, ValidationError
 
 
@@ -44,16 +44,12 @@ class Installment(models.Model):
 
         invoice = self.plan_id.invoice_id
         if not invoice or invoice.state != 'posted':
-            raise ValidationError(
-                'A posted customer invoice is required before payment.'
-            )
+            raise ValidationError(_('A posted customer invoice is required before payment.'))
 
         if invoice.currency_id.compare_amounts(
             invoice.amount_residual, self.amount
         ) < 0:
-            raise ValidationError(
-                'The invoice residual is less than this installment amount.'
-            )
+            raise ValidationError(_('The invoice residual is less than this installment amount.'))
 
         receivable_lines = invoice.line_ids.filtered(
             lambda line:
@@ -61,9 +57,7 @@ class Installment(models.Model):
                 and not line.reconciled
         )
         if not receivable_lines:
-            raise ValidationError(
-                'No outstanding receivable balance was found on the invoice.'
-            )
+            raise ValidationError(_('No outstanding receivable balance was found on the invoice.'))
 
         action = invoice.action_register_payment()
         context = dict(action.get('context', {}))
@@ -112,40 +106,28 @@ class Installment(models.Model):
 
                 invoice = installment.plan_id.invoice_id
                 if not invoice or invoice.state != 'posted':
-                    raise ValidationError(
-                        'A posted installment-plan invoice is required.'
-                    )
+                    raise ValidationError(_('A posted installment-plan invoice is required.'))
 
                 if (
                     payment.state not in ('paid', 'in_process')
                     or not payment.move_id
                     or payment.move_id.state != 'posted'
                 ):
-                    raise ValidationError(
-                        'The payment must be successfully processed and posted.'
-                    )
+                    raise ValidationError(_('The payment must be successfully processed and posted.'))
 
                 if payment.partner_id != invoice.partner_id:
-                    raise ValidationError(
-                        'The payment customer does not match the invoice customer.'
-                    )
+                    raise ValidationError(_('The payment customer does not match the invoice customer.'))
 
                 if payment.currency_id != invoice.currency_id:
-                    raise ValidationError(
-                        'The payment currency does not match the invoice currency.'
-                    )
+                    raise ValidationError(_('The payment currency does not match the invoice currency.'))
 
                 if invoice not in payment.reconciled_invoice_ids:
-                    raise ValidationError(
-                        'The payment must be reconciled with the installment-plan invoice.'
-                    )
+                    raise ValidationError(_('The payment must be reconciled with the installment-plan invoice.'))
 
                 if invoice.currency_id.compare_amounts(
                     payment.amount, installment.amount
                 ) != 0:
-                    raise ValidationError(
-                        'The payment amount does not match the installment amount.'
-                    )
+                    raise ValidationError(_('The payment amount does not match the installment amount.'))
 
                 duplicate = self.search_count([
                     ('payment_id', '=', payment.id),
@@ -153,9 +135,7 @@ class Installment(models.Model):
                     ('status', '=', 'paid'),
                 ])
                 if duplicate:
-                    raise ValidationError(
-                        'This payment has already been used for another installment.'
-                    )
+                    raise ValidationError(_('This payment has already been used for another installment.'))
 
         elif 'status' in vals:
             for installment in self:

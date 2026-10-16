@@ -1,4 +1,4 @@
-from odoo import api, fields, models
+from odoo import api, fields, models, _
 from odoo.exceptions import AccessError, ValidationError
 
 
@@ -66,9 +66,7 @@ class GymClass(models.Model):
                 and rec.end_datetime
                 and rec.end_datetime <= rec.start_datetime
             ):
-                raise ValidationError(
-                    "End Datetime cannot be earlier than Start Datetime."
-                )
+                raise ValidationError(_("End Datetime cannot be earlier than Start Datetime."))
 
     def _get_booked_count(self):
         """Return only the occupied-seat count for an accessible timetable class."""
@@ -115,9 +113,7 @@ class GymClass(models.Model):
                 record.start_datetime,
                 record.end_datetime,
             ):
-                raise ValidationError(
-                    "The trainer is not available during the selected working hours."
-                )
+                raise ValidationError(_("The trainer is not available during the selected working hours."))
 
     @api.constrains('trainer_id', 'start_datetime', 'end_datetime')
     def _fz_check_trainer_schedule(self):

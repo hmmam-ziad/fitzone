@@ -1,4 +1,4 @@
-from odoo import api, fields, models
+from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
 
 
@@ -18,7 +18,7 @@ class CommissionRule(models.Model):
     def _check_rule_values(self):
         for rule in self:
             if not 0 <= rule.rate <= 100:
-                raise ValidationError("Commission rate must be between 0 and 100 percent.")
+                raise ValidationError(_("Commission rate must be between 0 and 100 percent."))
             if (rule.effective_from and rule.effective_to
                     and rule.effective_to < rule.effective_from):
-                raise ValidationError("The commission end date cannot precede its start date.")
+                raise ValidationError(_("The commission end date cannot precede its start date."))

@@ -1,4 +1,4 @@
-from odoo import api, fields, models
+from odoo import api, fields, models, _
 from odoo.exceptions import AccessError, ValidationError
 
 
@@ -99,7 +99,7 @@ class PosOrder(models.Model):
             member_id = order._verified_member_link()
             eligible = set(self._supplement_ids(discounted.product_id.ids))
             if not member_id or any(line.product_id.id not in eligible for line in discounted):
-                raise ValidationError('A 50% member discount requires active membership and supplement products.')
+                raise ValidationError(_('A 50% member discount requires active membership and supplement products.'))
 
     def _verified_member_link(self):
         """Return only the revalidated link; never expose it through RPC."""

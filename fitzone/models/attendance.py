@@ -90,20 +90,20 @@ class Attendance(models.Model):
         booking.invalidate_recordset(['status', 'membership_id'])
         if not attended:
             if booking.status == 'attended':
-                raise ValidationError('An attended booking cannot be reopened.')
+                raise ValidationError(_('An attended booking cannot be reopened.'))
             return True
         if booking.status == 'attended':
             return True
         if booking.status != 'booked':
-            raise ValidationError('Only a booked attendee can check in.')
+            raise ValidationError(_('Only a booked attendee can check in.'))
         membership = booking.membership_id
         if membership.state != 'active':
-            raise ValidationError('Check-in denied.')
+            raise ValidationError(_('Check-in denied.'))
         today = fields.Date.context_today(self)
         if self.env['fitzone.freeze'].sudo().search_count([
                 ('membership_id', '=', membership.id), ('start_date', '<=', today),
                 ('end_date', '>=', today)]):
-            raise ValidationError('Check-in denied.')
+            raise ValidationError(_('Check-in denied.'))
         booking.write({'status': 'attended'})
         return True
 
@@ -133,7 +133,7 @@ class Attendance(models.Model):
             ('class_id', '=', class_id), ('membership_id.barcode', '=', barcode),
             ('status', '=', 'booked')], limit=1)
         if not booking:
-            raise ValidationError('Not pre-registered for this class.')
+            raise ValidationError(_('Not pre-registered for this class.'))
         booking = booking.with_env(self.env)
         attendance = self.browse(self._ensure_booking_attendance(booking))
         attendance.write({'attended': True})

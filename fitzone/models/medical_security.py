@@ -1,4 +1,4 @@
-from odoo import api, fields, models
+from odoo import api, fields, models, _
 from odoo.exceptions import AccessError, ValidationError
 from odoo.fields import Domain
 
@@ -73,7 +73,7 @@ class MedicalAttachment(models.Model):
     def _check_medical_sharing(self):
         for attachment in self:
             if attachment.res_model in MEDICAL_MODELS and (attachment.public or attachment.access_token):
-                raise ValidationError('Medical attachments cannot be public or shared by access token.')
+                raise ValidationError(_('Medical attachments cannot be public or shared by access token.'))
 
     def _has_medical_parent_access(self, operation):
         self.ensure_one()

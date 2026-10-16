@@ -1,5 +1,5 @@
 
-from odoo import api, fields, models
+from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
 
 
@@ -43,9 +43,7 @@ class Visit(models.Model):
     @api.model_create_multi
     def create(self, vals_list):
         if not self.env.context.get('allow_barcode_checkin'):
-            raise ValidationError(
-                'Visits can only be created through barcode check-in.'
-            )
+            raise ValidationError(_('Visits can only be created through barcode check-in.'))
         return super().create(vals_list)
 
     @api.model
@@ -53,50 +51,34 @@ class Visit(models.Model):
         barcode = (barcode or '').strip()
 
         if not barcode:
-            raise ValidationError(
-                'Please scan or enter a member barcode.'
-            )
+            raise ValidationError(_('Please scan or enter a member barcode.'))
 
         membership = self.env['fitzone.membership'].search([
             ('barcode', '=', barcode),
         ], limit=1)
 
         if not membership:
-            raise ValidationError(
-                'No membership found for this barcode.'
-            )
+            raise ValidationError(_('No membership found for this barcode.'))
 
         today = fields.Date.context_today(self)
 
         if membership.state == 'blocked':
-            raise ValidationError(
-                'Check-in denied: membership is blocked.'
-            )
+            raise ValidationError(_('Check-in denied: membership is blocked.'))
 
         if membership.state == 'cancelled':
-            raise ValidationError(
-                'Check-in denied: membership is cancelled.'
-            )
+            raise ValidationError(_('Check-in denied: membership is cancelled.'))
 
         if membership.state == 'draft':
-            raise ValidationError(
-                'Check-in denied: membership is not activated.'
-            )
+            raise ValidationError(_('Check-in denied: membership is not activated.'))
 
         if membership.state == 'expired':
-            raise ValidationError(
-                'Check-in denied: membership has expired.'
-            )
+            raise ValidationError(_('Check-in denied: membership has expired.'))
 
         if not membership.date_start or not membership.date_end:
-            raise ValidationError(
-                'Check-in denied: membership dates are missing.'
-            )
+            raise ValidationError(_('Check-in denied: membership dates are missing.'))
 
         if today < membership.date_start or today > membership.date_end:
-            raise ValidationError(
-                'Check-in denied: membership is not valid today.'
-            )
+            raise ValidationError(_('Check-in denied: membership is not valid today.'))
 
         freeze = self.env['fitzone.freeze'].search_count([
             ('membership_id', '=', membership.id),
@@ -105,18 +87,14 @@ class Visit(models.Model):
         ])
 
         if freeze:
-            raise ValidationError(
-                'Check-in denied: membership is frozen.'
-            )
+            raise ValidationError(_('Check-in denied: membership is frozen.'))
 
         if (
             membership.package_type == 'private'
             and membership.total_sessions > 0
             and membership.remaining_sessions <= 0
         ):
-            raise ValidationError(
-                'Check-in denied: no sessions remaining.'
-            )
+            raise ValidationError(_('Check-in denied: no sessions remaining.'))
 
         overdue_installment = self.env['fitzone.installment'].search([
             ('plan_id.membership_id', '=', membership.id),
@@ -125,10 +103,8 @@ class Visit(models.Model):
         ], limit=1)
 
         if overdue_installment:
-            raise ValidationError(
-                'Check-in denied: an installment is overdue. '
-                'Please settle the outstanding payment.'
-            )
+            raise ValidationError(_('Check-in denied: an installment is overdue. '
+                'Please settle the outstanding payment.'))
 
         if (
             membership.package_type == 'private'

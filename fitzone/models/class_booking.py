@@ -1,4 +1,4 @@
-from odoo import api, fields, models
+from odoo import api, fields, models, _
 from odoo.exceptions import AccessError, ValidationError
 
 
@@ -55,31 +55,31 @@ class ClassBooking(models.Model):
             ])
             if not candidates:
                 if Membership.search_count([('member_id', '=', member_id)]):
-                    raise ValidationError("Membership expired or does not cover the class date.")
-                raise ValidationError("This member has no membership.")
+                    raise ValidationError(_("Membership expired or does not cover the class date."))
+                raise ValidationError(_("This member has no membership."))
             membership = candidates.filtered(lambda m: m.state == 'active')[:1]
             if not membership:
                 state = candidates[0].state
                 if state == 'blocked':
-                    raise ValidationError("Membership is blocked.")
+                    raise ValidationError(_("Membership is blocked."))
                 if state == 'expired':
-                    raise ValidationError("Membership expired.")
-                raise ValidationError("Membership is not active (%s)." % state)
+                    raise ValidationError(_("Membership expired."))
+                raise ValidationError(_("Membership is not active (%s).") % state)
 
         if self.env['fitzone.freeze'].search_count([
             ('membership_id', '=', membership.id),
             ('start_date', '<=', class_date),
             ('end_date', '>=', class_date),
         ]):
-            raise ValidationError("Membership is frozen on the class date.")
+            raise ValidationError(_("Membership is frozen on the class date."))
 
         package = membership.package_id
         if class_date.weekday() not in package.allowed_weekdays():
-            raise ValidationError("Package does not include this day.")
+            raise ValidationError(_("Package does not include this day."))
 
         # Time covered by the package
         if not (package.allowed_from <= class_hour <= package.allowed_to):
-            raise ValidationError("Package does not include this time.")
+            raise ValidationError(_("Package does not include this time."))
 
         return membership
 
@@ -102,14 +102,14 @@ class ClassBooking(models.Model):
                 ('class_id', '=', gym_class.id),
                 ('status', 'in', ('booked', 'attended')),
             ]):
-                raise ValidationError("This member has already booked this class.")
+                raise ValidationError(_("This member has already booked this class."))
 
             booked = self.search_count([
                 ('class_id', '=', gym_class.id),
                 ('status', 'in', ('booked', 'attended')),
             ])
             if booked >= gym_class.room_id.capacity:
-                raise ValidationError("The class is full.")
+                raise ValidationError(_("The class is full."))
 
             vals['membership_id'] = membership.id
             booking = super().create([vals])
@@ -119,16 +119,15 @@ class ClassBooking(models.Model):
 
     def write(self, vals):
         if 'class_id' in vals or 'member_id' in vals:
-            raise ValidationError(
-                "Member and class cannot be changed. Cancel and create a new booking.")
+            raise ValidationError(_("Member and class cannot be changed. Cancel and create a new booking."))
         if vals.get('status') == 'booked' and any(r.status != 'booked' for r in self):
-            raise ValidationError("A cancelled or attended booking cannot be reopened.")
+            raise ValidationError(_("A cancelled or attended booking cannot be reopened."))
         return super().write(vals)
 
     def action_cancel(self):
         for rec in self:
             if rec.status != 'booked':
-                raise ValidationError("This booking cannot be cancelled.")
+                raise ValidationError(_("This booking cannot be cancelled."))
             rec.status = 'cancelled'
 
     @api.model
@@ -146,19 +145,18 @@ class ClassBooking(models.Model):
                 ('status', '=', 'booked'),
             ], limit=1)
         if not booking:
-            raise ValidationError(
-                "Not pre-registered for this class (walk-ins are not allowed).")
+            raise ValidationError(_("Not pre-registered for this class (walk-ins are not allowed)."))
 
         if membership.state != 'active':
             raise ValidationError(
-                "Membership is %s. Check-in denied." % membership.state)
+                _("Membership is %s. Check-in denied.") % membership.state)
         today = fields.Date.context_today(self)
         if self.env['fitzone.freeze'].search_count([
             ('membership_id', '=', membership.id),
             ('start_date', '<=', today),
             ('end_date', '>=', today),
         ]):
-            raise ValidationError("Membership is frozen. Check-in denied.")
+            raise ValidationError(_("Membership is frozen. Check-in denied."))
 
         booking.status = 'attended'
         self.env['fitzone.attendance']._ensure_booking_attendance(booking)

@@ -1,4 +1,4 @@
-from odoo import api, fields, models
+from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
 
 
@@ -40,13 +40,13 @@ class Rehabilitation(models.Model):
     def _check_dates(self):
         for rec in self:
             if rec.start_date and rec.end_date and rec.end_date < rec.start_date:
-                raise ValidationError("End date cannot be earlier than start date!")
+                raise ValidationError(_("End date cannot be earlier than start date!"))
 
     @api.constrains('member_id', 'injury_id')
     def _check_member_injury_match(self):
         for rec in self:
             if rec.injury_id and rec.member_id != rec.injury_id.member_id:
-                raise ValidationError("The selected member must match the member in the linked injury report!")
+                raise ValidationError(_("The selected member must match the member in the linked injury report!"))
 
     def action_start(self):
         for rec in self:

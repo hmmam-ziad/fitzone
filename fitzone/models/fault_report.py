@@ -79,9 +79,9 @@ class FaultReport(models.Model):
         self._check_manager()
         for rec in self:
             if rec.status != 'reported':
-                raise ValidationError("Only new reports can be approved.")
+                raise ValidationError(_("Only new reports can be approved."))
             if not (rec.technician_id or rec.vendor_id):
-                raise ValidationError("Assign a technician or vendor first.")
+                raise ValidationError(_("Assign a technician or vendor first."))
             super(FaultReport, rec).write({'status': 'approved'})
             request_id = rec._create_approved_ticket()
             super(FaultReport, rec).write({'request_id': request_id})
@@ -90,7 +90,7 @@ class FaultReport(models.Model):
         self._check_manager()
         for rec in self:
             if rec.status != 'reported':
-                raise ValidationError("Only new reports can be rejected.")
+                raise ValidationError(_("Only new reports can be rejected."))
             if not rec.reject_reason:
-                raise ValidationError("Please enter a rejection reason.")
+                raise ValidationError(_("Please enter a rejection reason."))
             super(FaultReport, rec).write({'status': 'rejected'})

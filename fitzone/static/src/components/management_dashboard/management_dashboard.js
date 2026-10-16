@@ -6,6 +6,7 @@ import { useService } from "@web/core/utils/hooks";
 import { standardActionServiceProps } from "@web/webclient/actions/action_service";
 import { useSetupAction } from "@web/search/action_hook";
 import { localization } from "@web/core/l10n/localization";
+import { _t } from "@web/core/l10n/translation";
 
 const { DateTime } = luxon;
 // Logo tones only: burgundy #630002 and charcoal #3E4444 with lighter shades of each.
@@ -46,6 +47,15 @@ class DashboardChart extends Component {
 }
 
 export class ManagementDashboard extends Component {
+    performanceLabel(d) {
+        if (d.trend.length > 45) {
+            return _t("Daily performance");
+        }
+        return d.date_to > d.date_from
+            ? _t("Performance over the selected period")
+            : _t("Today's performance");
+    }
+
     static template = "fitzone.ManagementDashboard";
     static components = { DashboardChart };
     static props = { ...standardActionServiceProps };
@@ -109,16 +119,18 @@ export class ManagementDashboard extends Component {
         return data ? DateTime.fromSQL(data.refreshed_at, { zone: "utc" }).toLocal().toLocaleString(DateTime.TIME_WITH_SECONDS) : "—";
     }
     get cards() {
+
         const definitions = [
-            ["total_revenue", "Total revenue", "money", "fa-line-chart", false],
-            ["total_expenses", "Total expenses", "money", "fa-credit-card", true],
-            ["net_revenue", "Net revenue", "money", "fa-balance-scale", false],
-            ["net_margin_percent", "Net margin", "percent", "fa-pie-chart", false],
-            ["active_memberships", "Active memberships", "number", "fa-id-card-o", false],
-            ["new_members", "New members", "number", "fa-user-plus", false],
-            ["overall_occupancy_percent", "Overall occupancy", "percent", "fa-building-o", false],
-            ["overdue_installments_amount", "Overdue installments", "money", "fa-clock-o", true],
+            ["total_revenue", _t("Total revenue"), "money", "fa-line-chart", false],
+            ["total_expenses", _t("Total expenses"), "money", "fa-credit-card", true],
+            ["net_revenue", _t("Net revenue"), "money", "fa-balance-scale", false],
+            ["net_margin_percent", _t("Net margin"), "percent", "fa-pie-chart", false],
+            ["active_memberships", _t("Active memberships"), "number", "fa-id-card-o", false],
+            ["new_members", _t("New members"), "number", "fa-user-plus", false],
+            ["overall_occupancy_percent", _t("Overall occupancy"), "percent", "fa-building-o", false],
+            ["overdue_installments_amount", _t("Overdue installments"), "money", "fa-clock-o", true],
         ];
+
         return definitions.map(([key, label, type, icon, inverse]) => {
             const trend = this.state.data.trends[key];
             return { key, label, icon, value: this.number(this.state.data.kpis[key], type), trend,
@@ -150,16 +162,16 @@ export class ManagementDashboard extends Component {
         const bars = (label, data, color) => ({ label, data, backgroundColor: color, borderColor: color, borderRadius: 5 });
         const doughnut = (rows, key) => this.chart("doughnut", rows.map(r => r.name), [{ data: rows.map(r => r[key]), backgroundColor: rows.map((_, i) => PALETTE[i % PALETTE.length]), borderWidth: 0 }], { cutout: "72%" });
         const charts = {
-            finances: this.chart("bar", d.departments.map(r => r.name), [bars("Revenue", d.departments.map(r => r.revenue), PALETTE[0]), bars("Manual expenses", d.departments.map(r => r.manual_expenses), PALETTE[2]), bars("Purchase expenses", d.departments.map(r => r.purchase_expenses), PALETTE[3])]),
+            finances: this.chart("bar", d.departments.map(r => r.name), [bars(_t("Revenue"), d.departments.map(r => r.revenue), PALETTE[0]), bars(_t("Manual expenses"), d.departments.map(r => r.manual_expenses), PALETTE[2]), bars(_t("Purchase expenses"), d.departments.map(r => r.purchase_expenses), PALETTE[3])]),
             share: doughnut(d.departments.map(r => ({ ...r, revenue: Math.max(0,r.revenue) })), "revenue"),
             trend: this.chart("line", d.trend.map(r => r.day), [
-                { label: "Revenue", data: d.trend.map(r => r.revenue), borderColor: PALETTE[0], backgroundColor: PALETTE[0], tension: 0.3, pointRadius: 2 },
-                { label: "Expenses", data: d.trend.map(r => r.expenses), borderColor: PALETTE[2], backgroundColor: PALETTE[2], tension: 0.3, pointRadius: 2 },
+                { label: _t("Revenue"), data: d.trend.map(r => r.revenue), borderColor: PALETTE[0], backgroundColor: PALETTE[0], tension: 0.3, pointRadius: 2 },
+                { label: _t("Expenses"), data: d.trend.map(r => r.expenses), borderColor: PALETTE[2], backgroundColor: PALETTE[2], tension: 0.3, pointRadius: 2 },
             ]),
-            workload: this.chart("bar", d.workload.map(r => r.name), [bars("Sessions", d.workload.map(r => r.sessions), PALETTE[0]), bars("Quota", d.workload.map(r => r.quota), PALETTE[1])], { indexAxis: "y" }),
-            causes: this.chart("bar", d.injuries_by_cause.map(r => r.name), [bars("Injuries", d.injuries_by_cause.map(r => r.count), PALETTE[0])], { indexAxis: "y" }),
+            workload: this.chart("bar", d.workload.map(r => r.name), [bars(_t("Sessions"), d.workload.map(r => r.sessions), PALETTE[0]), bars(_t("Quota"), d.workload.map(r => r.quota), PALETTE[1])], { indexAxis: "y" }),
+            causes: this.chart("bar", d.injuries_by_cause.map(r => r.name), [bars(_t("Injuries"), d.injuries_by_cause.map(r => r.count), PALETTE[0])], { indexAxis: "y" }),
             sports: doughnut(d.injuries_by_sport, "count"),
-            memberships: doughnut([{ name: "Active", count: d.memberships.active }, { name: "Expired", count: d.memberships.expired }], "count"),
+            memberships: doughnut([{ name: _t("Active"), count: d.memberships.active }, { name: _t("Expired"), count: d.memberships.expired }], "count"),
         };
         const wire = (name, select, legend = select) => {
             charts[name].options.onClick = (_event, elements) => {
