@@ -79,7 +79,9 @@
                 </header>
 
                 <sheet>
-                    <group><field name="company_id" invisible="1"/><field name="department_id" options="{'no_create': True}"/>
+                    <group>
+                        <field name="company_id" invisible="1" />
+                        <field name="department_id" options="{'no_create': True}" invisible="1" />
                         <field name="member_id" />
                         <field name="membership_id" />
                         <field name="pool_slot_id" />
