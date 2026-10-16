@@ -58,6 +58,11 @@ class GymClass(models.Model):
         compute='_compute_alert_level', store=True
     )
 
+    _name_uniq = models.Constraint(
+        'UNIQUE(name)',
+        'A class with this name already exists.',
+    )
+
     @api.constrains('start_datetime', 'end_datetime')
     def _check_class_datetimes(self):
         for rec in self:
