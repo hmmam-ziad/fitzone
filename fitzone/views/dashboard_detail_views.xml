@@ -2,8 +2,8 @@
 <record id="financial_list" model="ir.ui.view"><field name="name">fitzone.financial.detail.financial.list</field><field name="model">fitzone.financial.detail</field><field name="arch" type="xml"><list create="0" edit="0" delete="0" js_class="fitzone_readonly_detail_list">
 <field name="currency_id" column_invisible="1"/><field name="company_id" optional="hide"/>
 <field name="date"/>
-<field name="type"/>
-<field name="source"/>
+<field name="type_label" string="Type"/>
+<field name="source_label" string="Source"/>
 <field name="reference"/>
 <field name="partner_id" options="{'no_open': True, 'no_create': True}"/>
 <field name="product_id" options="{'no_open': True, 'no_create': True}"/>
@@ -19,7 +19,7 @@
 <record id="collected_list" model="ir.ui.view"><field name="name">fitzone.collected.detail.collected.list</field><field name="model">fitzone.collected.detail</field><field name="arch" type="xml"><list create="0" edit="0" delete="0" js_class="fitzone_readonly_detail_list">
 <field name="currency_id" column_invisible="1"/><field name="company_id" optional="hide"/>
 <field name="date"/>
-<field name="source"/>
+<field name="source_label" string="Source"/>
 <field name="reference"/>
 <field name="partner_id" options="{'no_open': True, 'no_create': True}"/>
 <field name="invoice_id" options="{'no_open': True, 'no_create': True}"/>
@@ -83,7 +83,7 @@
 <field name="currency_id" column_invisible="1"/><field name="company_id" optional="hide"/>
 <field name="date"/>
 <field name="reference"/>
-<field name="source"/>
+<field name="source_label" string="Source"/>
 <field name="member_id" options="{'no_open': True, 'no_create': True}"/>
 <field name="employee_id" options="{'no_open': True, 'no_create': True}"/>
 <field name="user_id" options="{'no_open': True, 'no_create': True}"/>

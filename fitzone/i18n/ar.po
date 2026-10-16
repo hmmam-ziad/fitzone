@@ -600,6 +600,8 @@ msgstr "تاريخ الحجز"
 
 #. module: fitzone
 #: model:ir.model.fields,field_description:fitzone.field_fitzone_gym_class__booking_ids
+#: model_terms:ir.ui.view,arch_db:fitzone.view_fitzone_gym_class_form
+#: model_terms:ir.ui.view,arch_db:fitzone.view_fitzone_pool_slot_form
 msgid "Bookings"
 msgstr "الحجوزات"
 
@@ -787,6 +789,7 @@ msgstr "حجز حصة"
 #: model:ir.model.fields,field_description:fitzone.field_res_partner__class_booking_ids
 #: model:ir.model.fields,field_description:fitzone.field_res_users__class_booking_ids
 #: model:ir.ui.menu,name:fitzone.menu_fitzone_class_booking
+#: model_terms:ir.ui.view,arch_db:fitzone.view_partner_form_fitzone
 msgid "Class Bookings"
 msgstr "حجوزات الحصص"
 
@@ -2334,6 +2337,7 @@ msgstr "قسط"
 
 #. module: fitzone
 #: model:ir.model,name:fitzone.model_fitzone_installment_plan
+#: model_terms:ir.ui.view,arch_db:fitzone.view_fitzone_membership_form
 msgid "Installment Plan"
 msgstr "خطة التقسيط"
 
@@ -2366,6 +2370,7 @@ msgstr "المخزون والمشتريات"
 #. module: fitzone
 #: model:ir.model.fields,field_description:fitzone.field_fitzone_collected_detail__invoice_id
 #: model_terms:ir.ui.view,arch_db:fitzone.collected_detail_search
+#: model_terms:ir.ui.view,arch_db:fitzone.view_fitzone_membership_form
 msgid "Invoice"
 msgstr "فاتورة"
 
@@ -3253,6 +3258,7 @@ msgstr "إيرادات نقطة البيع"
 #: model:ir.actions.act_window,name:fitzone.action_fitzone_pt_session
 #: model:ir.ui.menu,name:fitzone.menu_fitzone_pt_session
 #: model_terms:ir.ui.view,arch_db:fitzone.view_fitzone_pt_session_calendar
+#: model_terms:ir.ui.view,arch_db:fitzone.view_partner_form_fitzone
 msgid "PT Sessions"
 msgstr "جلسات التدريب الشخصي"
 
@@ -3811,6 +3817,7 @@ msgstr "دفعة مسجّلة"
 #. odoo-python
 #: code:addons/fitzone/models/injuries.py:0
 #: model:ir.model,name:fitzone.model_fitzone_rehabilitation
+#: model_terms:ir.ui.view,arch_db:fitzone.view_fitzone_injury_form
 msgid "Rehabilitation"
 msgstr "التأهيل"
 
@@ -5878,3 +5885,66 @@ msgstr "الإيرادات والمصروفات بمرور الوقت"
 #. odoo-javascript
 msgid "Expenses"
 msgstr "المصروفات"
+
+
+#. module: fitzone
+#. odoo-javascript
+#: code:addons/fitzone/static/src/components/management_dashboard/management_dashboard.js:137
+msgid "New activity"
+msgstr "نشاط جديد"
+
+
+#. module: fitzone
+msgid "Manual expense"
+msgstr "مصروف يدوي"
+
+#. module: fitzone
+msgid "Purchase expense"
+msgstr "مصروف مشتريات"
+
+#. module: fitzone
+msgid "POS"
+msgstr "نقطة البيع"
+
+#. module: fitzone
+msgid "Credit note"
+msgstr "إشعار دائن"
+
+#. module: fitzone
+msgid "Vendor bill"
+msgstr "فاتورة مورد"
+
+#. module: fitzone
+msgid "Vendor credit note"
+msgstr "إشعار دائن للمورد"
+
+#. module: fitzone
+msgid "Invoice payment"
+msgstr "دفعة فاتورة"
+
+#. module: fitzone
+msgid "Injury sport"
+msgstr "رياضة الإصابة"
+
+#. module: fitzone
+msgid "Session"
+msgstr "جلسة"
+
+#. module: fitzone
+msgid "PT Session"
+msgstr "جلسة تدريب شخصي"
+
+
+#. module: fitzone
+#: model_terms:ir.ui.view,arch_db:fitzone.view_fitzone_membership_form
+msgid "Due Installments"
+msgstr "الأقساط المستحقة"
+
+#. module: fitzone
+msgid "Schedule"
+msgstr "الجدول"
+
+#. module: fitzone
+#: model_terms:ir.ui.view,arch_db:fitzone.view_fitzone_trainer_form
+msgid "Trainees"
+msgstr "المتدربون"
