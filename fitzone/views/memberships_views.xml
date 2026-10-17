@@ -173,6 +173,9 @@
                         <button name="action_view_due_installments" type="object" class="oe_stat_button fz-smart-button fz-smart-warning" icon="fa-clock-o" groups="fitzone.group_fitzone_manager,fitzone.group_fitzone_reception">
                             <field name="due_installment_count" widget="statinfo" string="Due Installments"/>
                         </button>
+                        <button name="action_view_membership_invoice" type="object" class="oe_stat_button fz-smart-button fz-smart-teal" icon="fa-file-text-o" groups="fitzone.group_fitzone_manager,fitzone.group_fitzone_reception" invisible="not invoice_id">
+                            <span class="o_stat_text">Invoice</span>
+                        </button>
                     </div>
 
                     <group>

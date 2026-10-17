@@ -194,8 +194,8 @@ msgstr "إعادة التأهيل النشطة"
 
 #. module: fitzone
 #. odoo-python
-#: code:addons/fitzone/models/dashboard_details.py:0
 #. odoo-javascript
+#: code:addons/fitzone/models/dashboard_details.py:0
 #: code:addons/fitzone/static/src/components/management_dashboard/management_dashboard.js:118
 msgid "Active memberships"
 msgstr "العضويات النشطة"
@@ -2959,8 +2959,8 @@ msgstr "لا يمكن معالجة بلاغات الإصابات الجديدة 
 
 #. module: fitzone
 #. odoo-python
-#: code:addons/fitzone/models/dashboard_details.py:0
 #. odoo-javascript
+#: code:addons/fitzone/models/dashboard_details.py:0
 #: code:addons/fitzone/static/src/components/management_dashboard/management_dashboard.js:119
 msgid "New members"
 msgstr "الأعضاء الجدد"
@@ -3242,8 +3242,8 @@ msgstr "متأخر"
 
 #. module: fitzone
 #. odoo-python
-#: code:addons/fitzone/models/dashboard_details.py:0
 #. odoo-javascript
+#: code:addons/fitzone/models/dashboard_details.py:0
 #: code:addons/fitzone/static/src/components/management_dashboard/management_dashboard.js:121
 msgid "Overdue installments"
 msgstr "الأقساط المتأخرة"
@@ -4569,6 +4569,7 @@ msgstr "لا يوجد تاريخ انتهاء للعضوية."
 #. module: fitzone
 #. odoo-python
 #: code:addons/fitzone/models/pool_booking.py:0
+#: code:addons/fitzone/models/personal_training.py:0
 msgid "The selected membership does not belong to this member."
 msgstr "العضوية المحددة لا تخص هذا العضو."
 
@@ -5194,7 +5195,9 @@ msgstr "نسبة الإشغال الإجمالية"
 #. module: fitzone
 #. odoo-python
 #: code:addons/fitzone/models/memberships.py:0
-msgid "Create and post the membership invoice, then register the full payment before activation."
+msgid ""
+"Create and post the membership invoice, then register the full payment "
+"before activation."
 msgstr "أنشئ فاتورة الاشتراك ورحّلها، ثم سجّل سداد كامل المبلغ قبل التفعيل."
 
 #. module: fitzone
@@ -5205,16 +5208,13 @@ msgstr "يجب سداد فاتورة الاشتراك بالكامل قبل ال
 
 #. module: fitzone
 #. odoo-python
+#: code:addons/fitzone/models/memberships.py:0
 msgid "The first installment must be paid before activation."
 msgstr "يجب سداد القسط الأول قبل التفعيل."
 
 #. module: fitzone
 #. odoo-python
-msgid "Please select a package before activation."
-msgstr "يرجى اختيار باقة قبل التفعيل."
-
-#. module: fitzone
-#. odoo-python
+#: code:addons/fitzone/models/memberships.py:0
 msgid "All-Inclusive must be added to a General Membership."
 msgstr "يجب إضافة باقة الشامل إلى اشتراك عام."
 
@@ -5317,7 +5317,9 @@ msgstr "تم رفض تسجيل الحضور: لا توجد جلسات متبقي
 #. module: fitzone
 #. odoo-python
 #: code:addons/fitzone/models/visits.py:0
-msgid "Check-in denied: an installment is overdue. Please settle the outstanding payment."
+msgid ""
+"Check-in denied: an installment is overdue. Please settle the outstanding "
+"payment."
 msgstr "تم رفض تسجيل الحضور: يوجد قسط متأخر. يرجى تسديد المبلغ المستحق."
 
 #. module: fitzone
@@ -5503,8 +5505,12 @@ msgstr "يرجى تحديد عميل للاشتراك."
 #. module: fitzone
 #. odoo-python
 #: code:addons/fitzone/models/installment_plan.py:0
-msgid "Installment plans are available only for General Membership packages of three months or more."
-msgstr "تتوفر خطط التقسيط لباقات الاشتراك العام التي تبلغ مدتها ثلاثة أشهر أو أكثر فقط."
+msgid ""
+"Installment plans are available only for General Membership packages of "
+"three months or more."
+msgstr ""
+"تتوفر خطط التقسيط لباقات الاشتراك العام التي تبلغ مدتها ثلاثة أشهر أو أكثر "
+"فقط."
 
 #. module: fitzone
 #. odoo-python
@@ -5521,13 +5527,15 @@ msgstr "يجب أن يكون إجمالي خطة التقسيط أكبر من ص
 #. module: fitzone
 #. odoo-python
 #: code:addons/fitzone/models/installment_plan.py:0
-msgid "The down payment must be greater than zero and less than the plan total."
+msgid ""
+"The down payment must be greater than zero and less than the plan total."
 msgstr "يجب أن تكون الدفعة المقدمة أكبر من صفر وأقل من إجمالي خطة التقسيط."
 
 #. module: fitzone
 #. odoo-python
 #: code:addons/fitzone/models/installment_plan.py:0
-msgid "The installment plan total must match the membership price including tax."
+msgid ""
+"The installment plan total must match the membership price including tax."
 msgstr "يجب أن يتطابق إجمالي خطة التقسيط مع سعر الاشتراك شاملًا الضريبة."
 
 #. module: fitzone
@@ -5563,20 +5571,26 @@ msgstr "يجب أن يتطابق إجمالي الفاتورة مع إجمالي
 #. module: fitzone
 #. odoo-python
 #: code:addons/fitzone/models/installment_plan.py:0
-msgid "The linked invoice already has a payment or adjustment. Review it before creating this installment schedule."
-msgstr "تحتوي الفاتورة المرتبطة بالفعل على دفعة أو تسوية. يرجى مراجعتها قبل إنشاء جدول الأقساط."
+msgid ""
+"The linked invoice already has a payment or adjustment. Review it before "
+"creating this installment schedule."
+msgstr ""
+"تحتوي الفاتورة المرتبطة بالفعل على دفعة أو تسوية. يرجى مراجعتها قبل إنشاء "
+"جدول الأقساط."
 
 #. module: fitzone
 #. odoo-python
 #: code:addons/fitzone/models/pos_order.py:0
-msgid "A 50% member discount requires active membership and supplement products."
+msgid ""
+"A 50% member discount requires active membership and supplement products."
 msgstr "يتطلب خصم الأعضاء بنسبة 50% اشتراكًا نشطًا ومنتجات مكملات غذائية."
 
 #. module: fitzone
 #. odoo-python
 #: code:addons/fitzone/models/medical_security.py:0
 msgid "Medical attachments cannot be public or shared by access token."
-msgstr "لا يجوز أن تكون المرفقات الطبية عامة أو متاحة للمشاركة عبر رمز الوصول."
+msgstr ""
+"لا يجوز أن تكون المرفقات الطبية عامة أو متاحة للمشاركة عبر رمز الوصول."
 
 #. module: fitzone
 #. odoo-python
@@ -5587,8 +5601,12 @@ msgstr "لم يعد القسط بانتظار الدفع."
 #. module: fitzone
 #. odoo-python
 #: code:addons/fitzone/models/installment_payment_register.py:0
-msgid "The registered payment amount does not match the installment amount. The installment was not marked paid."
-msgstr "المبلغ المسجل للدفعة لا يطابق مبلغ القسط، لذلك لم يتم وضع علامة على القسط بأنه مدفوع."
+msgid ""
+"The registered payment amount does not match the installment amount. The "
+"installment was not marked paid."
+msgstr ""
+"المبلغ المسجل للدفعة لا يطابق مبلغ القسط، لذلك لم يتم وضع علامة على القسط "
+"بأنه مدفوع."
 
 #. module: fitzone
 #. odoo-python
@@ -5625,12 +5643,6 @@ msgstr "لا يمكن أن يكون سعر الجلسة سالبًا."
 #: code:addons/fitzone/models/personal_training.py:0
 msgid "Cancelled sessions cannot be completed."
 msgstr "لا يمكن إكمال الجلسات الملغاة."
-
-#. module: fitzone
-#. odoo-python
-#: code:addons/fitzone/models/personal_training.py:0
-msgid "The selected membership does not belong to this member."
-msgstr "الاشتراك المحدد لا يخص هذا العضو."
 
 #. module: fitzone
 #. odoo-python
@@ -5761,12 +5773,6 @@ msgstr "يمكن إضافة الباقة الشاملة إلى الاشتراك 
 #. module: fitzone
 #. odoo-python
 #: code:addons/fitzone/models/memberships.py:0
-msgid "All-Inclusive must be added to a General Membership."
-msgstr "يجب إضافة الباقة الشاملة إلى اشتراك عام."
-
-#. module: fitzone
-#. odoo-python
-#: code:addons/fitzone/models/memberships.py:0
 msgid "An invoice can only be created for a draft membership."
 msgstr "يمكن إنشاء فاتورة لاشتراك بحالة مسودة فقط."
 
@@ -5779,8 +5785,12 @@ msgstr "توجد فاتورة مرتبطة بهذا الاشتراك بالفع�
 #. module: fitzone
 #. odoo-python
 #: code:addons/fitzone/models/memberships.py:0
-msgid "Create memberships as Draft and use the Activate action after the required payment."
-msgstr "أنشئ الاشتراكات بحالة مسودة، واستخدم إجراء التفعيل بعد استكمال الدفع المطلوب."
+msgid ""
+"Create memberships as Draft and use the Activate action after the required "
+"payment."
+msgstr ""
+"أنشئ الاشتراكات بحالة مسودة، واستخدم إجراء التفعيل بعد استكمال الدفع "
+"المطلوب."
 
 #. module: fitzone
 #. odoo-python
@@ -5815,13 +5825,9 @@ msgstr "يرجى اختيار عضو وباقة قبل إنشاء الفاتور
 #. module: fitzone
 #. odoo-python
 #: code:addons/fitzone/models/memberships.py:0
-msgid "The first installment must be paid before activation."
-msgstr "يجب دفع القسط الأول قبل التفعيل."
-
-#. module: fitzone
-#. odoo-python
-#: code:addons/fitzone/models/memberships.py:0
-msgid "The first installment must have a successful payment before activating this membership."
+msgid ""
+"The first installment must have a successful payment before activating this "
+"membership."
 msgstr "يجب إتمام دفع القسط الأول بنجاح قبل تفعيل هذا الاشتراك."
 
 #. module: fitzone
@@ -5833,19 +5839,28 @@ msgstr "يجب أن تكون مدة الباقة صالحة."
 #. module: fitzone
 #. odoo-python
 #: code:addons/fitzone/models/memberships.py:0
-msgid "This member already has an active or blocked membership for the same package during this period. The package can be purchased again after the current membership period ends."
-msgstr "لدى هذا العضو اشتراك نشط أو محظور بالباقة نفسها خلال هذه الفترة. يمكن شراء الباقة مجددًا بعد انتهاء فترة الاشتراك الحالية."
+msgid ""
+"This member already has an active or blocked membership for the same package"
+" during this period. The package can be purchased again after the current "
+"membership period ends."
+msgstr ""
+"لدى هذا العضو اشتراك نشط أو محظور بالباقة نفسها خلال هذه الفترة. يمكن شراء "
+"الباقة مجددًا بعد انتهاء فترة الاشتراك الحالية."
 
 #. module: fitzone
 #. odoo-python
 #: code:addons/fitzone/models/memberships.py:0
-msgid "This membership has an installment plan. Use the plan to manage its invoice and payments."
+msgid ""
+"This membership has an installment plan. Use the plan to manage its invoice "
+"and payments."
 msgstr "لدى هذا الاشتراك خطة تقسيط. استخدم الخطة لإدارة الفاتورة والمدفوعات."
 
 #. module: fitzone
 #. odoo-python
 #: code:addons/fitzone/models/memberships.py:0
-msgid "This package requires an installment plan. Create the installment plan instead of a regular invoice."
+msgid ""
+"This package requires an installment plan. Create the installment plan "
+"instead of a regular invoice."
 msgstr "تتطلب هذه الباقة خطة تقسيط. أنشئ خطة التقسيط بدلًا من فاتورة عادية."
 
 #. module: fitzone
@@ -5886,13 +5901,11 @@ msgstr "الإيرادات والمصروفات بمرور الوقت"
 msgid "Expenses"
 msgstr "المصروفات"
 
-
 #. module: fitzone
 #. odoo-javascript
 #: code:addons/fitzone/static/src/components/management_dashboard/management_dashboard.js:137
 msgid "New activity"
 msgstr "نشاط جديد"
-
 
 #. module: fitzone
 msgid "Manual expense"
@@ -5934,7 +5947,6 @@ msgstr "جلسة"
 msgid "PT Session"
 msgstr "جلسة تدريب شخصي"
 
-
 #. module: fitzone
 #: model_terms:ir.ui.view,arch_db:fitzone.view_fitzone_membership_form
 msgid "Due Installments"
@@ -5948,3 +5960,39 @@ msgstr "الجدول"
 #: model_terms:ir.ui.view,arch_db:fitzone.view_fitzone_trainer_form
 msgid "Trainees"
 msgstr "المتدربون"
+
+#. module: fitzone
+msgid "Shipping address"
+msgstr "عنوان الشحن"
+
+#. module: fitzone
+msgid "Order Date:"
+msgstr "تاريخ الطلب:"
+
+#. module: fitzone
+msgid "Expected Arrival:"
+msgstr "موعد الوصول المتوقع:"
+
+#. module: fitzone
+msgid "Payment Terms:"
+msgstr "شروط الدفع:"
+
+#. module: fitzone
+msgid "Disc."
+msgstr "الخصم"
+
+#. module: fitzone
+msgid "Amount Due"
+msgstr "المبلغ المستحق"
+
+#. module: fitzone
+msgid "Paid on"
+msgstr "تم الدفع بتاريخ"
+
+#. module: fitzone
+msgid "My Company"
+msgstr "شركتي"
+
+#. module: fitzone
+msgid "Jordan"
+msgstr "الأردن"
