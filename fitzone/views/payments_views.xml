@@ -1,6 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
+    <!-- Reception can read linked invoice headers, but not accounting lines.
+         This standalone view does not inherit accounting actions or chatter. -->
+    <record id="view_membership_invoice_readonly" model="ir.ui.view">
+        <field name="name">fitzone.membership.invoice.readonly</field>
+        <field name="model">account.move</field>
+        <field name="priority">100</field>
+        <field name="arch" type="xml">
+            <form string="Membership Invoice" create="0" edit="0" delete="0" duplicate="0">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="invoice_date"/>
+                        <field name="invoice_date_due"/>
+                        <field name="state"/>
+                        <field name="payment_state"/>
+                        <field name="currency_id" invisible="1"/>
+                        <field name="amount_total"/>
+                        <field name="amount_residual"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
     <!-- Installment Plans -->
     <record id="view_fitzone_installment_plan_list" model="ir.ui.view">
         <field name="name">fitzone.installment.plan.list</field>

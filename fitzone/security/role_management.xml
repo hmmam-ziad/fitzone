@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="rule_manager_restricted_menus" model="ir.rule">
+        <field name="name">Manager: exclude Apps and Technical menu trees</field>
+        <field name="model_id" ref="base.model_ir_ui_menu"/>
+        <field name="domain_force">[('id', 'not in', user.env['ir.ui.menu'].sudo().search([('id', 'child_of', [user.env.ref('base.menu_management').id, user.env.ref('base.menu_custom').id])]).ids)] if user.has_group('fitzone.group_fitzone_manager') and not user.has_group('fitzone.group_fitzone_full_admin_ui') else [(1, '=', 1)]</field>
+    </record>
+    <!-- Global ceilings cannot be broadened by another read record rule.
+         Deliberately assigned accounting roles retain their previous access. -->
+    <record id="rule_reception_membership_invoice_read" model="ir.rule">
+        <field name="name">Reception: linked membership invoices only</field>
+        <field name="model_id" ref="account.model_account_move"/>
+        <field name="domain_force">[('id', 'in', user.env['fitzone.membership'].search([]).mapped('invoice_id').ids)] if user.has_group('fitzone.group_fitzone_reception') and not user.has_group('account.group_account_invoice') else [(1, '=', 1)]</field>
+    </record>
+    <record id="rule_reception_membership_payment_read" model="ir.rule">
+        <field name="name">Reception: linked membership payments only</field>
+        <field name="model_id" ref="account.model_account_payment"/>
+        <field name="domain_force">[('membership_id', '!=', False), ('membership_id.company_id', 'in', company_ids)] if user.has_group('fitzone.group_fitzone_reception') and not user.has_group('account.group_account_invoice') else [(1, '=', 1)]</field>
+    </record>
+    <!-- Both roles use the native Settings actions and views. -->
+    <record id="base.menu_administration" model="ir.ui.menu">
+        <field name="group_ids" eval="[(4, ref('fitzone.group_fitzone_manager'))]"/>
+    </record>
+    <record id="view_fitzone_membership_payment_form" model="ir.ui.view">
+        <field name="name">fitzone.membership.payment.form</field>
+        <field name="model">fitzone.membership.payment</field>
+        <field name="arch" type="xml">
+            <form string="Membership Payment">
+                <group>
+                    <field name="membership_id"/>
+                    <field name="installment_id" invisible="not installment_id"/>
+                    <field name="journal"/>
+                    <field name="payment_date"/>
+                </group>
+                <p>The outstanding membership balance, or the selected installment amount, will be registered using the selected journal's first inbound payment method.</p>
+                <footer>
+                    <button name="action_pay" type="object" string="Register Payment" class="btn-primary"/>
+                    <button string="Cancel" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

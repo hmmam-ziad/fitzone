@@ -51,9 +51,9 @@
         <field name="model">fitzone.pt.session</field>
         <field name="arch" type="xml">
             <list decoration-success="state == 'completed'" decoration-muted="state == 'cancelled'">
-                <field name="can_report_incident" invisible="1"/>
-                    <button name="action_report_incident" type="object" string="Report incident"
-                        groups="fitzone.group_fitzone_trainer" invisible="not can_report_incident"/>
+                <field name="can_report_incident" invisible="1" />
+                <button name="action_report_incident" type="object" string="Report incident"
+                    groups="fitzone.group_fitzone_trainer" invisible="not can_report_incident" />
                 <field name="member_id" />
                 <field name="trainer_id" />
                 <field name="membership_id" />
@@ -75,15 +75,17 @@
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <field name="can_report_incident" invisible="1"/>
+                    <field name="can_report_incident" invisible="1" />
                     <button name="action_report_incident" type="object" string="Report incident"
-                        groups="fitzone.group_fitzone_trainer" invisible="not can_report_incident"/>
+                        groups="fitzone.group_fitzone_trainer" invisible="not can_report_incident" />
                     <button name="action_complete_session" type="object" string="Complete Session"
                         class="oe_highlight" invisible="state != 'draft'" />
                     <field name="state" widget="statusbar" />
                 </header>
                 <sheet>
-                    <group><field name="company_id" invisible="1"/><field name="department_id" options="{'no_create': True}"/>
+                    <group>
+                        <field name="company_id" invisible="1" />
+                        <field name="department_id" options="{'no_create': True}" invisible="1" />
                         <field name="member_id" readonly="state == 'completed'" />
                         <field name="trainer_id" readonly="state == 'completed'" />
                         <field name="membership_id" />
@@ -128,7 +130,9 @@
         <field name="name">My Trainees</field>
         <field name="res_model">res.partner</field>
         <field name="view_mode">list,form</field>
-        <field name="domain">['|', ('pt_session_ids.trainer_id.employee_id.user_id', '=', uid), ('class_booking_ids', 'any', [('class_id.trainer_id.employee_id.user_id', '=', uid), ('status', '!=', 'cancelled')])]</field>
+        <field name="domain">['|', ('pt_session_ids.trainer_id.employee_id.user_id', '=', uid),
+            ('class_booking_ids', 'any', [('class_id.trainer_id.employee_id.user_id', '=', uid),
+            ('status', '!=', 'cancelled')])]</field>
     </record>
 
 

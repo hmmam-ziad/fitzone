@@ -23,6 +23,11 @@
         <field name="arch" type="xml">
             <form string="Pool Slot">
                 <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_bookings" type="object" class="oe_stat_button fz-smart-button fz-smart-cyan" icon="fa-ticket" groups="fitzone.group_fitzone_manager,fitzone.group_fitzone_reception,fitzone.group_fitzone_trainer">
+                            <field name="booking_count" widget="statinfo" string="Bookings"/>
+                        </button>
+                    </div>
                     <group>
                         <field name="day_of_week" />
                         <field name="start_time" widget="float_time" />
@@ -54,6 +59,8 @@
         <field name="arch" type="xml">
             <list>
                 <field name="member_id" />
+                <field name="member_name" groups="fitzone.group_fitzone_trainer"/>
+                <field name="membership_number" groups="fitzone.group_fitzone_trainer"/>
                 <field name="membership_id" />
                 <field name="pool_slot_id" />
                 <field name="trainer_id"
@@ -79,8 +86,12 @@
                 </header>
 
                 <sheet>
-                    <group><field name="company_id" invisible="1"/><field name="department_id" options="{'no_create': True}"/>
+                    <group>
+                        <field name="company_id" invisible="1" />
+                        <field name="department_id" options="{'no_create': True}" invisible="1" />
                         <field name="member_id" />
+                <field name="member_name" groups="fitzone.group_fitzone_trainer"/>
+                <field name="membership_number" groups="fitzone.group_fitzone_trainer"/>
                         <field name="membership_id" />
                         <field name="pool_slot_id" />
                         <field name="session_date" />

@@ -1,6 +1,11 @@
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
 
+from .smart_button_helpers import (
+    OPERATIONS, FINANCE_READERS, check_navigation, check_trainer_owner,
+    has_roles, related_action,
+)
+
 
 class Trainer(models.Model):
     _name = 'fitzone.trainer'
@@ -18,6 +23,49 @@ class Trainer(models.Model):
         required=True,
     )
     specialty = fields.Char()
+
+    trainee_count = fields.Integer(
+        compute='_compute_trainee_count', compute_sudo=False,
+        groups='fitzone.group_fitzone_manager,fitzone.group_fitzone_reception,fitzone.group_fitzone_trainer',
+    )
+    can_view_assignments = fields.Boolean(compute='_compute_can_view_assignments', compute_sudo=False)
+
+    @api.depends('employee_id', 'employee_id.user_id')
+    @api.depends_context('uid')
+    def _compute_can_view_assignments(self):
+        for trainer in self:
+            trainer.can_view_assignments = has_roles(self.env, FINANCE_READERS) or (
+                has_roles(self.env, ('trainer',)) and trainer.employee_id.user_id == self.env.user
+            )
+
+    def _trainee_domain(self):
+        self.ensure_one()
+        return ['|',
+                ('pt_session_ids', 'any', [('trainer_id', '=', self.id)]),
+                ('class_booking_ids', 'any', [
+                    ('class_id.trainer_id', '=', self.id), ('status', '!=', 'cancelled'),
+                ])]
+
+    @api.depends_context('uid', 'allowed_company_ids')
+    def _compute_trainee_count(self):
+        for trainer in self:
+            trainer.trainee_count = 0
+            if trainer.id and isinstance(trainer.id, int) and trainer.can_view_assignments:
+                trainer.check_access('read')
+                trainer.trainee_count = self.env['res.partner'].with_context(active_test=False).search_count(
+                    trainer._trainee_domain())
+
+    def action_view_schedule(self):
+        check_navigation(self, OPERATIONS, 'fitzone.trainer.schedule')
+        check_trainer_owner(self, self)
+        return related_action(self, 'fitzone.action_fitzone_trainer_schedule',
+                              [('trainer_id', '=', self.id)])
+
+    def action_view_trainees(self):
+        check_navigation(self, OPERATIONS, 'res.partner')
+        check_trainer_owner(self, self)
+        return related_action(self, 'fitzone.action_fitzone_members', self._trainee_domain(),
+                              {'active_test': False})
 
     def is_available_during(self, start_datetime, end_datetime):
         """Check whether the trainer is within working hours."""

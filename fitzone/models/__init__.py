@@ -59,3 +59,5 @@ from . import revenue_department
 from . import financial_analysis
 from . import collected_department
 from . import dashboard_details
+from . import role_security
+from . import membership_payment

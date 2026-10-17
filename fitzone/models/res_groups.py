@@ -5,6 +5,24 @@ class ResGroups(models.Model):
     _inherit = 'res.groups'
 
     @api.model
+    def _configure_fitzone_admin_interface(self):
+        # The exemption is noupdate so assignments are initialized only once.
+        self.env.ref('fitzone.group_fitzone_full_admin_ui').write({
+            'implied_ids': [Command.link(self.env.ref('fitzone.group_fitzone_manager').id)],
+        })
+
+    @api.model
+    def _initialize_fitzone_admin_interface(self):
+        """One-time XML migration; keep existing administrators' interface intact."""
+        parameters = self.env['ir.config_parameter']
+        key = 'fitzone.admin_interface_initialized'
+        if not parameters.get_param(key):
+            users = self.env.ref('base.group_system').with_context(active_test=False).all_user_ids
+            users.write({'group_ids': [Command.link(
+                self.env.ref('fitzone.group_fitzone_full_admin_ui').id)]})
+            parameters.set_param(key, 'True')
+
+    @api.model
     def _merge_fitzone_owner_group(self):
         """Upgrade data step: preserve access before removing the legacy role.
 

@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from odoo import api, fields, models, _
 from odoo.exceptions import AccessError, ValidationError
 
@@ -222,3 +224,20 @@ class PTSession(models.Model):
     def _compute_package_id(self):
         for rec in self:
             rec.package_id = rec.membership_id.package_id
+
+    @api.constrains('member_id', 'session_date', 'end_datetime', 'state')
+    def _check_no_pool_overlap(self):
+        for rec in self.sudo():
+            if rec.state == 'cancelled' or not (rec.member_id and rec.session_date and rec.end_datetime):
+                continue
+            bookings = self.env['fitzone.pool.booking'].sudo().search([
+                ('member_id', '=', rec.member_id.id),
+                ('status', '!=', 'cancelled'),
+                ('session_date', '>=', (rec.session_date - timedelta(days=1)).date()),
+                ('session_date', '<=', (rec.end_datetime + timedelta(days=1)).date()),
+            ])
+            for booking in bookings:
+                start, end = booking._slot_datetimes_utc()
+                if start < rec.end_datetime and end > rec.session_date:
+                    raise ValidationError(
+                        _("This member already has a pool booking that overlaps with this PT session."))

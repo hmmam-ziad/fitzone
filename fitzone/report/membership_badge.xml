@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="paperformat_membership_badge" model="report.paperformat">
+        <field name="name">Membership Badge (86 x 54 mm)</field>
+        <field name="format">custom</field>
+        <field name="page_width">86</field>
+        <field name="page_height">54</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">0</field>
+        <field name="margin_bottom">0</field>
+        <field name="margin_left">0</field>
+        <field name="margin_right">0</field>
+        <field name="header_line" eval="False" />
+        <field name="header_spacing">0</field>
+        <field name="disable_shrinking" eval="True" />
+        <field name="dpi">96</field>
+    </record>
+
+    <record id="action_report_membership_badge" model="ir.actions.report">
+        <field name="name">Membership Badge</field>
+        <field name="model">fitzone.membership</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">fitzone.report_membership_badge</field>
+        <field name="report_file">fitzone.report_membership_badge</field>
+        <field name="paperformat_id" ref="paperformat_membership_badge" />
+        <field name="binding_model_id" ref="model_fitzone_membership" />
+        <field name="binding_type">report</field>
+        <field name="group_ids"
+            eval="[(6, 0, [ref('fitzone.group_fitzone_manager'), ref('fitzone.group_fitzone_reception'), ref('base.group_system')])]" />
+        <field name="print_report_name">'Membership Badge - %s' % (object.member_id.membership_no or
+            object.id)</field>
+    </record>
+
+    <template id="report_membership_badge">
+        <t t-call="web.html_container">
+            <style>
+                html, body, main { margin: 0 !important; padding: 0 !important; }
+                /* One unit system only (mm), including fonts, so nothing scales differently. */
+                .fz-badge { width: 85.6mm; height: 53.5mm; overflow: hidden; position: relative;
+                    box-sizing: border-box; background: #ffffff; color: #17283b;
+                    font-family: 'DejaVu Sans', sans-serif; font-size: 2.5mm; line-height: 1.2;
+                    page-break-inside: avoid; page-break-after: avoid;
+                    -webkit-print-color-adjust: exact; }
+                .fz-badge div, .fz-badge span, .fz-badge strong, .fz-badge table, .fz-badge td, .fz-badge img {
+                    margin: 0; padding: 0; font-size: inherit; line-height: inherit; }
+                .fz-badge strong { font-weight: bold; }
+                .fz-badge table { width: 100%; table-layout: fixed; border-collapse: collapse; }
+                .fz-badge td { vertical-align: middle; }
+                .fz-badge .fz-ellipsis { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+                .fz-badge .fz-header { height: 10mm; box-sizing: border-box; padding: 0 3.5mm; color: #ffffff; overflow: hidden; }
+                .fz-badge .fz-header table { height: 10mm; }
+                .fz-badge .fz-logo-box { width: 7.4mm; height: 7.4mm; background: #ffffff; border-radius: 3.7mm; text-align: center; overflow: hidden; }
+                .fz-badge .fz-logo-box img { max-width: 6mm; max-height: 6mm; margin-top: .7mm; }
+                .fz-badge .fz-company { font-size: 3.6mm; font-weight: bold; max-width: 55mm; }
+                .fz-badge .fz-sub { font-size: 1.7mm; letter-spacing: .35mm; color: rgba(255,255,255,.8); }
+
+                .fz-badge .fz-details { height: 21mm; box-sizing: border-box; padding: 1.5mm 3.5mm; overflow: hidden; }
+                .fz-badge .fz-details table { height: 18mm; }
+                .fz-badge .fz-photo { width: 15mm; height: 18mm; border-radius: 1.2mm; }
+                .fz-badge .fz-photo-ph { width: 15mm; height: 18mm; border-radius: 1.2mm; background: #eef2f6;
+                    text-align: center; font-size: 8mm; font-weight: bold; line-height: 18mm; }
+                .fz-badge .fz-name { font-size: 3.6mm; font-weight: bold; max-width: 58mm; }
+                .fz-badge .fz-label { font-size: 1.7mm; text-transform: uppercase; letter-spacing: .25mm; color: #64748b; }
+                .fz-badge .fz-id { font-size: 3.3mm; font-weight: bold; }
+                .fz-badge .fz-phone { font-size: 2.5mm; color: #334155; }
+                .fz-badge .fz-pill { display: inline-block; font-size: 1.9mm; font-weight: bold; color: #ffffff;
+                    padding: .5mm 2mm; border-radius: 2mm; text-transform: uppercase; letter-spacing: .15mm; }
+
+                .fz-badge .fz-plan { height: 9mm; box-sizing: border-box; padding: 0 3.5mm; background: #f1f5f9; overflow: hidden; }
+                .fz-badge .fz-plan table { height: 9mm; }
+                .fz-badge .fz-plan-name { font-size: 2.5mm; font-weight: bold; max-width: 49mm; }
+                .fz-badge .fz-tag { font-size: 1.7mm; color: #64748b; }
+                .fz-badge .fz-dates { font-size: 2.2mm; }
+
+                .fz-badge .fz-code { height: 13.5mm; box-sizing: border-box; padding-top: 1.2mm; text-align: center; overflow: hidden; }
+                .fz-badge .fz-code img { width: 62mm; height: 10.5mm; }
+                .fz-badge .fz-nocode { font-size: 2.2mm; color: #64748b; line-height: 12mm; }
+
+                .fz-badge .fz-header, .fz-badge .fz-header * { color: #ffffff !important; }
+                .fz-badge .fz-header .fz-sub { color: rgba(255,255,255,.8) !important; }
+            </style>
+            <t t-foreach="docs" t-as="o">
+                <t t-set="company" t-value="o.company_id" />
+                <t t-set="primary" t-value="'#630002'" />
+                <t t-set="secondary" t-value="'#3e4444'" />
+                <div class="page fz-badge" t-att-data-oe-model="o._name" t-att-data-oe-id="o.id">
+
+                    <!-- Header -->
+                    <div class="fz-header" t-att-style="'background-color: %s;' % primary">
+                        <table>
+                            <tr>
+                                <td t-if="company.logo" style="width: 9.5mm;">
+                                    <div class="fz-logo-box">
+                                        <img t-att-src="image_data_uri(company.logo)" alt="Gym logo" />
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="fz-company fz-ellipsis" t-field="company.name" />
+                                    <div class="fz-sub">MEMBERSHIP CARD</div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <!-- Member details -->
+                    <div class="fz-details">
+                        <table>
+                            <tr>
+                                <td style="width: 18mm;">
+                                    <img t-if="o.member_id.image_128"
+                                        t-att-src="image_data_uri(o.member_id.image_128)"
+                                        class="fz-photo" alt="Member photo" />
+                                    <div t-else="" class="fz-photo-ph"
+                                        t-att-style="'color: %s;' % primary"
+                                        t-out="(o.member_id.name or '?')[:1].upper()" />
+                                </td>
+                                <td>
+                                    <div class="fz-name fz-ellipsis" t-field="o.member_id.name" />
+                                    <div style="margin-top: .8mm;">
+                                        <span class="fz-label">Member ID</span>
+                                    </div>
+                                    <div class="fz-id" t-att-style="'color: %s;' % primary"
+                                        t-out="o.member_id.membership_no or o.member_id.ref or '-'" />
+                                    <div class="fz-phone" style="margin-top: .6mm;"
+                                        t-if="o.member_id.phone" t-out="o.member_id.phone" />
+                                    <div style="margin-top: 1mm;">
+                                        <span class="fz-pill"
+                                            t-att-style="'background-color: %s;' % ('#16a34a' if o.state == 'active' else '#b45309')"
+                                            t-field="o.state" />
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <!-- Plan and validity -->
+                    <div class="fz-plan" t-att-style="'border-left: 1.2mm solid %s;' % secondary">
+                        <table>
+                            <tr>
+                                <td style="width: 48mm;">
+                                    <div class="fz-label">Membership plan</div>
+                                    <div class="fz-plan-name fz-ellipsis"
+                                        t-field="o.package_id.name" />
+                                    <div class="fz-tag" t-if="o.all_inclusive">All-Inclusive</div>
+                                </td>
+                                <td>
+                                    <div class="fz-dates">
+                                        <span class="fz-label">From </span>
+                                        <span t-field="o.date_start"
+                                            t-options="{'format': 'dd MMM yyyy'}" />
+                                    </div>
+                                    <div class="fz-dates">
+                                        <span class="fz-label">Until </span>
+                                        <strong t-field="o.date_end"
+                                            t-options="{'format': 'dd MMM yyyy'}" />
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <!-- Barcode -->
+                    <div class="fz-code">
+                        <img t-if="o.barcode_image" t-att-src="image_data_uri(o.barcode_image)"
+                            alt="Membership check-in barcode" />
+                        <div t-else="" class="fz-nocode">Awaiting activation - no access barcode
+                            issued</div>
+                    </div>
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>

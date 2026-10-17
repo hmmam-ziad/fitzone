@@ -4,9 +4,102 @@ from odoo import api, fields, models
 from odoo.exceptions import AccessError
 from odoo.fields import Domain
 
+from .smart_button_helpers import (
+    MEMBERSHIP_READERS, OPERATIONS, check_navigation, grouped_counts, related_action,
+)
+
 
 class ResPartner(models.Model):
     _inherit = 'res.partner'
+
+    fitzone_membership_count = fields.Integer(
+        compute='_compute_fitzone_membership_count', compute_sudo=False,
+        groups='fitzone.group_fitzone_manager,fitzone.group_fitzone_reception,fitzone.group_fitzone_trainer,fitzone.group_fitzone_physiotherapist,fitzone.group_fitzone_nutritionist',
+    )
+    fitzone_pt_session_count = fields.Integer(
+        compute='_compute_fitzone_pt_session_count', compute_sudo=False,
+        groups='fitzone.group_fitzone_manager,fitzone.group_fitzone_reception,fitzone.group_fitzone_trainer',
+    )
+    fitzone_class_booking_count = fields.Integer(
+        compute='_compute_fitzone_class_booking_count', compute_sudo=False,
+        groups='fitzone.group_fitzone_manager,fitzone.group_fitzone_reception,fitzone.group_fitzone_trainer',
+    )
+
+    @api.depends('membership_ids')
+    @api.depends_context('uid', 'allowed_company_ids')
+    def _compute_fitzone_membership_count(self):
+        counts = grouped_counts(self, 'fitzone.membership', 'member_id', MEMBERSHIP_READERS)
+        for member in self:
+            member.fitzone_membership_count = counts.get(member.id, 0)
+
+    @api.depends('pt_session_ids', 'pt_session_ids.trainer_id')
+    @api.depends_context('uid', 'allowed_company_ids')
+    def _compute_fitzone_pt_session_count(self):
+        counts = grouped_counts(self, 'fitzone.pt.session', 'member_id', OPERATIONS)
+        for member in self:
+            member.fitzone_pt_session_count = counts.get(member.id, 0)
+
+    def _fitzone_accessible_class_booking_ids(self):
+        """Resolve only associations for caller-readable bookings and partners.
+
+        Odoo 19 forbids Trainer domains/grouping on booking.member_id. The
+        private elevated lookup is limited to IDs already readable by the
+        caller, like the existing safe-identity helpers. Never expose its rows.
+        """
+        self.check_access('read')
+        members = self.filtered(lambda record: record.id and isinstance(record.id, int))
+        result = {member.id: [] for member in members}
+        if not members:
+            return result
+        Booking = self.env['fitzone.class.booking']
+        Booking.check_access('read')
+        if Booking._has_field_access(Booking._fields['member_id'], 'read'):
+            for member, ids in Booking._read_group(
+                [('member_id', 'in', members.ids)], ['member_id'], ['id:array_agg'],
+            ):
+                result[member.id] = ids
+        else:
+            accessible_ids = Booking.search([]).ids
+            links = Booking.sudo().search_fetch([
+                ('id', 'in', accessible_ids), ('member_id', 'in', members.ids),
+            ], ['member_id'])
+            for booking in links:
+                result[booking.member_id.id].append(booking.id)
+        return result
+
+    @api.depends('class_booking_ids', 'class_booking_ids.class_id.trainer_id')
+    @api.depends_context('uid', 'allowed_company_ids')
+    def _compute_fitzone_class_booking_count(self):
+        ids_by_member = self._fitzone_accessible_class_booking_ids()
+        all_ids = [booking_id for ids in ids_by_member.values() for booking_id in ids]
+        accessible_ids = set(self.env['fitzone.class.booking'].search([
+            ('id', 'in', all_ids),
+        ]).ids)
+        for member in self:
+            # Batch recheck with ordinary ORM access, never count elevated rows.
+            member.fitzone_class_booking_count = len(
+                accessible_ids.intersection(ids_by_member.get(member.id, []))
+            )
+
+    def action_view_fitzone_memberships(self):
+        check_navigation(self, MEMBERSHIP_READERS, 'fitzone.membership')
+        return related_action(self, 'fitzone.action_fitzone_membership',
+                              [('member_id', '=', self.id)], {'default_member_id': self.id})
+
+    def action_view_fitzone_pt_sessions(self):
+        check_navigation(self, OPERATIONS, 'fitzone.pt.session')
+        return related_action(self, 'fitzone.action_fitzone_pt_session',
+                              [('member_id', '=', self.id)], {'default_member_id': self.id})
+
+    def action_view_fitzone_class_bookings(self):
+        check_navigation(self, OPERATIONS, 'fitzone.class.booking')
+        Booking = self.env['fitzone.class.booking']
+        if Booking._has_field_access(Booking._fields['member_id'], 'read'):
+            domain = [('member_id', '=', self.id)]
+        else:
+            domain = [('id', 'in', self._fitzone_accessible_class_booking_ids().get(self.id, []))]
+        return related_action(self, 'fitzone.action_fitzone_class_booking', domain,
+                              {'default_member_id': self.id})
 
     membership_no = fields.Char(copy=False, index=True, readonly=True)
     birth_date = fields.Date(

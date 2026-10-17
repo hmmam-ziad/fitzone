@@ -107,3 +107,9 @@ access_purchase_request_line_purchase_manager,Purchase request line Purchase Man
 
 access_purchase_request_purchase_user,Purchase request purchasing user,model_fitzone_purchase_request,purchase.group_purchase_user,1,1,0,0
 access_purchase_request_line_purchase_user,Purchase request line purchasing user,model_fitzone_purchase_request_line,purchase.group_purchase_user,1,0,0,0
+
+access_fitzone_payment_reception,Membership payments reception,model_fitzone_membership_payment,fitzone.group_fitzone_reception,1,1,1,1
+access_fitzone_payment_manager,Membership payments manager,model_fitzone_membership_payment,fitzone.group_fitzone_manager,1,1,1,1
+access_fitzone_audit_manager,Medical audit manager,model_fitzone_medical_audit_log,fitzone.group_fitzone_manager,1,0,0,0
+access_fitzone_invoice_label_reception,Membership invoice labels,account.model_account_move,fitzone.group_fitzone_reception,1,0,0,0
+access_fitzone_payment_label_reception,Membership payment labels,account.model_account_payment,fitzone.group_fitzone_reception,1,0,0,0

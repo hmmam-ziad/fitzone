@@ -1,6 +1,8 @@
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
+from .smart_button_helpers import OPERATIONS, check_navigation, grouped_counts, related_action
+
 
 def _hhmm(value):
     """9.5 -> '09:30'"""
@@ -12,6 +14,25 @@ class PoolSlot(models.Model):
     _name = 'fitzone.pool.slot'
     _description = 'Pool Slot'
     _order = 'day_of_week, start_time'
+
+    booking_count = fields.Integer(
+        compute='_compute_booking_count', compute_sudo=False,
+        groups='fitzone.group_fitzone_manager,fitzone.group_fitzone_reception,fitzone.group_fitzone_trainer',
+    )
+
+    @api.depends_context('uid', 'allowed_company_ids')
+    def _compute_booking_count(self):
+        counts = grouped_counts(self, 'fitzone.pool.booking', 'pool_slot_id', OPERATIONS)
+        for slot in self:
+            slot.booking_count = counts.get(slot.id, 0)
+
+    def action_view_bookings(self):
+        check_navigation(self, OPERATIONS, 'fitzone.pool.booking')
+        return related_action(self, 'fitzone.action_fitzone_pool_booking',
+                              [('pool_slot_id', '=', self.id)], {
+                                  'default_pool_slot_id': self.id,
+                                  'group_by': 'session_date:day',
+                              })
 
     day_of_week = fields.Selection(
         [

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="fitzone.NativeSettingsDeveloperControls" t-inherit="res_config_dev_tool" t-inherit-mode="extension">
+        <xpath expr="//a[@t-if='!isDebug']" position="attributes">
+            <attribute name="t-if" add="!fitzoneHideAdminUI" separator=" and "/>
+        </xpath>
+        <xpath expr="//a[@t-if='!isAssets']" position="attributes">
+            <attribute name="t-if" add="!fitzoneHideAdminUI" separator=" and "/>
+        </xpath>
+        <xpath expr="//a[@t-if='!isTests']" position="attributes">
+            <attribute name="t-if" add="!fitzoneHideAdminUI" separator=" and "/>
+        </xpath>
+        <xpath expr="//a[@t-if='isDebug']" position="attributes">
+            <attribute name="t-if" add="!fitzoneHideAdminUI" separator=" and "/>
+        </xpath>
+    </t>
+</templates>
