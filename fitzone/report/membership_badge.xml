@@ -69,18 +69,21 @@
 
                 .fz-badge .fz-plan { height: 9mm; box-sizing: border-box; padding: 0 3.5mm; background: #f1f5f9; overflow: hidden; }
                 .fz-badge .fz-plan table { height: 9mm; }
-                .fz-badge .fz-plan-name { font-size: 2.8mm; font-weight: bold; max-width: 46mm; }
+                .fz-badge .fz-plan-name { font-size: 2.5mm; font-weight: bold; max-width: 49mm; }
                 .fz-badge .fz-tag { font-size: 1.7mm; color: #64748b; }
                 .fz-badge .fz-dates { font-size: 2.2mm; }
 
                 .fz-badge .fz-code { height: 13.5mm; box-sizing: border-box; padding-top: 1.2mm; text-align: center; overflow: hidden; }
                 .fz-badge .fz-code img { width: 62mm; height: 10.5mm; }
                 .fz-badge .fz-nocode { font-size: 2.2mm; color: #64748b; line-height: 12mm; }
+
+                .fz-badge .fz-header, .fz-badge .fz-header * { color: #ffffff !important; }
+                .fz-badge .fz-header .fz-sub { color: rgba(255,255,255,.8) !important; }
             </style>
             <t t-foreach="docs" t-as="o">
                 <t t-set="company" t-value="o.company_id" />
-                <t t-set="primary" t-value="company.primary_color or '#630002'" />
-                <t t-set="secondary" t-value="company.secondary_color or '#3e4444'" />
+                <t t-set="primary" t-value="'#630002'" />
+                <t t-set="secondary" t-value="'#3e4444'" />
                 <div class="page fz-badge" t-att-data-oe-model="o._name" t-att-data-oe-id="o.id">
 
                     <!-- Header -->
