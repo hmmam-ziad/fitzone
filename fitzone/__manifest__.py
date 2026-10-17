@@ -10,6 +10,7 @@
     "license": "LGPL-3",
     "depends": [
         "base",
+        "mail",
         "contacts",
         "point_of_sale",
         "sale_management",
@@ -40,6 +41,8 @@
         "security/ir_rule.xml",
         "security/ir.model.access.csv",
         "security/role_management.xml",
+        "report/membership_badge.xml",
+        "data/membership_badge_email.xml",
         "views/employee_views.xml",
         "views/members_views.xml",
         "views/trainer_views.xml",

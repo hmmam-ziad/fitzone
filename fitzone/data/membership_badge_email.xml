@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <record id="mail_template_membership_badge" model="mail.template">
+        <field name="name">Membership: Welcome and Badge</field>
+        <field name="model_id" ref="model_fitzone_membership"/>
+        <field name="subject">Your {{ object.company_id.name }} membership badge</field>
+        <field name="email_from">{{ object.company_id.partner_id.email_formatted or user.email_formatted }}</field>
+        <field name="email_to">{{ object.member_id.email }}</field>
+        <field name="lang">{{ object.member_id.lang }}</field>
+        <field name="report_template_ids" eval="[(6, 0, [ref('fitzone.action_report_membership_badge')])]"/>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="font-family: Arial, sans-serif; font-size: 14px; color: #17283b;">
+                <p>Hello <t t-out="object.member_id.name"/>,</p>
+                <p>Welcome to <strong t-out="object.company_id.name"/>! Your membership badge is attached as a PDF.</p>
+                <p>
+                    <strong>Member ID:</strong> <t t-out="object.member_id.membership_no or object.member_id.ref or ''"/><br/>
+                    <strong>Plan:</strong> <t t-out="object.package_id.name"/><br/>
+                    <strong>Start date:</strong> <t t-out="format_date(object.date_start)"/><br/>
+                    <strong>Expiration date:</strong> <t t-out="format_date(object.date_end)"/>
+                </p>
+                <p>Print the card at actual size (100%) or keep the PDF on your phone. Present the barcode at reception for check-in.</p>
+                <p>We look forward to seeing you,<br/><t t-out="object.company_id.name"/></p>
+            </div>
+        </field>
+    </record>
+</odoo>

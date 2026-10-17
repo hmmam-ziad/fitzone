@@ -4,7 +4,8 @@ import io
 from PIL import Image, ImageDraw, ImageFont
 from reportlab.graphics.barcode.code128 import Code128
 from odoo import _, api, fields, models
-from odoo.exceptions import AccessError, ValidationError
+from odoo.exceptions import AccessError, UserError, ValidationError
+from odoo.tools import email_normalize
 from dateutil.relativedelta import relativedelta
 
 from .smart_button_helpers import (
@@ -14,8 +15,62 @@ from .smart_button_helpers import (
 
 class Membership(models.Model):
     _name = 'fitzone.membership'
+    _inherit = ['mail.thread']
     _description = 'Membership'
     _rec_name = 'member_id'
+
+    def _check_badge_access(self):
+        self.check_access('read')
+        if not (self.env.su or self.env.user.has_group('base.group_system')
+                or has_roles(self.env, ('manager', 'reception'))):
+            raise AccessError(_('Only administrators and receptionists can issue membership badges.'))
+
+    def action_print_badge(self):
+        self.ensure_one()
+        self._check_badge_access()
+        return self.env.ref('fitzone.action_report_membership_badge').report_action(self)
+
+    def action_send_badge_email(self):
+        self.ensure_one()
+        self._check_badge_access()
+        self.check_access('write')
+        recipient = email_normalize(self.member_id.email or '')
+        if not recipient:
+            raise UserError(_('Please enter a valid email address on the member before sending the badge.'))
+        if not self.barcode or not self.date_start or not self.date_end:
+            raise UserError(_('Activate the membership before sending its badge.'))
+
+        # The template generates a fresh PDF each time, including renewed dates.
+        template = self.env.ref('fitzone.mail_template_membership_badge')
+        mail_id = template.with_company(self.company_id).with_context(
+            lang=self.member_id.lang or self.env.lang,
+        ).send_mail(
+            self.id, force_send=True, raise_exception=True,
+            email_values={
+                'email_to': recipient,
+                'email_cc': False,
+                'recipient_ids': [(5, 0, 0)],
+                'auto_delete': False,
+            },
+        )
+        # mail.template creates mail as sudo; inspect only this dispatch result.
+        mail = self.env['mail.mail'].sudo().browse(mail_id)
+        if mail.state != 'sent':
+            raise UserError(_('The badge email was not sent. Please check the outgoing mail configuration.'))
+        self.message_post(
+            body=_('Membership badge sent by email to %s.', recipient),
+            subtype_xmlid='mail.mt_note',
+        )
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'title': _('Membership Badge'),
+                'message': _('Badge email sent to %s.', recipient),
+                'type': 'success',
+                'sticky': False,
+            },
+        }
 
     installment_plan_count = fields.Integer(
         compute='_compute_installment_plan_count', compute_sudo=False,
