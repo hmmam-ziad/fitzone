@@ -161,6 +161,7 @@ class Membership(models.Model):
     package_id = fields.Many2one(
         'product.template',
         required=True,
+        domain=[('package_type', '!=', False)],
     )
 
     package_type = fields.Selection(
