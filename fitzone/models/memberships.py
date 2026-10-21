@@ -18,6 +18,10 @@ class Membership(models.Model):
     _inherit = ['mail.thread']
     _description = 'Membership'
     _rec_name = 'member_id'
+    _barcode_uniq = models.Constraint(
+        'UNIQUE(barcode)',
+        'Membership barcode must be unique.',
+    )
 
     def _check_badge_access(self):
         self.check_access('read')
@@ -173,7 +177,7 @@ class Membership(models.Model):
         ondelete='restrict',
     )
 
-    barcode = fields.Char()
+    barcode = fields.Char(copy=False)
     barcode_image = fields.Binary(
         string='Barcode Image',
         compute='_compute_barcode_image',
