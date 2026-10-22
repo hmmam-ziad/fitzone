@@ -188,7 +188,11 @@
                             <field name="due_installment_count" widget="statinfo"
                                 string="Due Installments" />
                         </button>
-                        <button name="action_view_membership_invoice" type="object" class="oe_stat_button fz-smart-button fz-smart-teal" icon="fa-file-text-o" groups="fitzone.group_fitzone_manager,fitzone.group_fitzone_reception" invisible="not invoice_id">
+                        <button name="action_view_membership_invoice" type="object"
+                            class="oe_stat_button fz-smart-button fz-smart-teal"
+                            icon="fa-file-text-o"
+                            groups="fitzone.group_fitzone_manager,fitzone.group_fitzone_reception"
+                            invisible="not invoice_id">
                             <span class="o_stat_text">Invoice</span>
                         </button>
                     </div>
@@ -200,6 +204,7 @@
                             <field name="package_id" />
                             <field name="barcode" />
                             <field name="barcode_image" widget="image" string="Membership Barcode"
+                                class="fz-barcode-img"
                                 readonly="1" invisible="not barcode" options="{'size': [400, 120]}" />
                             <field name="base_price" readonly="1" />
                             <field name="all_inclusive" />

@@ -1,4 +1,4 @@
-from odoo import api, fields, models
+from odoo import _, api, fields, models
 from odoo.exceptions import AccessError, ValidationError
 
 
@@ -9,7 +9,9 @@ class FaultReport(models.Model):
     _rec_name = 'equipment_id'
     _order = 'id desc'
 
-    equipment_id = fields.Many2one('maintenance.equipment', required=True)
+    equipment_id = fields.Many2one(
+        'maintenance.equipment', required=True,
+        domain="[('status', '!=', 'out_of_service')]")
     serial_no = fields.Char(related='equipment_id.serial_no', readonly=True)
     reported_by = fields.Many2one(
         'hr.employee',
