@@ -12,6 +12,7 @@
     --fz-space: 16px;
     --fz-gap: 24px;
     --fz-radius: 12px;
+    --fz-body-h: 280px; // standard height of a card body (chart / table / list); longer content scrolls
     height: 100%;
     overflow: auto;
     color: var(--fz-text);
@@ -381,7 +382,7 @@
     .fz-chart {
         position: relative;
         flex: 1 1 auto;
-        min-height: 280px;
+        min-height: var(--fz-body-h);
         color: var(--fz-muted);
 
         canvas {
@@ -424,11 +425,11 @@
 
     .fz-table-wrap {
         overflow-x: auto;
-        max-height: 280px;
+        max-height: var(--fz-body-h);
         overflow-y: auto;
     }
 
-    // same height as .fz-chart; long tables scroll inside the card
+    // long tables scroll inside the card
     .fz-table {
         width: 100%;
         border-collapse: collapse;
@@ -509,6 +510,11 @@
         &.fz-high span {
             background: var(--fz-brand);
         }
+    }
+
+    .fz-occupancy {
+        max-height: var(--fz-body-h);
+        overflow-y: auto;
     }
 
     .fz-room {
