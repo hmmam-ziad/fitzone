@@ -439,9 +439,12 @@
             color: var(--fz-muted);
             font-size: 11px;
             background: color-mix(in srgb, var(--fz-brand) 5%, var(--fz-surface));
+        }
+
+        thead th {
             position: sticky;
             top: 0;
-            z-index: 1;
+            z-index: 2;
         }
 
         th,
@@ -574,6 +577,17 @@
 
     .fz-matrix {
         font-size: 10px;
+
+        tbody th {
+            position: sticky;
+            inset-inline-start: 0;
+            z-index: 1;
+        }
+
+        thead th:first-child {
+            inset-inline-start: 0;
+            z-index: 3;
+        }
 
         th {
             font-size: 9px;
