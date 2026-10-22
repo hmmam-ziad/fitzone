@@ -101,6 +101,11 @@
         action="action_fitzone_free_swim_slots"
         groups="fitzone.group_fitzone_manager" sequence="20" />
 
+    <menuitem id="menu_fitzone_pool_slot_reception" name="Pool Slots"
+        parent="menu_fitzone_pool"
+        action="action_fitzone_pool_slot" sequence="30"
+        groups="fitzone.group_fitzone_reception" />
+
     <menuitem id="menu_fitzone_injuries" name="Clinic" parent="menu_fitzone_root" sequence="80"
         groups="fitzone.group_fitzone_physiotherapist" />
     <menuitem id="menu_fitzone_injury" name="Incident Reports Inbox" parent="menu_fitzone_injuries"
