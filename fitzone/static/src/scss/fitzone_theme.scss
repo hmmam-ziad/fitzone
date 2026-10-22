@@ -11,13 +11,21 @@ $fz-secondary-light: rgba($fz-secondary, 0.08);
 // Bootstrap 5.3 CSS variables (Odoo 19 reads colors from these at runtime)
 :root {
     --bs-primary: #{$fz-primary};
-    --bs-primary-rgb: #{red($fz-primary)}, #{green($fz-primary)}, #{blue($fz-primary)};
+    --bs-primary-rgb: #{red($fz-primary)},
+    #{green($fz-primary)},
+    #{blue($fz-primary)};
     --bs-secondary: #{$fz-secondary};
-    --bs-secondary-rgb: #{red($fz-secondary)}, #{green($fz-secondary)}, #{blue($fz-secondary)};
+    --bs-secondary-rgb: #{red($fz-secondary)},
+    #{green($fz-secondary)},
+    #{blue($fz-secondary)};
     --bs-link-color: #{$fz-primary};
     --bs-link-hover-color: #{$fz-primary-dark};
-    --bs-link-color-rgb: #{red($fz-primary)}, #{green($fz-primary)}, #{blue($fz-primary)};
-    --bs-link-hover-color-rgb: #{red($fz-primary-dark)}, #{green($fz-primary-dark)}, #{blue($fz-primary-dark)};
+    --bs-link-color-rgb: #{red($fz-primary)},
+    #{green($fz-primary)},
+    #{blue($fz-primary)};
+    --bs-link-hover-color-rgb: #{red($fz-primary-dark)},
+    #{green($fz-primary-dark)},
+    #{blue($fz-primary-dark)};
 }
 
 // Top navbar
@@ -36,8 +44,8 @@ header.o_navbar {
     .o_menu_sections,
     .o_menu_systray,
     .o_menu_toggle,
-    .o_menu_sections > *,
-    .o_menu_systray > * {
+    .o_menu_sections>*,
+    .o_menu_systray>* {
         background-color: transparent !important;
     }
 
@@ -55,7 +63,10 @@ header.o_navbar {
         background-clip: padding-box !important;
         border-radius: 999px !important;
 
-        &:hover, &:focus, &:active, &.show {
+        &:hover,
+        &:focus,
+        &:active,
+        &.show {
             background-color: $fz-hover-bg !important;
             color: $fz-hover-text !important;
             font-weight: 700 !important;
@@ -73,7 +84,10 @@ header.o_navbar {
 .btn-primary {
     background-color: $fz-primary;
     border-color: $fz-primary;
-    &:hover, &:focus, &:active {
+
+    &:hover,
+    &:focus,
+    &:active {
         background-color: $fz-primary-dark !important;
         border-color: $fz-primary-dark !important;
     }
@@ -84,7 +98,10 @@ header.o_navbar {
     background-color: $fz-secondary;
     border-color: $fz-secondary;
     color: #fff;
-    &:hover, &:focus, &:active {
+
+    &:hover,
+    &:focus,
+    &:active {
         background-color: darken($fz-secondary, 6%) !important;
         border-color: darken($fz-secondary, 6%) !important;
         color: #fff;
@@ -92,8 +109,13 @@ header.o_navbar {
 }
 
 // Links
-a { color: $fz-primary; }
-a:hover { color: $fz-primary-dark; }
+a {
+    color: $fz-primary;
+}
+
+a:hover {
+    color: $fz-primary-dark;
+}
 
 // List views
 .o_list_view {
@@ -102,10 +124,18 @@ a:hover { color: $fz-primary-dark; }
         color: #fff;
         border-color: darken($fz-secondary, 6%);
     }
-    .o_data_row:hover { background-color: $fz-primary-light; }
+
+    .o_data_row:hover {
+        background-color: $fz-primary-light;
+    }
+
     .o_data_row.o_data_row_selected,
-    .o_data_row.table-active { background-color: rgba($fz-primary, 0.15); }
-    tfoot td, .o_list_footer td {
+    .o_data_row.table-active {
+        background-color: rgba($fz-primary, 0.15);
+    }
+
+    tfoot td,
+    .o_list_footer td {
         background-color: $fz-secondary-light;
         color: $fz-primary;
         font-weight: 600;
@@ -114,12 +144,19 @@ a:hover { color: $fz-primary-dark; }
 
 // Pivot views
 .o_pivot {
+
     .o_pivot_header_cell_opened,
     .o_pivot_header_cell_closed {
         background-color: $fz-secondary-light;
-        &:hover { background-color: $fz-primary-light; }
+
+        &:hover {
+            background-color: $fz-primary-light;
+        }
     }
-    thead th { color: $fz-secondary; }
+
+    thead th {
+        color: $fz-secondary;
+    }
 }
 
 // Search panel / filters
@@ -128,6 +165,7 @@ a:hover { color: $fz-primary-dark; }
     background-color: $fz-primary;
     color: #fff;
 }
+
 .o_cp_searchview .dropdown-item.selected,
 .o_search_options .dropdown-item.selected {
     color: $fz-primary;
@@ -138,27 +176,65 @@ a:hover { color: $fz-primary-dark; }
     color: $fz-primary;
     border-bottom: 2px solid $fz-primary;
 }
-.o_control_panel .breadcrumb-item a { color: $fz-primary; }
+
+.o_control_panel .breadcrumb-item a {
+    color: $fz-primary;
+}
 
 // Badges and statusbar
-.badge.text-bg-primary { background-color: $fz-primary !important; }
+.badge.text-bg-primary {
+    background-color: $fz-primary !important;
+}
+
 .o_statusbar_status .o_arrow_button.o_arrow_button_current {
     background-color: $fz-primary;
     color: #fff;
 }
 
 // Graph view axis / legend accent
-.o_graph_renderer .o_graph_canvas_container { color: $fz-secondary; }
+.o_graph_renderer .o_graph_canvas_container {
+    color: $fz-secondary;
+}
 
 // Navigation-only accents. Keep Odoo's stat-button layout and interaction styles.
 // Teal and warning reuse the FitZone dashboard's semantic palette.
 .o_form_view .oe_stat_button.fz-smart-button {
-    &.fz-smart-blue { --fz-smart-icon-color: #{$blue}; }
-    &.fz-smart-purple { --fz-smart-icon-color: #{$purple}; }
-    &.fz-smart-warning { --fz-smart-icon-color: #bd7b20; }
-    &.fz-smart-teal { --fz-smart-icon-color: #258c75; }
-    &.fz-smart-indigo { --fz-smart-icon-color: #{$indigo}; }
-    &.fz-smart-cyan { --fz-smart-icon-color: #{$cyan}; }
+    &.fz-smart-blue {
+        --fz-smart-icon-color: #{$blue};
+    }
 
-    > .o_button_icon { color: var(--fz-smart-icon-color); }
+    &.fz-smart-purple {
+        --fz-smart-icon-color: #{$purple};
+    }
+
+    &.fz-smart-warning {
+        --fz-smart-icon-color: #bd7b20;
+    }
+
+    &.fz-smart-teal {
+        --fz-smart-icon-color: #258c75;
+    }
+
+    &.fz-smart-indigo {
+        --fz-smart-icon-color: #{$indigo};
+    }
+
+    &.fz-smart-cyan {
+        --fz-smart-icon-color: #{$cyan};
+    }
+
+    >.o_button_icon {
+        color: var(--fz-smart-icon-color);
+    }
+}
+
+.o_form_view .o_field_widget.fz-barcode-img {
+    max-width: 100%;
+
+    img {
+        max-width: 100% !important;
+        height: auto !important;
+        max-height: 120px !important;
+        object-fit: contain;
+    }
 }
